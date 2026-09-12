@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Env
+.env
+.env.local
+*.env
+!.env.example
+
+# Data caches (regenerable from MaleCNS via scripts/)
+data/cache/**
+!data/cache/.gitkeep
+data/circuits/**
+!data/circuits/.gitkeep
+!data/circuits/**/*.manifest.json
+data/metadata/**
+!data/metadata/.gitkeep
+frontend/public/circuits/**
+!frontend/public/circuits/.gitkeep
+
+# Models
+.cache/
+models/
+
+# OS
+.DS_Store
