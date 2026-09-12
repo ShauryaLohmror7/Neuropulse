@@ -185,8 +185,10 @@ FRUIT_ODOUR = StimulusConcept(
     ),
     phrases=[
         "the smell of ripe fruit", "rotting fruit odour", "fermenting fruit", "vinegar smell",
-        "a banana", "smells food", "the scent of an apple", "attractive food odour",
-        "smells something sweet in the air", "the aroma of fruit",
+        "the smell of a banana", "smelling food nearby", "food is nearby",
+        "the scent of an apple", "attractive food odour", "the odour of a meal",
+        "smells something sweet in the air", "the aroma of fruit", "food smell",
+        "detects the odour of ripe produce", "an attractive smell of something edible",
     ],
 )
 
@@ -227,8 +229,9 @@ PHEROMONE = StimulusConcept(
         "pheromone channel (Kurtovic et al. 2007; Datta et al. 2008). Annotated by glomerulus."
     ),
     phrases=[
-        "another fly's pheromone", "a mating signal", "the scent of a female fly",
-        "pheromone in the air", "smells another fly",
+        "cis-vaccenyl acetate", "a mating pheromone", "the scent of a potential mate",
+        "conspecific pheromone in the air", "a courtship signal from another individual",
+        "male pheromone marking",
     ],
 )
 

@@ -1,0 +1,62 @@
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { useStore } from '../../lib/store'
+
+export const PRESETS: { label: string; text: string }[] = [
+  {
+    label: 'Predator + food',
+    text: 'A hungry fly smells ripe fruit while a dark object rapidly approaches from its left.',
+  },
+  { label: 'Touch', text: "Something suddenly touches the fly's left antenna." },
+  { label: 'Sweet landing', text: 'The fly lands on a sweet surface and begins tasting sugar.' },
+  {
+    label: 'Multisensory',
+    text: 'The fly smells food, feels a vibration underneath it, and sees motion on its right.',
+  },
+]
+
+export function ExperienceInput({ onSimulate }: { onSimulate: (text: string) => void }) {
+  const text = useStore((s) => s.text)
+  const setText = useStore((s) => s.setText)
+  const phase = useStore((s) => s.phase)
+  const [focused, setFocused] = useState(false)
+  const busy = phase === 'compiling' || phase === 'transition' || phase === 'propagating'
+
+  return (
+    <motion.div
+      className="input-block"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className={`field ${focused ? 'focused' : ''}`}>
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && text.trim() && !busy) onSimulate(text)
+          }}
+          placeholder="Describe an experience…"
+          spellCheck={false}
+          aria-label="Describe an experience for the fly"
+        />
+        <button
+          className="simulate"
+          disabled={!text.trim() || busy}
+          onClick={() => onSimulate(text)}
+        >
+          {busy ? 'Simulating' : 'Simulate experience'}
+        </button>
+      </div>
+      <div className="presets">
+        {PRESETS.map((p) => (
+          <button key={p.label} onClick={() => setText(p.text)} disabled={busy}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  )
+}

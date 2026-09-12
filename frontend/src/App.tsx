@@ -1,48 +1,76 @@
-import { Suspense, useEffect, useMemo, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
-import * as THREE from 'three'
-import { NeuronSkeleton } from './components/brain/NeuronSkeleton'
-import { Atmosphere } from './components/brain/Atmosphere'
-import { boundsOf } from './lib/morphology'
-import type { CachedDocument, MorphologyPayload } from './types/connectome'
+import { useCallback, useEffect, useRef } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { BrainScene } from './components/brain/BrainScene'
+import { ExperienceInput } from './components/experience/ExperienceInput'
+import { ExperienceBreakdown } from './components/experience/ExperienceBreakdown'
+import { SimulationOverlay } from './components/simulation/SimulationOverlay'
+import { ResponsePanel } from './components/simulation/ResponsePanel'
+import { ViewToggle } from './components/ViewToggle'
+import { useSceneData } from './hooks/useSceneData'
+import { api } from './lib/api'
+import { STEP_DURATION, useStore } from './lib/store'
 
 /**
- * Milestone 1 scene: a single genuine MaleCNS v1.0 neuron, reconstructed from
- * its real skeleton, ignited on a loop so the travelling wavefront is visible.
+ * One screen.
+ *
+ * The biology is the hero; every panel is small, quiet, and appears only when it
+ * has something to say. Technical detail (provenance, evidence, lesion tooling)
+ * lives behind the inspector rather than on the default view.
  */
 export default function App() {
-  const [doc, setDoc] = useState<CachedDocument<MorphologyPayload> | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const { data, error: dataError } = useSceneData()
+  const { phase, sim, error, setPhase, setSim, setError, setView } = useStore()
+  const timers = useRef<number[]>([])
 
-  useEffect(() => {
-    fetch('/circuits/demo_neuron.json')
-      .then((r) => {
-        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-        return r.json()
-      })
-      .then(setDoc)
-      .catch((e) =>
-        setError(
-          `Could not load real connectome data (${e.message}).\n` +
-            `Run:  backend/.venv/bin/python -m scripts.fetch_demo_neuron\n` +
-            `NEUROPULSE has no synthetic fallback by design.`,
-        ),
-      )
-  }, [])
+  useEffect(() => () => timers.current.forEach(clearTimeout), [])
 
-  const radius = useMemo(() => {
-    if (!doc) return 200
-    const b = boundsOf(doc.payload)
-    return b.getSize(new THREE.Vector3()).length() * 0.5
-  }, [doc])
+  const runSimulation = useCallback(
+    async (text: string) => {
+      timers.current.forEach(clearTimeout)
+      timers.current = []
+      setError(null)
+      setSim(null, null)
+      setPhase('compiling')
 
-  if (error) {
+      try {
+        const envelope = await api.simulate(text)
+
+        // Beat 1: show the decomposition while the camera moves to the head.
+        setPhase('transition')
+        setView('brain')
+
+        // Beat 2: ignite. simStartedAt is in scene-clock seconds, which the
+        // shaders share, so step 0 fires exactly when the camera arrives.
+        const startDelay = 1500
+        timers.current.push(
+          window.setTimeout(() => {
+            const t0 = performance.now() / 1000
+            setSim(envelope, sceneClockNow() + 0.15)
+            setPhase('propagating')
+            void t0
+
+            const steps = envelope.result.metrics.propagation_depth + 1
+            timers.current.push(
+              window.setTimeout(
+                () => setPhase('settled'),
+                (steps * STEP_DURATION + 1.4) * 1000,
+              ),
+            )
+          }, startDelay),
+        )
+      } catch (e) {
+        setPhase('idle')
+        setError((e as Error).message)
+      }
+    },
+    [setError, setPhase, setSim, setView],
+  )
+
+  if (dataError) {
     return (
       <div className="app">
         <div className="error">
-          <code>{error}</code>
+          <code>{dataError}</code>
         </div>
       </div>
     )
@@ -50,102 +78,84 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="scene">
-        <Canvas
-          dpr={[1, 2]}
-          gl={{ antialias: true, powerPreference: 'high-performance' }}
-          camera={{ position: [220, 90, 260], fov: 38, near: 1, far: 6000 }}
-          onCreated={({ gl, scene }) => {
-            gl.setClearColor('#050507', 1)
-            gl.toneMapping = THREE.ACESFilmicToneMapping
-            gl.toneMappingExposure = 1.05
-            scene.fog = new THREE.FogExp2('#050507', 0.0009)
-          }}
-        >
-          <Suspense fallback={null}>
-            <Atmosphere radius={Math.max(radius * 2.4, 300)} />
-            {doc && (
-              <PulsingNeuron payload={doc.payload} maxGeodesic={doc.payload.stats.maxGeodesic} />
-            )}
-            <OrbitControls
-              enablePan={false}
-              enableDamping
-              dampingFactor={0.045}
-              rotateSpeed={0.55}
-              minDistance={radius * 0.5}
-              maxDistance={radius * 8}
-              autoRotate
-              autoRotateSpeed={0.28}
-            />
-          </Suspense>
-          <EffectComposer>
-            <Bloom intensity={1.15} luminanceThreshold={0.12} luminanceSmoothing={0.4} mipmapBlur />
-            <Vignette eskil={false} offset={0.24} darkness={0.82} />
-          </EffectComposer>
-        </Canvas>
-      </div>
+      <div className="scene">{data && <BrainScene data={data} />}</div>
+
+      {!data && <div className="loading">Loading real connectome</div>}
 
       <div className="overlay">
         <header className="masthead">
-          <h1 className="wordmark">NEUROPULSE</h1>
-          <p className="tagline">Give a biological brain an experience.</p>
+          <div>
+            <h1 className="wordmark">NEUROPULSE</h1>
+            <p className="tagline">Give a biological brain an experience.</p>
+          </div>
+          <ViewToggle />
         </header>
-        <div />
+
+        <div className="stage">
+          <div className="left-rail">
+            {(phase !== 'idle' || sim) && sim && (
+              <ExperienceBreakdown experience={sim.experience} />
+            )}
+          </div>
+          <div className="right-rail">
+            <AnimatePresence>
+              {(phase === 'propagating' || phase === 'settled') && (
+                <SimulationOverlay sim={sim} />
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <footer className="foot">
+          <AnimatePresence mode="wait">
+            {phase === 'idle' && !sim && (
+              <motion.div key="input" exit={{ opacity: 0, y: 8 }} style={{ width: '100%' }}>
+                <ExperienceInput onSimulate={runSimulation} />
+              </motion.div>
+            )}
+            {phase !== 'idle' && (
+              <motion.div key="status" className="foot-status" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <span className="status-text">{STATUS[phase]}</span>
+                {phase === 'settled' && (
+                  <button className="again" onClick={() => { useStore.getState().reset(); setView('fly') }}>
+                    New experience
+                  </button>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {phase === 'settled' && sim && <ResponsePanel response={sim.response} />}
+        </footer>
       </div>
 
-      {doc && <ProvenancePanel doc={doc} />}
-      {!doc && <div className="loading">Loading real connectome data</div>}
-    </div>
-  )
-}
-
-/** Re-ignites the neuron on a slow loop so the wavefront is continuously visible. */
-function PulsingNeuron({ payload, maxGeodesic }: { payload: MorphologyPayload; maxGeodesic: number }) {
-  const [ignition, setIgnition] = useState(0.6)
-  const speed = 210
-  const period = Math.max(maxGeodesic / speed + 2.4, 4)
-
-  useEffect(() => {
-    const id = setInterval(() => setIgnition(performance.now() / 1000), period * 1000)
-    return () => clearInterval(id)
-  }, [period])
-
-  return (
-    <NeuronSkeleton
-      payload={payload}
-      ignition={ignition}
-      activation={0.85}
-      waveSpeed={speed}
-      waveWidth={22}
-      baseColor="#5d6675"
-      activeColor="#a8d8ff"
-      baseOpacity={0.34}
-      fogNear={120}
-      fogFar={760}
-    />
-  )
-}
-
-function ProvenancePanel({ doc }: { doc: CachedDocument<MorphologyPayload> }) {
-  const m = doc.payload.meta as Record<string, unknown>
-  const rows: [string, string][] = [
-    ['Dataset', `${doc.provenance.dataset} ${doc.provenance.dataset_version}`],
-    ['Body ID', String(doc.payload.bodyId)],
-    ['Cell type', `${m.type ?? '—'}  ${m.instance ? `(${m.instance})` : ''}`],
-    ['Class', String(m.superclass ?? m.class ?? '—')],
-    ['Transmitter', m.predictedNt ? `${m.predictedNt} · p=${Number(m.predictedNtConfidence).toFixed(2)}` : '—'],
-    ['Synapses', `${m.pre ?? '?'} pre · ${m.post ?? '?'} post`],
-    ['Morphology', `${doc.payload.stats.pathCount} strands · ${(doc.payload.stats.cableLengthNm / 1000).toFixed(0)} µm cable`],
-  ]
-  return (
-    <div className="provenance">
-      <div className="label" style={{ marginBottom: 4 }}>Real reconstruction</div>
-      {rows.map(([k, v]) => (
-        <div className="row" key={k}>
-          <b>{k}</b>
-          <span>{v}</span>
+      {error && (
+        <div className="toast">
+          <code>{error}</code>
+          <button onClick={() => setError(null)}>dismiss</button>
         </div>
-      ))}
+      )}
     </div>
   )
+}
+
+const STATUS: Record<string, string> = {
+  compiling: 'Interpreting experience',
+  transition: 'Locating sensory populations',
+  propagating: 'Propagating through real connectome',
+  settled: '',
+}
+
+/**
+ * Scene-clock reading.
+ *
+ * three's clock starts when the Canvas mounts; we mirror it here so React-side
+ * scheduling and the shader uniforms agree on t=0.
+ */
+let clockOrigin: number | null = null
+export function markSceneClock() {
+  if (clockOrigin === null) clockOrigin = performance.now() / 1000
+}
+function sceneClockNow(): number {
+  if (clockOrigin === null) markSceneClock()
+  return performance.now() / 1000 - (clockOrigin ?? 0)
 }

@@ -168,6 +168,7 @@ def write_bundle(
                 "class": meta.get("class"),
                 "superclass": meta.get("superclass"),
                 "side": meta.get("side") or meta.get("somaSide") or meta.get("rootSide"),
+                "roi": meta.get("roi"),
                 "nt": meta.get("predictedNt"),
                 "ntConf": _round(meta.get("predictedNtConfidence"), 3),
                 "pre": meta.get("pre"),

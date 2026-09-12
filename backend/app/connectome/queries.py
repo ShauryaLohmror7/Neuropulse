@@ -12,6 +12,7 @@ Design notes
 
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
 from functools import lru_cache
@@ -62,6 +63,7 @@ WANTED_KEYS = [
     "pre",
     "post",
     "synweight",
+    "roiInfo",
     "cellBodyFiber",
     "flow",
     "birthtime",
@@ -194,6 +196,39 @@ def fetch_connection_weights(pairs_source: Sequence[int], pairs_target: Sequence
         RETURN n.bodyId AS source, m.bodyId AS target, w.weight AS weight
     """
     return fetch_custom(q, client=get_client())
+
+
+@lru_cache(maxsize=1)
+def primary_roi_set() -> frozenset[str]:
+    """The dataset's primary neuropils — the level we report 'regions reached' at."""
+    return frozenset(get_client().primary_rois)
+
+
+def dominant_roi(roi_info: Any) -> str | None:
+    """The primary neuropil where a neuron has most of its synapses.
+
+    ``roiInfo`` is the real per-ROI synapse tally neuPrint stores on each neuron.
+    We restrict to primary ROIs so the reported region is a named neuropil rather
+    than a super-level container like 'CentralBrain'.
+    """
+    if not roi_info:
+        return None
+    if isinstance(roi_info, str):
+        try:
+            roi_info = json.loads(roi_info)
+        except (ValueError, TypeError):
+            return None
+    if not isinstance(roi_info, dict):
+        return None
+    primary = primary_roi_set()
+    best: tuple[str, int] | None = None
+    for roi, counts in roi_info.items():
+        if roi not in primary or not isinstance(counts, dict):
+            continue
+        total = int(counts.get("pre", 0) or 0) + int(counts.get("post", 0) or 0)
+        if best is None or total > best[1]:
+            best = (roi, total)
+    return best[0] if best else None
 
 
 @lru_cache(maxsize=1)

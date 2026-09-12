@@ -20,7 +20,7 @@ import pandas as pd
 from neuprint import fetch_custom
 
 from app.connectome.client import get_client
-from app.connectome.queries import available_keys
+from app.connectome.queries import available_keys, dominant_roi
 
 log = logging.getLogger(__name__)
 
@@ -98,8 +98,11 @@ def _fetch_downstream(
 
 def _row_meta(row: pd.Series) -> dict[str, Any]:
     out: dict[str, Any] = {}
+    roi = dominant_roi(row.get("roiInfo"))
+    if roi:
+        out["roi"] = roi
     for k, v in row.items():
-        if k in ("source", "target", "weight"):
+        if k in ("source", "target", "weight", "roiInfo"):
             continue
         if v is None:
             continue
