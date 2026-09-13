@@ -31,7 +31,8 @@ export interface UnmappedContent {
 }
 
 export interface CompiledExperience {
-  scene_interpretations?: {label:string;original:string;assumptions:string;missing:string}[]
+  interpreter_notice?: string | null
+  scene_interpretations?: {label:string;original:string;assumptions:string;missing:string;question?:string}[]
   raw_text: string
   components: ExperienceComponent[]
   unmapped: UnmappedContent[]
@@ -51,6 +52,7 @@ export interface PulseEvent {
 }
 
 export interface NeuronActivation {
+  carried?: boolean
   modality?: string | null
   body_id: number
   activation: number
@@ -107,6 +109,7 @@ export interface ChannelReadout {
 }
 
 export interface ModelledResponse {
+  plain_language?: string
   interpretation_kind?: 'behavioral_marker'|'partial_marker'|'sensory_only'|'no_input'
   neural_summary?: string[]
   limitations?: string[]
@@ -121,6 +124,8 @@ export interface ModelledResponse {
 }
 
 export interface SimulationEnvelope {
+  sequence?: {mode:string; carried_active:number; note:string; events:{text:string;reached:number;carried_active:number;steps:number}[]} | null
+  systems?: {key:string;label:string;role:string;total:number;reached:number;active_by_step:number[];peak:number;example_ids:number[]}[]
   experience: CompiledExperience
   result: PropagationResult
   response: ModelledResponse
@@ -156,3 +161,6 @@ export interface HealthInfo {
   circuit_error?: string
   parser?: string
 }
+
+export interface InterpreterInfo { available: boolean; provider: string; model: string }
+export interface InterpretationReceipt { experience: CompiledExperience; ticket: string; notice: string | null }

@@ -45,6 +45,22 @@ class ResponseChannel:
 
 CHANNELS: tuple[ResponseChannel, ...] = (
     ResponseChannel(
+        key="front_leg_rubbing", label="Front-leg rubbing",
+        marker_types=("DNg11",), evidence_tier="MODERATE",
+        evidence="Guo, Zhang & Simpson (2022) associate DNg11 stimulation with front-leg rubbing (https://doi.org/10.1016/j.cub.2021.12.055). Exact MaleCNS type match; cross-animal functional association, not validated natural-stimulus prediction.",
+    ),
+    ResponseChannel(
+        key="stride_steering", label="Walking stride adjustment",
+        marker_types=("DNg13",), evidence_tier="MODERATE",
+        evidence="Fine-grained descending control of steering in walking Drosophila (Cell 2024, https://doi.org/10.1016/j.cell.2024.08.033) links DNg13 to contralateral stride lengthening. Read separately from DNa01/02 because the populations can be recruited independently. Locomotor phase and turn direction are not decoded here.",
+    ),
+    ResponseChannel(
+        key="forward_walking", label="Forward-walking pathway",
+        marker_types=("DNg97", "DNg100"), evidence_tier="MODERATE",
+        evidence="Sapkal et al. (2024), https://www.nature.com/articles/s41586-024-07854-7, and the type cross-reference in Bates et al. (2026), https://www.nature.com/articles/s41586-026-10735-w, associate these types with walking promotion. MaleCNS DNg97 is also named oDN1 (https://reiserlab.github.io/celltype-explorer-drosophila-male-cns/types/DNg97.html). A pathway hypothesis, not proof of forward displacement.",
+        opposes=("freeze_stop", "backward_walking"),
+    ),
+    ResponseChannel(
         key="antennal_grooming",
         label="Antennal grooming",
         marker_types=("DNg62", "DNge011", "DNge012", "DNge078"),
@@ -133,12 +149,14 @@ CHANNELS: tuple[ResponseChannel, ...] = (
     ResponseChannel(
         key="feeding_proboscis",
         label="Proboscis extension (feeding)",
-        marker_types=("MN9", "MN11D", "MN11V", "MN12D"),
+        marker_types=("MN9",),
         evidence_tier="MODERATE",
         evidence=(
-            "MN9 and the other proboscis motor neurons (subclass 'pm' in MaleCNS) drive "
-            "proboscis extension; MN9 in particular is required for the proboscis extension "
-            "response to sugar (Gordon & Scott 2009)."
+            "MN9 controls rostrum lifting, a component of proboscis extension. "
+            "Shiu et al. (2024), https://www.nature.com/articles/s41586-024-07763-9, "
+            "use MN9 as the feeding-initiation readout. Other proboscis motor types "
+            "are not pooled into this marker. MaleCNS taste inputs remain broad and "
+            "are not the experimentally identified FlyWire sugar-GRN population."
         ),
         opposes=("escape_takeoff", "escape_generic"),
     ),
@@ -177,6 +195,7 @@ class ModelledResponse(BaseModel):
     limitations: list[str] = Field(default_factory=list)
     output_evidence: list[dict[str, Any]] = Field(default_factory=list)
     headline: str
+    plain_language: str = ""
     detail: str | None = None
     confidence: EvidenceTier | Literal["NONE"] = "NONE"
     channels: list[ChannelReadout] = Field(default_factory=list)

@@ -126,6 +126,7 @@ export function CameraRig({
     const el = gl.domElement
     const take = (e: Event) => {
       if (e instanceof PointerEvent && e.button !== 0 && e.button !== 1 && e.button !== 2) return
+      if (useStore.getState().manualCamera) return
       const c = controls.current
       if (c) {
         // Adopt the rig's current framing so control transfer is seamless.

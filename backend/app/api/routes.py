@@ -3,21 +3,23 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.api.state import CircuitMissingError, get_circuit, get_semantic_index
-from app.experience.mapper import map_to_neurons, seed_drive, scheduled_drive
+from app.experience.interpreter import from_ticket, interpret, interpreter_status
+from app.experience.mapper import map_to_neurons, scheduled_drive, seed_drive
 from app.experience.ontology import MODALITY_COLOUR, ONTOLOGY
 from app.experience.parser import compile_experience
 from app.experience.schemas import CompiledExperience
 from app.simulation.lesion import lesion_and_compare
 from app.simulation.parameters import DEFAULT_PARAMETERS, PropagationParameters
-from app.simulation.propagation import propagate
+from app.simulation.propagation import NeuralState, propagate
 from app.simulation.response import ModelledResponse, infer_response
 from app.simulation.schemas import PropagationResult
+from app.simulation.systems import system_activity
 
 log = logging.getLogger(__name__)
 router = APIRouter()
@@ -28,6 +30,7 @@ class CompileRequest(BaseModel):
 
 
 class SimulateRequest(BaseModel):
+    interpretation_ticket: str | None = Field(default=None, max_length=60000)
     text: str = Field(max_length=600)
     parameters: PropagationParameters | None = None
     lesion: list[int] = Field(default_factory=list)
@@ -42,6 +45,8 @@ class SimulationEnvelope(BaseModel):
     )
     circuit: dict[str, Any]
     lesion: dict[str, Any] | None = None
+    sequence: dict[str, Any] | None = None
+    systems: list[dict[str, Any]] = Field(default_factory=list)
 
 
 def _circuit():
@@ -70,6 +75,7 @@ def health() -> dict[str, Any]:
         out["parser"] = get_semantic_index().name
     except Exception as e:  # pragma: no cover
         out["parser_error"] = str(e)[:200]
+    out["interpreter"] = interpreter_status()
     return out
 
 
@@ -105,6 +111,29 @@ def provenance() -> dict[str, Any]:
     }
 
 
+class InterpretRequest(CompileRequest):
+    mode: Literal["local", "llm"] = "local"
+
+
+@router.get("/interpreter")
+def interpreter_info():
+    return interpreter_status()
+
+
+@router.post("/interpret")
+def interpret_input(req: InterpretRequest):
+    return interpret(req.text, req.mode, index=get_semantic_index())
+
+
+def _experience(req):
+    if req.interpretation_ticket:
+        try:
+            return from_ticket(req.interpretation_ticket, req.text)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return compile_experience(req.text, index=get_semantic_index())
+
+
 @router.post("/compile")
 def compile_only(req: CompileRequest) -> CompiledExperience:
     c = _circuit()
@@ -114,10 +143,14 @@ def compile_only(req: CompileRequest) -> CompiledExperience:
 
 @router.post("/simulate")
 def simulate(req: SimulateRequest) -> SimulationEnvelope:
+    return _simulate(req)
+
+
+def _simulate(req: SimulateRequest, initial_state=None, capture_state=None) -> SimulationEnvelope:
     c = _circuit()
     params = req.parameters or DEFAULT_PARAMETERS
 
-    exp = compile_experience(req.text, index=get_semantic_index())
+    exp = _experience(req)
     map_to_neurons(exp, c.seed_sets, c.node_meta)
     drive, modality = seed_drive(exp)
     schedule = scheduled_drive(exp)
@@ -148,7 +181,13 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
         }
     else:
         result = propagate(
-            graph, drive, params=params, seed_modalities=modality, input_schedule=schedule
+            graph,
+            drive,
+            params=params,
+            seed_modalities=modality,
+            input_schedule=schedule,
+            initial_state=initial_state,
+            capture_state=capture_state,
         )
 
     response = infer_response(result.activations, c.node_meta)
@@ -170,7 +209,70 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
             "dataset": f"{c.provenance.get('dataset')} {c.provenance.get('dataset_version')}",
         },
         lesion=lesion_info,
+        systems=system_activity(result, c.node_meta, params.activation_threshold),
     )
+
+
+class SequenceRequest(BaseModel):
+    interpretation_tickets: list[Annotated[str | None, Field(max_length=60000)]] | None = Field(
+        default=None, max_length=6
+    )
+    events: list[Annotated[str, Field(max_length=600)]] = Field(min_length=1, max_length=6)
+
+    @model_validator(mode="after")
+    def matching_tickets(self):
+        if self.interpretation_tickets is not None and len(self.interpretation_tickets) != len(
+            self.events
+        ):
+            raise ValueError("Each event needs a matching interpretation ticket or null")
+        return self
+
+
+@router.post("/simulate-sequence")
+def simulate_sequence(req: SequenceRequest) -> SimulationEnvelope:
+    # Request-local recomputation avoids hidden shared sessions, lost state and stale tokens.
+    # Each prefix is reproduced exactly; full activity/refractory arrays cross boundaries.
+    state: NeuralState | None = None
+    trace = []
+    for event_index, text in enumerate(req.events):
+        captured = []
+        carried = (
+            int((state.activity > DEFAULT_PARAMETERS.activation_threshold).sum())
+            if state is not None
+            else 0
+        )
+        ticket = req.interpretation_tickets[event_index] if req.interpretation_tickets else None
+        envelope = _simulate(
+            SimulateRequest(text=text, interpretation_ticket=ticket), state, captured.append
+        )
+        state = captured[0]
+        trace.append(
+            {
+                "text": text or "No new stimulus · let activity settle",
+                "reached": envelope.result.metrics.neurons_activated,
+                "carried_active": carried,
+                "steps": len(envelope.result.steps) - 1,
+            }
+        )
+    envelope.sequence = {
+        "events": trace,
+        "mode": "continuous_state",
+        "carried_active": trace[-1]["carried_active"],
+        "note": "Activity and refractory state persist between events. Model time advances only when an event runs. Synaptic weights do not learn; this is not biological memory.",
+    }
+    if len(trace) > 1:
+        envelope.response.neural_summary.insert(
+            0,
+            f"Continuing event {len(trace)}: {trace[-1]['carried_active']:,} neurons entered above threshold from the previous state. Responses may reflect earlier inputs as well as this event.",
+        )
+        envelope.response.limitations.append(envelope.sequence["note"])
+        if not envelope.experience.components and envelope.result.activations:
+            if envelope.response.confidence == "NONE":
+                envelope.response.interpretation_kind = "sensory_only"
+                envelope.response.headline = "Earlier activity is settling"
+                envelope.response.plain_language = "Activity from the earlier event is decaying through the model. No new sensory input was added, and no biological learning is implied."
+                envelope.response.detail = "No new sensory input was injected. This response comes from the retained neural state; it is not a response to unsupported words."
+    return envelope
 
 
 def _detail(body_id: int):

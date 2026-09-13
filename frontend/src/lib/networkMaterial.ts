@@ -51,6 +51,7 @@ void main() {
 export const NETWORK_FRAG = /* glsl */ `
 precision highp float;
 
+uniform float uReveal;
 uniform float uCinematic;
 uniform float uSummary; // static peak-activity summary, no repeated firing
 uniform float uTime;
@@ -76,6 +77,7 @@ varying vec3  vTint;
 varying float vZ;
 
 void main() {
+  if (vGeo > uReveal) discard;
   // Brain view isolates the brain: the ventral nerve cord sits posterior of the
   // clip plane in the dataset's own frame and fades out entirely.
   float keep = (1.0 - smoothstep(uClipZ - uClipSoft, uClipZ + uClipSoft, vZ));
@@ -113,7 +115,7 @@ void main() {
     float residue = arrived * activation * 0.1;
 
     float energy = min((0.38 * activation + trail + residue + pulse * activation * 2.2) * uGain, 1.5);
-    if (uSummary > 0.5) energy = activation * 0.8 * uGain;
+    if (uSummary > 0.5) energy = min(activation * 0.8 * uGain, 1.0);
 
     vec3 hue = uPalette[0];
     for (int i = 0; i < 10; i++) { if (i == mi) hue = uPalette[i]; }
@@ -130,8 +132,8 @@ void main() {
     float core = exp(-(d*d) / (2.0 * 0.009 * 0.009));
     float halo = exp(-(d*d) / (2.0 * 0.065 * 0.065));
     float flare = (core * 2.8 + halo * 0.32) * activation * uGain * uCinematic;
-    if (uSummary > 0.5) flare = activation * uGain * uCinematic * 0.24;
-    color += mix(hue, vec3(0.82, 0.98, 1.0), 0.48) * flare;
+    if (uSummary > 0.5) flare = 0.0;
+    color += mix(hue, vec3(0.82, 0.98, 1.0), 0.18) * flare;
     alpha = clamp(alpha + energy * 0.55 + flare * 0.16, 0.0, 0.95);
   } else {
     // Once a cascade is running, quiet cells recede so the active path reads.
@@ -166,6 +168,7 @@ export function makeNetworkMaterial(
 ): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     uniforms: {
+      uReveal: { value: 1.1 },
       uCinematic: { value: 1 },
       uSummary: { value: 0 },
     uTime: { value: 0 },

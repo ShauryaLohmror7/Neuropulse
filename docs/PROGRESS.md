@@ -153,3 +153,58 @@ Added bounded rain, capture and social-encounter decomposition, with original te
 ## Maze removed
 
 Removed the maze entry point, five-maze interface, pixel renderer, Q-learning engine, decision explanations, styles, maze tests and user guide at the project owner’s request. The explorer is now the only product flow. Earlier maze entries above are historical, not current capabilities. Existing connectome data and sensory simulation remain intact.
+
+
+## Optional neural state continuity and system coverage
+
+Added default fresh runs and opt-in continuous-state sequences with six-event history, reset and no-input settling. Full activity and refractory arrays persist, source weights do not learn. Added disjoint class/superclass recruitment summaries accounting for all 166,700 neurons, including memory-related, central-complex and modulatory groups without inventing functional activity. Tests verify uninterrupted/split-state equality, isolated fresh runs, decay and exact group totals. 55 backend tests, two frontend tests and production build pass; see NEURAL_STATE_MODES.md.
+
+## Optional AI interpretation and clearer source branches
+
+Added opt-in server-side structured scene interpretation, fixed-ontology validation, visible local fallback and signed event receipts for stable sequences. No API key is configured: live model quality remains untested. Added anatomical branch ribbons, shaded measured-position soma sprites, branch-focus/all-somata toggle, and activation overlays on additional real overview skeletons. No invented geometry paths or extra model firings. See AI_INTERPRETATION.md and ANATOMICAL_RENDERING.md. Backend: 64 tests passing; frontend: 2 tests passing.
+
+Interpreter provider changed to Google Gemini at the user’s request. OpenAI transport/configuration removed. AI Studio free-tier project verified, but Google rejected automated key creation as suspicious; awaiting manual creation. No billing enabled and no existing unrelated key reused.
+
+The user manually completed Gemini key creation. Stored the dedicated key in ignored backend configuration, verified the project remains Free tier, and passed five live interpretation checks. Gemini is the configured default, Local remains selectable. The Gemini migration passes 64 backend tests and the frontend build.
+
+Gemini browser flow verified to completion: left-feeler brush paraphrase → repeated left-antennal input → 207 reached real neurons / 37,408 connections → modeled antennal grooming.
+
+## Demo-readiness pass
+
+Made session settings compact so input remains visible; show computed outcomes during playback, add plain-language action explanations, final-activity skip, revise-input controls and Markdown/JSON run exports. Added eight selectable demo scenarios and made the brain the initial view. Found and fixed a live Gemini omission for held-in-hand contact using explicit instruction plus a bounded reviewed-scene fallback; absent/hypothetical/enclosure-only cases remain unstimulated. 67 backend and four frontend tests pass. Five full-graph live demo checks recorded in demo-live-check.json. Added DEMO_AND_POST.md; no public deployment or social publication performed.
+
+Final browser demo verified: Gemini preset → plain-language grooming result during playback; orbit does not open inspection; final-activity skip and Markdown download work. Downloaded report copied to docs/demo-run.md after verifying counts, result and scientific boundaries.
+
+### Playback and partial-action correction — 2026-09-13
+- Partial output-marker activity now headlines “Neural response · movement unresolved”; actual marker counts remain in evidence. No forced courtship or escape output.
+- Display timing reduced from 2.8 to 0.85 seconds/state, transition from 1600 to 250 ms. Model computation and source geometry unchanged.
+- Camera ownership transfers once per manual session; repeated scroll/drag no longer resets the orbit pivot.
+- Context ribbons clip crossing segments before perspective division and no longer write transparent depth. Reduced soma halo overlap and capped sprite footprint; invisible halo sprites are rejected before rasterization.
+- Settled GPU state uploads occur once; expensive development geometry scans require ?debugScene. DPR capped at 1.5, redundant postprocessing MSAA removed, bloom reduced.
+- Verification: production build, 4 frontend tests, 13 targeted backend tests pass. Browser anatomy renders successfully. No FPS guarantee or claim of biologically measured signal timing.
+- Live browser check of the exact female-approach input retained 25,479 reached cells and the 2/8, 0.043 avoidance marker evidence, with the corrected unresolved-movement headline. Orbit and zoom checked; drag did not open the inspector. Removed additive soma blending and static-summary flare after visually observing white saturation. Smoothness is not yet quantitatively benchmarked across devices.
+
+### UI simplification — 2026-09-13
+- Removed the sci-fi glow control, disabled cinematic styling by default, and removed bloom plus animated background layers. Dataset activity colors remain.
+- Results lead with one headline and plain-language explanation; evidence is expandable. New experience, replay, edit and export precede optional timeline/system/input detail. Sequence actions remain outside the detail disclosure.
+- Labeled Reset view / Explore data / Display toolbar stays readable at narrow breakpoints. Display groups region labels, cell-body visibility and contrast.
+- Added restrained translucent glass surfaces, clear focus states and reduced-motion-aware result entrance.
+- Verified an antenna-input result in the browser with primary actions visible; production build, 4 frontend tests and targeted lint passed. Biological computation unchanged.
+
+### Editorial visual direction — 2026-09-13
+- Added editorial.css: ink/olive surfaces, champagne accents, serif display typography, fine rules and restrained translucent controls. Scientific anatomy/activity colors unchanged.
+- Replaced pill-like examples with numbered rows and subtle hover arrows; revised hero and atlas headings. Removed unused input border-beam markup; input entrance respects reduced motion.
+- Desktop browser visual check confirms new typography, warm palette and labeled controls. Production build and frontend checks run for the presentation-only change.
+
+### Ambient shaders and source-branch entrance — 2026-09-13
+- Restored NeuroNoise in the intro with champagne/olive colors; added GrainGradient as masked viewer edge atmosphere. Paper components match shader families reviewed on 21st.dev; source/provenance in SHADER_ART_DIRECTION.md.
+- Added animated indeterminate loader tied to real data availability. Added a 2.6-second GPU reveal along the existing normalized cable coordinates in primary/context skeletons, plus soma/surface fade. Interaction or a simulation skips the entrance; no new geometry, firing events or model-state changes.
+- Two decorative shader canvases are lazy loaded and pixel-budgeted; hidden-page animation pauses and reduced-motion uses static frames. No sci-fi glow toggle reintroduced.
+- Browser reload checked loading state, restored neural ambience and completed source anatomy. Production build, 4 frontend tests and targeted lint pass. Frame rate across devices remains unbenchmarked.
+
+### 20-input readiness audit — 2026-09-13
+- Ran 20 live HTTP interpretation/simulation cases, all using Gemini with no fallback or API failure. Results: 3 behavioral-marker outputs, 3 partial-marker outputs, 10 sensory-only outputs, 4 no-input outputs. Median API time 2.41s; playback additional. Full cases in INPUT_AUDIT.md and input-audit.json.
+- Browser mixed smell/touch run: visibly distinct mint and amber activity. Clicked ORN_VA2 18147 (odor input), VM2_adPN 14665 (relay), DNge078 36541 (grooming output); all three reached SOURCE GEOMETRY VERIFIED and displayed plain-language roles and run-specific highlight reasons. Relay function remained broad central-brain annotation; no specific function invented.
+- Added explicit “Why it is highlighted” heading and incoming recorded signal citation when present. DNge078 displayed incoming neuron 65635 at step 1. Regression test excludes later/fabricated incoming events.
+- Fixed legend to use actual run modalities and shader palette; moved viewer toolbar away from neuron-card close button. Production build, targeted lint and 5 frontend tests passed.
+- Verdict: scoped research/demo explorer ready; not general behavior-prediction ready. Heat/cold share the broad thermal input; 13/20 cases respond neurally without an action hypothesis. No biological validation claimed.

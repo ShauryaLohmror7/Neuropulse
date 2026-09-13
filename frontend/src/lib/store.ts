@@ -14,6 +14,8 @@ export type ViewMode = 'fly' | 'brain'
 export type Phase = 'idle' | 'compiling' | 'transition' | 'propagating' | 'settled'
 
 interface State {
+  anatomyFocus:boolean
+  toggleAnatomyFocus:()=>void
   cinematic:boolean
   activityGain:number
   setActivityGain:(gain:number)=>void
@@ -56,13 +58,14 @@ interface State {
 }
 
 export const useStore = create<State>((set) => ({
-  cinematic:true, toggleCinematic:()=>set(s=>({cinematic:!s.cinematic})),
+  anatomyFocus:true, toggleAnatomyFocus:()=>set(s=>({anatomyFocus:!s.anatomyFocus})),
+  cinematic:false, toggleCinematic:()=>set(s=>({cinematic:!s.cinematic})),
   activityGain:2, setActivityGain:(activityGain)=>set({activityGain:Math.max(.5,Math.min(4,activityGain))}),
   detail:null, detailStatus:'idle', detailError:null, detailRetry:0, isolateNeuron:false,
   setDetail:(detail,detailStatus,detailError)=>set({detail,detailStatus,detailError}),
   retryDetail:()=>set(s=>({detailRetry:s.detailRetry+1})),
   toggleIsolate:()=>set(s=>({isolateNeuron:!s.isolateNeuron})),
-  view: 'fly',
+  view: 'brain',
   phase: 'idle',
   simStartedAt: null,
   sim: null,
@@ -94,4 +97,5 @@ export const useStore = create<State>((set) => ({
 }))
 
 /** Seconds of wall time per propagation step. Paces the whole cascade. */
-export const STEP_DURATION = 2.8
+// Display seconds per recorded state; does not change biological/model time.
+export const STEP_DURATION = 0.85

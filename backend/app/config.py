@@ -12,7 +12,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     neuropulse_data_dir: str = Field(default="data")
     neuropulse_host: str = Field(default="127.0.0.1")
     neuropulse_port: int = Field(default=8000)
+
+    gemini_api_key: SecretStr = SecretStr("")
+    neuropulse_llm_model: str = "gemini-3.5-flash-lite"
 
     # --- derived paths -------------------------------------------------
     @property

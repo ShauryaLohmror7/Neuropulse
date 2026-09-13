@@ -14,7 +14,8 @@ reproducible demo.
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -29,6 +30,15 @@ from app.simulation.schemas import (
 )
 
 
+@dataclass
+class NeuralState:
+    """Full internal dynamical state. This is not learned synaptic memory."""
+
+    activity: np.ndarray
+    refractory: np.ndarray
+    modalities: np.ndarray
+
+
 def propagate(
     graph: ConnectomeGraph,
     seeds: Mapping[int, float],
@@ -37,6 +47,8 @@ def propagate(
     seed_modalities: Mapping[int, str] | None = None,
     max_pulses: int = 12000,
     input_schedule: Mapping[int, Mapping[int, float]] | None = None,
+    initial_state: NeuralState | None = None,
+    capture_state: Callable[[NeuralState], None] | None = None,
 ) -> PropagationResult:
     """Run the cascade.
 
@@ -54,6 +66,16 @@ def propagate(
     first_step = np.full(n, -1, dtype=np.int32)
     refractory = np.zeros(n, dtype=np.int32)
     peak = np.zeros(n, dtype=np.float32)
+    if initial_state is not None:
+        if any(
+            x.shape != (n,)
+            for x in (initial_state.activity, initial_state.refractory, initial_state.modalities)
+        ):
+            raise ValueError("Neural state must match the graph node ordering and size")
+        act = initial_state.activity.copy()
+        refractory = initial_state.refractory.copy()
+        peak = act.copy()
+        first_step[act > params.activation_threshold] = 0
 
     src, tgt, nw, raw_w = graph.transmission_edges(
         params.weight_normalisation, top_k=params.top_k_edges, min_weight=params.min_edge_weight
@@ -77,13 +99,15 @@ def propagate(
         )
     # --- seed ---------------------------------------------------------
     modality_of = np.array([""] * n, dtype=object)
+    if initial_state is not None:
+        modality_of = initial_state.modalities.copy()
     seed_indices: list[int] = []
     seeds_by_modality: dict[str, list[int]] = defaultdict(list)
     for body_id, drive in seeds.items():
         i = graph.node_index(int(body_id))
         if i is None:
             continue
-        act[i] = min(float(drive), params.max_activation)
+        act[i] = max(act[i], min(float(drive), params.max_activation))
         peak[i] = act[i]
         first_step[i] = 0
         seed_indices.append(i)
@@ -114,12 +138,16 @@ def propagate(
     for step in range(1, params.steps + 1):
         emitting = act > params.activation_threshold
         if not emitting.any():
-            if not any(k >= step for k in scheduled):
+            if capture_state is None and not any(k >= step for k in scheduled):
                 break
 
         # Signal leaving each emitting neuron along each surviving edge.
         edge_active = emitting[src]
-        if not edge_active.any() and not any(k >= step for k in scheduled):
+        if (
+            capture_state is None
+            and not edge_active.any()
+            and not any(k >= step for k in scheduled)
+        ):
             break
         edge_traversed |= edge_active
         active_raw = raw_w[edge_active]
@@ -203,6 +231,11 @@ def propagate(
     activated_idx = np.flatnonzero(first_step >= 0)
     activations = [
         NeuronActivation(
+            carried=bool(
+                initial_state is not None
+                and initial_state.activity[i] > params.activation_threshold
+                and int(graph.body_ids[i]) not in seeds
+            ),
             body_id=int(graph.body_ids[i]),
             modality=modality_of[i] or None,
             activation=round(float(peak[i]), 5),
@@ -237,6 +270,8 @@ def propagate(
         else {"applied": False},
     )
 
+    if capture_state is not None:
+        capture_state(NeuralState(act.copy(), refractory.copy(), modality_of.copy()))
     return PropagationResult(
         metrics=metrics,
         steps=step_summaries,

@@ -181,10 +181,18 @@ def compile_experience(
                 re.I,
             )
         )
+        approach_key = "visual_looming" if re.search(
+            r"\b(rapid\w*|fast|rush\w*|expand\w*|loom\w*|collision|swat\w*)\b", clause, re.I
+        ) else "visual_motion"
         if approach_cue:
-            ranked = [("visual_looming", 0.97)] + [
-                (k, s) for k, s in ranked if k != "visual_looming"
+            # Mere approach is not evidence of collision-like retinal expansion.
+            ranked = [(approach_key, 0.97)] + [
+                (k, s) for k, s in ranked if k not in ("visual_looming", "visual_motion")
             ]
+        if re.search(r"\b(air|temperature|environment)\b", clause, re.I) and re.search(
+            r"\b(hot|cold|warm\w*|cool\w*|drops?|rises?|increases?|decreases?)\b", clause, re.I
+        ):
+            ranked = [("thermo_change", 0.97)] + [(k,s) for k,s in ranked if k!="thermo_change"]
         if not ranked:
             continue
         top_score = ranked[0][1]
@@ -296,9 +304,9 @@ def compile_experience(
             if scene_assumption:
                 quality = "APPROXIMATE_MAPPING"
                 caveat = " ".join(x for x in [scene_assumption, caveat] if x)
-            if approach_cue and key == "visual_looming":
+            if approach_cue and key == approach_key:
                 quality = "APPROXIMATE_MAPPING"
-                caveat = "Approach is interpreted as an expanding visual image. Object identity, number, size and speed are not resolved; two approaching flies are not encoded as two separate objects."
+                caveat = "Assuming the approaching object is visible. Rapid approach is treated as looming only when expansion or speed is described; otherwise visual motion is used. Object number and geometry are not reproduced as separate objects."
             components[key] = ExperienceComponent(
                 modality=concept.modality,
                 stimulus=concept.key,

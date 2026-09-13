@@ -1,12 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { useStore } from '../../lib/store'
 
 const NeuroNoise=lazy(()=>import('@paper-design/shaders-react').then(m=>({default:m.NeuroNoise})))
+const GrainGradient=lazy(()=>import('@paper-design/shaders-react').then(m=>({default:m.GrainGradient})))
 
-/** Decorative Paper shader discovered on 21st.dev. Never represents neuron activity. */
-export function NeuralAmbience() {
-  const cinematic=useStore(s=>s.cinematic)
+/** Paper shader families featured on 21st.dev. Decorative only, never activity. */
+export function NeuralAmbience({ variant='neural' }: {variant?:'neural'|'silk'}) {
   const reduced=useReducedMotion()
   const [visible,setVisible]=useState(!document.hidden)
   useEffect(()=>{
@@ -14,8 +13,11 @@ export function NeuralAmbience() {
     document.addEventListener('visibilitychange',update)
     return ()=>document.removeEventListener('visibilitychange',update)
   },[])
-  if(!cinematic) return null
-  return <div className="neural-ambience" aria-hidden="true">
-    <Suspense fallback={null}><NeuroNoise width="100%" height="100%" colorFront="#b3ffe0" colorMid="#7e65d7" colorBack="#080f1b" brightness={0.025} contrast={0.55} scale={0.72} speed={reduced || !visible ? 0 : 0.22} frame={1200} minPixelRatio={1} maxPixelCount={160000}/></Suspense>
+  const speed=reduced || !visible ? 0 : 0.16
+  return <div className={variant==='neural'?'neural-ambience':'silk-ambience'} aria-hidden="true">
+    <Suspense fallback={null}>{variant==='neural'
+      ? <NeuroNoise width="100%" height="100%" colorFront="#e8c988" colorMid="#7e9985" colorBack="#151a16" brightness={0.08} contrast={0.65} scale={0.85} speed={speed} frame={1200} minPixelRatio={0.5} maxPixelCount={110000}/>
+      : <GrainGradient width="100%" height="100%" colorBack="#0b1010" colors={['#a88b5f','#345e54','#182929']} shape="wave" softness={0.8} intensity={0.3} noise={0.13} speed={speed*0.6} scale={1.25} minPixelRatio={0.5} maxPixelCount={90000}/>
+    }</Suspense>
   </div>
 }

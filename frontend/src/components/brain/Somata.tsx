@@ -1,3 +1,5 @@
+import { useReducedMotion } from 'framer-motion'
+import { anatomyEntrance } from '../../lib/anatomyEntrance'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -20,15 +22,18 @@ import { PALETTE } from '../../lib/networkMaterial'
  */
 export function Somata({
   circuit,
+  context,
   opacity = 1,
   clipZ = 1e6,
   size = 1,
 }: {
   circuit: CircuitGeometry
+  context?: CircuitGeometry | null
   opacity?: number
   clipZ?: number
   size?: number
 }) {
+  const reduced = useReducedMotion()
   const sim = useStore(s => s.sim)
   const simStartedAt = useStore(s => s.simStartedAt)
   const tracks = useMemo(() => {
@@ -47,12 +52,24 @@ export function Somata({
       g.setAttribute('position', new THREE.BufferAttribute(s.positions, 3))
       g.setAttribute('aActivity', new THREE.BufferAttribute(new Float32Array(s.bodyIds.length), 1))
       g.setAttribute('aModality', new THREE.BufferAttribute(new Float32Array(s.bodyIds.length), 1))
-      g.setAttribute('aColour', new THREE.BufferAttribute(s.colours, 3))
+      const focus = new Float32Array(s.bodyIds.length)
+      const colours = s.colours.slice()
+      const contextColours = context?.somas
+      const contextSlots = new Map(contextColours?.bodyIds.map((id,i)=>[id,i]) ?? [])
+      for (let i=0;i<s.bodyIds.length;i++) {
+        const id=s.bodyIds[i]
+        focus[i]=circuit.slotOf.has(id)||context?.slotOf.has(id)?1:0
+        const slot=contextSlots.get(id)
+        if (slot!==undefined&&contextColours) colours.set(contextColours.colours.subarray(slot*3,slot*3+3),i*3)
+      }
+      g.setAttribute('aFocus',new THREE.BufferAttribute(focus,1))
+      g.setAttribute('aColour', new THREE.BufferAttribute(colours, 3))
     }
     g.computeBoundingSphere()
 
     const m = new THREE.ShaderMaterial({
       uniforms: {
+        uFocus: { value: 1 },
         uOpacity: { value: 0.5 },
         uGain: { value: 2 },
         uHalo: { value: 0 },
@@ -69,6 +86,8 @@ export function Somata({
       blending: THREE.NormalBlending,
       vertexShader: /* glsl */ `
         attribute vec3 aColour;
+        attribute float aFocus;
+        uniform float uFocus;
         attribute float aActivity;
         attribute float aModality;
         uniform vec3 uPalette[10];
@@ -77,6 +96,7 @@ export function Somata({
         uniform float uActiveScene;
         varying float vActivity;
         uniform float uSize;
+        uniform float uOpacity;
         uniform float uClipZ;
         uniform float uClipSoft;
         uniform float uFogNear;
@@ -94,9 +114,14 @@ export function Somata({
           float keep = (1.0 - smoothstep(uClipZ - uClipSoft, uClipZ + uClipSoft, position.z));
           float fog = 1.0 - smoothstep(uFogNear, uFogFar, d);
           vAlpha = keep * clamp(fog, 0.05, 1.0);
+          vAlpha *= mix(1.0,max(aFocus,step(0.000001,aActivity)),uFocus);
           vAlpha *= mix(1.0, mix(0.17, 1.0, min(vActivity * 6.0, 1.0)), uActiveScene);
-          gl_PointSize = min(48.0, (uSize + vActivity * 12.0 * uGain) * mix(1.0, 2.4, uHalo) * (760.0 / max(d, 1.0)));
+          gl_PointSize = min(24.0, (uSize + vActivity * 5.0 * sqrt(uGain)) * mix(1.0, 1.6, uHalo) * (760.0 / max(d, 1.0)));
           gl_Position = projectionMatrix * mv;
+          if (vAlpha < 0.002 || (uHalo > 0.5 && (aActivity <= 0.0 || uOpacity <= 0.0))) {
+            gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+            gl_PointSize = 1.0;
+          }
         }
       `,
       fragmentShader: /* glsl */ `
@@ -116,30 +141,32 @@ export function Somata({
             if (vActivity <= 0.0) discard;
             float halo = exp(-r * r * 24.0);
             float core = exp(-r * r * 220.0);
-            gl_FragColor = vec4(vColour * (1.2 + core * 2.0), halo * vActivity * uGain * vAlpha * uOpacity * 0.48);
+            gl_FragColor = vec4(vColour * (1.0 + core * 0.5), halo * vActivity * uGain * vAlpha * uOpacity * 0.12);
             return;
           }
           // Soft-edged disc with a brighter core, so dense clusters still read
           // as individual cell bodies rather than a flat wash.
-          float core = smoothstep(0.5, 0.06, r);
+          float core = 1.0-smoothstep(0.36,0.5,r);
+          vec3 normal = vec3(c*2.0,sqrt(max(0.0,1.0-dot(c*2.0,c*2.0))));
+          float lighting = 0.38+0.62*max(dot(normal,normalize(vec3(-0.5,0.7,1.0))),0.0);
           float a = core * vAlpha * uOpacity;
           if (a < 0.003) discard;
           vec3 col = mix(vColour, vec3(1.0), pow(core, 6.0) * 0.15);
-          gl_FragColor = vec4(col * (0.65 + vActivity * 2.0), a);
+          gl_FragColor = vec4(col * (lighting + vActivity * 0.7), a);
         }
       `,
     })
     const halo = m.clone()
     halo.uniforms.uHalo.value = 1
-    halo.blending = THREE.AdditiveBlending
+    halo.blending = THREE.NormalBlending
     halo.depthTest = false
     return { geometry: g, material: m, halo }
-  }, [circuit])
+  }, [circuit,context])
 
   useFrame(({clock}, dt) => {
     const summary = useStore.getState().phase === 'settled'
     const step = simStartedAt === null ? -1 : Math.floor((clock.elapsedTime - simStartedAt) / STEP_DURATION)
-    const key = `${step}:${summary}`
+    const key = summary ? 'summary' : `${step}:playing`
     if (key !== lastState.current) {
       const attribute = geometry.getAttribute('aActivity') as THREE.BufferAttribute | undefined
       const modalities = geometry.getAttribute('aModality') as THREE.BufferAttribute | undefined
@@ -154,13 +181,14 @@ export function Somata({
       }
       lastState.current = key
     }
-    material.uniforms.uOpacity.value = 0.85 * opacity
-    material.uniforms.uSize.value = 5.0 * size
+    material.uniforms.uOpacity.value = 0.85 * opacity * Math.min(1, anatomyEntrance(clock.elapsedTime, !!reduced || useStore.getState().manualCamera || !!sim))
+    material.uniforms.uFocus.value = useStore.getState().anatomyFocus ? 1 : 0
+    material.uniforms.uSize.value = 5.0 * (useStore.getState().anatomyFocus ? 2.0 : size)
     const u = material.uniforms.uClipZ
     u.value += (clipZ - u.value) * (1 - Math.pow(0.02, dt))
     material.uniforms.uActiveScene.value = sim?.result.activations.length ? 1 : 0
     material.uniforms.uGain.value = useStore.getState().activityGain
-    for (const name of ['uOpacity','uSize','uClipZ','uActiveScene','uGain']) halo.uniforms[name].value = material.uniforms[name].value
+    for (const name of ['uOpacity','uSize','uClipZ','uActiveScene','uGain','uFocus']) halo.uniforms[name].value = material.uniforms[name].value
     if (!useStore.getState().cinematic) halo.uniforms.uOpacity.value = 0
   })
 

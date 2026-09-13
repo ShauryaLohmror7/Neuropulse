@@ -1,3 +1,6 @@
+import { useReducedMotion } from 'framer-motion'
+import { useStore } from '../../lib/store'
+import { anatomyEntrance } from '../../lib/anatomyEntrance'
 import { useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -18,6 +21,7 @@ interface Props {
  * ventral nerve cord.
  */
 export function AnatomyShell({ groups, opacity = 1, hide }: Props) {
+  const reduced = useReducedMotion()
   const materials = useMemo(() => {
     const m = new Map<string, THREE.ShaderMaterial>()
     for (const g of groups) {
@@ -26,8 +30,8 @@ export function AnatomyShell({ groups, opacity = 1, hide }: Props) {
     return m
   }, [groups])
 
-  useFrame(() => {
-    for (const mat of materials.values()) mat.uniforms.uOpacity.value = 0.105 * opacity
+  useFrame(({clock}) => {
+    for (const mat of materials.values()) mat.uniforms.uOpacity.value = 0.105 * opacity * Math.min(1, anatomyEntrance(clock.elapsedTime, !!reduced || useStore.getState().manualCamera || !!useStore.getState().sim))
   })
 
   useEffect(() => () => { for (const m of materials.values()) m.dispose() }, [materials])

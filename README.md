@@ -25,6 +25,8 @@ The browser uses `http://127.0.0.1:8000/api` by default. Set `VITE_API_BASE` for
 
 ## Explore
 
+Choose **Fresh run** (default) for independent inputs, or **Continue sequence** to retain modeled activity/refractory state across up to six events. This is not learned memory. The nervous-system panel shows recruitment of all annotation groups. See [state modes and verification](docs/NEURAL_STATE_MODES.md).
+
 - Start in Fly View: the shell is contextual artwork, with real reconstructed CNS geometry registered inside it.
 - Switch to Brain View to inspect dense real skeletons and measured anatomical region surfaces.
 - Drag to orbit, scroll to zoom, and use **Reset view** to restore framing.
@@ -100,3 +102,7 @@ Browser verification includes both views, multimodal simulation, replay, neuron 
 Real dataset: [Male CNS Connectome Project](https://male-cns.janelia.org/), Janelia FlyEM and collaborators. Data served through [neuPrint](https://neuprint.janelia.org/), dataset **`male-cns:v1.0`**. The project page identifies the dataset as CC-BY and links release notes, the paper and downloads. Preserve original per-bundle provenance, source queries, fetch dates and dataset attribution when sharing derived assets.
 
 Behavioral associations remain in `backend/app/simulation/response.py`; sensory evidence is in `backend/app/experience/ontology.py`. These existing literature mappings are not a comprehensive new review of fly behavior.
+
+Optional [AI scene interpretation](docs/AI_INTERPRETATION.md) supports broader phrasing with disclosed assumptions and local fallback. [Anatomical branch rendering](docs/ANATOMICAL_RENDERING.md) explains the branch-focused view and source-data limits.
+
+For presenting the project, see the [demo walkthrough and post draft](docs/DEMO_AND_POST.md), with tested examples, a short architecture explanation, and explicit release limits.

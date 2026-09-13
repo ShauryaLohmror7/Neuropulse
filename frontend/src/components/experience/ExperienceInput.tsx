@@ -1,22 +1,20 @@
-import { BorderBeam } from '../ui/BorderBeam'
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useStore } from '../../lib/store'
 
-export const PRESETS: { label: string; text: string }[] = [
-  {
-    label: 'Predator + food',
-    text: 'A hungry fly smells ripe fruit while a dark object rapidly approaches from its left.',
-  },
-  { label: 'Touch', text: "Something suddenly touches the fly's left antenna." },
-  { label: 'Sweet landing', text: 'The fly lands on a sweet surface and begins tasting sugar.' },
-  {
-    label: 'Multisensory',
-    text: 'The fly smells food, feels a vibration underneath it, and sees motion on its right.',
-  },
+const PRESETS: { label: string; text: string }[] = [
+  {label:'Threat + food',text:'A hungry fly smells ripe fruit while a dark object rapidly approaches from its left.'},
+  {label:'Antenna cleaning',text:'Something repeatedly touches the fly’s left antenna.'},
+  {label:'Flashing lights',text:'The lights repeatedly turn on and off.'},
+  {label:'Social encounter',text:'A female crosses its view while it drinks sugar.'},
+  {label:'Rain',text:'Raindrops repeatedly hit the fly’s body in humid air.'},
+  {label:'Sound + wind',text:'It hears a courtship song while a breeze blows across its antennae.'},
+  {label:'Heat',text:'The air around the fly suddenly becomes hot.'},
+  {label:'Absent stimulus',text:'Nothing touches its antenna, but it hears a courtship song.'},
 ]
 
 export function ExperienceInput({ onSimulate, disabled = false }: { onSimulate: (text: string) => void; disabled?: boolean }) {
+  const reduced = useReducedMotion()
   const text = useStore((s) => s.text)
   const setText = useStore((s) => s.setText)
   const phase = useStore((s) => s.phase)
@@ -26,13 +24,12 @@ export function ExperienceInput({ onSimulate, disabled = false }: { onSimulate: 
   return (
     <motion.div
       className="input-block"
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: reduced ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: reduced ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <label className="eyebrow" htmlFor="experience">DESCRIBE A MOMENT</label>
       <div className={`field ${focused ? 'focused' : ''}`}>
-        <BorderBeam/>
         <textarea
           id="experience"
           rows={4}
@@ -56,12 +53,12 @@ export function ExperienceInput({ onSimulate, disabled = false }: { onSimulate: 
           {busy ? 'Simulating' : 'Simulate experience'} <span aria-hidden="true">↗</span>
         </button>
       </div>
-      <p className="input-scope">Free-form text · supported sensory cues only · {text.length}/600</p>
-      <div className="preset-label">OR TRY A SENSORY SCENARIO</div>
+      <p className="input-scope">Describe freely · mappings have scientific limits · {text.length}/600</p>
+      <div className="preset-label">A FEW PLACES TO BEGIN</div>
       <div className="presets">
-        {PRESETS.map((p) => (
+        {PRESETS.map((p, i) => (
           <button key={p.label} onClick={() => setText(p.text)} disabled={busy}>
-            {p.label}
+            <span className="preset-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span><span>{p.label}</span><span className="preset-arrow" aria-hidden="true">↗</span>
           </button>
         ))}
       </div>

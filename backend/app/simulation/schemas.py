@@ -8,6 +8,10 @@ from pydantic import BaseModel, Field
 
 
 class NeuronActivation(BaseModel):
+    carried: bool = Field(
+        default=False,
+        description="Entered this event with above-threshold activity from a previous event, without being a new seed.",
+    )
     modality: str | None = None
     body_id: int
     activation: float

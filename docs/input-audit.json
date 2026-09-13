@@ -1,0 +1,2933 @@
+{
+  "scope": "Observed live software outputs; not validated animal behavior.",
+  "results": [
+    {
+      "case": "antenna_repeated",
+      "input": "Something repeatedly touches the fly\u2019s left antenna.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Antennal mechanical contact",
+          "stimulus": "mechano_antennal",
+          "modality": "mechanosensation",
+          "neurons": 79
+        }
+      ],
+      "kind": "behavioral_marker",
+      "headline": "Antennal grooming tendency (modeled)",
+      "explanation": "The model suggests antenna cleaning: a movement that removes material from the antennae. This is an unvalidated model hypothesis, not an observed action.",
+      "reached": 207,
+      "connections": 37408,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 3,
+          "available": 8,
+          "peak": 0.1061,
+          "engaged": true,
+          "body_ids": [
+            10587,
+            15653,
+            36541
+          ]
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 10438,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 20553,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 38160,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 56693,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 59128,
+          "step": 0,
+          "modality": "mechanosensation"
+        }
+      ],
+      "seconds": 2.34
+    },
+    {
+      "case": "antenna_single",
+      "input": "Something touches its antenna.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Antennal mechanical contact",
+          "stimulus": "mechano_antennal",
+          "modality": "mechanosensation",
+          "neurons": 133
+        }
+      ],
+      "kind": "partial_marker",
+      "headline": "Neural response \u00b7 movement unresolved",
+      "explanation": "The network responded, but no monitored action met the model's criteria. Activity in an action-associated neuron alone does not predict that movement.",
+      "reached": 340,
+      "connections": 54099,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 5,
+          "available": 8,
+          "peak": 0.063,
+          "engaged": false,
+          "body_ids": [
+            10587,
+            14537,
+            15653,
+            36541,
+            524190
+          ]
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [],
+      "sample_neurons": [
+        {
+          "id": 290332,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 259289,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 401592,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 17362,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 305417,
+          "step": 0,
+          "modality": "mechanosensation"
+        }
+      ],
+      "seconds": 2.21
+    },
+    {
+      "case": "looming",
+      "input": "A dark object rapidly expands in front of the fly.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Looming object",
+          "stimulus": "visual_looming",
+          "modality": "vision",
+          "neurons": 445
+        }
+      ],
+      "kind": "behavioral_marker",
+      "headline": "Escape takeoff tendency (modeled)",
+      "explanation": "The model suggests a rapid takeoff away from a possible threat. This is an unvalidated model hypothesis, not an observed action.",
+      "reached": 826,
+      "connections": 232016,
+      "evidence": [
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 8,
+          "available": 8,
+          "peak": 0.3384,
+          "engaged": true,
+          "body_ids": [
+            10106,
+            10117,
+            10197,
+            10228,
+            10259,
+            10584,
+            11137,
+            531898
+          ]
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 2,
+          "available": 2,
+          "peak": 0.1449,
+          "engaged": true,
+          "body_ids": [
+            10001,
+            10010
+          ]
+        },
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [],
+      "sample_neurons": [
+        {
+          "id": 11498,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 12032,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 12052,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 12114,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 12349,
+          "step": 0,
+          "modality": "vision"
+        }
+      ],
+      "seconds": 2.22
+    },
+    {
+      "case": "sugar",
+      "input": "The fly tastes sugar with its mouthparts.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Taste on the labellum",
+          "stimulus": "gustatory_labellar",
+          "modality": "gustation",
+          "neurons": 221
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Taste on the labellum response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 511,
+      "connections": 78759,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "sugar identity",
+        "Taste neurons are class-annotated; sugar-versus-bitter selectivity is not established by the current MaleCNS mapping."
+      ],
+      "sample_neurons": [
+        {
+          "id": 104287023,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 934523007,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 372711713,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 602736959,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 349137284,
+          "step": 0,
+          "modality": "gustation"
+        }
+      ],
+      "seconds": 2.3
+    },
+    {
+      "case": "fruit",
+      "input": "The fly smells ripe banana.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Ripe / fermenting fruit odour",
+          "stimulus": "olfactory_fruit",
+          "modality": "olfaction",
+          "neurons": 355
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Ripe / fermenting fruit odour response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 2505,
+      "connections": 541062,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Hunger state and food attraction motivation are unmodeled.",
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 18147,
+          "step": 0,
+          "modality": "olfaction"
+        },
+        {
+          "id": 36550,
+          "step": 0,
+          "modality": "olfaction"
+        },
+        {
+          "id": 60498,
+          "step": 0,
+          "modality": "olfaction"
+        },
+        {
+          "id": 75421,
+          "step": 0,
+          "modality": "olfaction"
+        },
+        {
+          "id": 80841,
+          "step": 0,
+          "modality": "olfaction"
+        }
+      ],
+      "seconds": 2.84
+    },
+    {
+      "case": "lights",
+      "input": "The lights repeatedly turn on and off.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Luminance change",
+          "stimulus": "visual_luminance",
+          "modality": "vision",
+          "neurons": 3377
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Repeated visual response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 14287,
+      "connections": 984375,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency.",
+        "Uniform light changes do not specify a movement direction. The model has no calibrated ON/OFF retinal dynamics or flicker-to-behavior decoder."
+      ],
+      "sample_neurons": [
+        {
+          "id": 248777,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 553459,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 166326,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 182513,
+          "step": 1,
+          "modality": "vision"
+        },
+        {
+          "id": 193397,
+          "step": 0,
+          "modality": "vision"
+        }
+      ],
+      "seconds": 3.02
+    },
+    {
+      "case": "darkness",
+      "input": "All the lights in the room turn off.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Luminance change",
+          "stimulus": "visual_luminance",
+          "modality": "vision",
+          "neurons": 3377
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Light-change response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 8827,
+      "connections": 425148,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Uniform light changes do not specify a movement direction. The model has no calibrated ON/OFF retinal dynamics or flicker-to-behavior decoder."
+      ],
+      "sample_neurons": [
+        {
+          "id": 553459,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 248777,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 193397,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 550771,
+          "step": 0,
+          "modality": "vision"
+        },
+        {
+          "id": 94374,
+          "step": 0,
+          "modality": "vision"
+        }
+      ],
+      "seconds": 2.56
+    },
+    {
+      "case": "rain",
+      "input": "Raindrops repeatedly hit the fly\u2019s body in humid air.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Body / leg touch",
+          "stimulus": "mechano_body",
+          "modality": "mechanosensation",
+          "neurons": 2344
+        },
+        {
+          "label": "Humidity change",
+          "stimulus": "hygro_change",
+          "modality": "hygrosensation",
+          "neurons": 58
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Body / leg touch + Humidity change response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 6225,
+      "connections": 1278494,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Rainfall physics and water accumulation",
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 828209,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 824124,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 829514,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 842076,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 1053952804,
+          "step": 1,
+          "modality": "mechanosensation"
+        }
+      ],
+      "seconds": 3.14
+    },
+    {
+      "case": "mate",
+      "input": "A female fly approaches to mate.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Visual motion",
+          "stimulus": "visual_motion",
+          "modality": "vision",
+          "neurons": 13580
+        }
+      ],
+      "kind": "partial_marker",
+      "headline": "Neural response \u00b7 movement unresolved",
+      "explanation": "The network responded, but no monitored action met the model's criteria. Activity in an action-associated neuron alone does not predict that movement.",
+      "reached": 25479,
+      "connections": 3248422,
+      "evidence": [
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 2,
+          "available": 8,
+          "peak": 0.0426,
+          "engaged": false,
+          "body_ids": [
+            11137,
+            531898
+          ]
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 2,
+          "available": 2,
+          "peak": 0.0414,
+          "engaged": false,
+          "body_ids": [
+            10001,
+            10010
+          ]
+        },
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Reproductive state and mating motivation",
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 41575,
+          "step": 1,
+          "modality": "vision"
+        },
+        {
+          "id": 10015,
+          "step": 1,
+          "modality": "vision"
+        },
+        {
+          "id": 10181,
+          "step": 1,
+          "modality": "vision"
+        },
+        {
+          "id": 39421,
+          "step": 1,
+          "modality": "vision"
+        },
+        {
+          "id": 34925,
+          "step": 1,
+          "modality": "vision"
+        }
+      ],
+      "seconds": 4.11
+    },
+    {
+      "case": "social_food",
+      "input": "Two flies approach while it is eating sugar.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Taste on the labellum",
+          "stimulus": "gustatory_labellar",
+          "modality": "gustation",
+          "neurons": 221
+        },
+        {
+          "label": "Visual motion",
+          "stimulus": "visual_motion",
+          "modality": "vision",
+          "neurons": 13580
+        }
+      ],
+      "kind": "partial_marker",
+      "headline": "Neural response \u00b7 movement unresolved",
+      "explanation": "The network responded, but no monitored action met the model's criteria. Activity in an action-associated neuron alone does not predict that movement.",
+      "reached": 24931,
+      "connections": 3188469,
+      "evidence": [
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 2,
+          "available": 2,
+          "peak": 0.0406,
+          "engaged": false,
+          "body_ids": [
+            10001,
+            10010
+          ]
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 2,
+          "available": 8,
+          "peak": 0.0365,
+          "engaged": false,
+          "body_ids": [
+            11137,
+            531898
+          ]
+        },
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Hunger or motivation to eat sugar",
+        "Social context or recognition of the approaching flies",
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency.",
+        "Taste neurons are class-annotated; sugar-versus-bitter selectivity is not established by the current MaleCNS mapping."
+      ],
+      "sample_neurons": [
+        {
+          "id": 104287023,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 372711713,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 466363045,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 934523007,
+          "step": 0,
+          "modality": "gustation"
+        },
+        {
+          "id": 602736959,
+          "step": 0,
+          "modality": "gustation"
+        }
+      ],
+      "seconds": 4.65
+    },
+    {
+      "case": "song",
+      "input": "The fly hears a courtship song.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Vibration / sound",
+          "stimulus": "mechano_auditory",
+          "modality": "audition",
+          "neurons": 102
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Vibration / sound response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 242,
+      "connections": 42113,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Courtship motivation and behavioral responses are unmodeled.",
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 25108,
+          "step": 0,
+          "modality": "audition"
+        },
+        {
+          "id": 29561,
+          "step": 0,
+          "modality": "audition"
+        },
+        {
+          "id": 35351,
+          "step": 0,
+          "modality": "audition"
+        },
+        {
+          "id": 42619,
+          "step": 0,
+          "modality": "audition"
+        },
+        {
+          "id": 46071,
+          "step": 0,
+          "modality": "audition"
+        }
+      ],
+      "seconds": 2.48
+    },
+    {
+      "case": "wind",
+      "input": "A breeze blows across its antennae.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Airflow / gravity",
+          "stimulus": "mechano_wind",
+          "modality": "airflow",
+          "neurons": 475
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Airflow / gravity response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 1442,
+      "connections": 236388,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 827993838,
+          "step": 0,
+          "modality": "airflow"
+        },
+        {
+          "id": 237273,
+          "step": 0,
+          "modality": "airflow"
+        },
+        {
+          "id": 394318,
+          "step": 0,
+          "modality": "airflow"
+        },
+        {
+          "id": 552400,
+          "step": 0,
+          "modality": "airflow"
+        },
+        {
+          "id": 902338,
+          "step": 0,
+          "modality": "airflow"
+        }
+      ],
+      "seconds": 2.62
+    },
+    {
+      "case": "heat",
+      "input": "The air around the fly suddenly becomes hot.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Temperature change",
+          "stimulus": "thermo_change",
+          "modality": "thermosensation",
+          "neurons": 25
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Temperature change response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 176,
+      "connections": 29959,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [],
+      "sample_neurons": [
+        {
+          "id": 15547,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 17406,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 35634,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 37147,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 65986,
+          "step": 0,
+          "modality": "thermosensation"
+        }
+      ],
+      "seconds": 2.24
+    },
+    {
+      "case": "cold",
+      "input": "The temperature suddenly drops around the fly.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Temperature change",
+          "stimulus": "thermo_change",
+          "modality": "thermosensation",
+          "neurons": 25
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Temperature change response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 176,
+      "connections": 29959,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [],
+      "sample_neurons": [
+        {
+          "id": 15547,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 17406,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 35634,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 37147,
+          "step": 0,
+          "modality": "thermosensation"
+        },
+        {
+          "id": 65986,
+          "step": 0,
+          "modality": "thermosensation"
+        }
+      ],
+      "seconds": 2.25
+    },
+    {
+      "case": "held",
+      "input": "The fly is held in a hand.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Body / leg touch",
+          "stimulus": "mechano_body",
+          "modality": "mechanosensation",
+          "neurons": 2344
+        }
+      ],
+      "kind": "sensory_only",
+      "headline": "Body / leg touch response",
+      "explanation": "The described cues produced a response in the network. This model cannot yet translate that response into a specific movement.",
+      "reached": 6095,
+      "connections": 1250926,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Restraint mechanics and human hand pressure are unmodeled.",
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 1053952804,
+          "step": 1,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 824124,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 824165,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 826735,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 828209,
+          "step": 0,
+          "modality": "mechanosensation"
+        }
+      ],
+      "seconds": 3.09
+    },
+    {
+      "case": "jar",
+      "input": "The fly is captured in a jar.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [],
+      "kind": "no_input",
+      "headline": "Situation recognized \u00b7 sensory details needed",
+      "explanation": "This description does not provide a supported present stimulus. That is a limit of this model, not evidence that a real fly would do nothing.",
+      "reached": 0,
+      "connections": 0,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Being held inside a jar or enclosure"
+      ],
+      "sample_neurons": [],
+      "seconds": 1.83
+    },
+    {
+      "case": "absent",
+      "input": "Nothing touches its antenna and there is no sound.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [],
+      "kind": "no_input",
+      "headline": "Situation recognized \u00b7 sensory details needed",
+      "explanation": "This description does not provide a supported present stimulus. That is a limit of this model, not evidence that a real fly would do nothing.",
+      "reached": 0,
+      "connections": 0,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Interpreter marked this cue absent; no input injected.",
+        "Interpreter marked this cue absent; no input injected."
+      ],
+      "sample_neurons": [],
+      "seconds": 1.97
+    },
+    {
+      "case": "hypothetical",
+      "input": "What if it started raining tomorrow?",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [],
+      "kind": "no_input",
+      "headline": "Situation recognized \u00b7 sensory details needed",
+      "explanation": "This description does not provide a supported present stimulus. That is a limit of this model, not evidence that a real fly would do nothing.",
+      "reached": 0,
+      "connections": 0,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Future rain event",
+        "Hypothetical weather conditions"
+      ],
+      "sample_neurons": [],
+      "seconds": 1.54
+    },
+    {
+      "case": "memory",
+      "input": "The fly remembers where it found sugar yesterday.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [],
+      "kind": "no_input",
+      "headline": "Situation recognized \u00b7 sensory details needed",
+      "explanation": "This description does not provide a supported present stimulus. That is a limit of this model, not evidence that a real fly would do nothing.",
+      "reached": 0,
+      "connections": 0,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Memory of past events and locations"
+      ],
+      "sample_neurons": [],
+      "seconds": 1.66
+    },
+    {
+      "case": "mixed",
+      "input": "It smells ripe fruit while something repeatedly touches its left antenna.",
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "notice": null,
+      "cues": [
+        {
+          "label": "Ripe / fermenting fruit odour",
+          "stimulus": "olfactory_fruit",
+          "modality": "olfaction",
+          "neurons": 355
+        },
+        {
+          "label": "Antennal mechanical contact",
+          "stimulus": "mechano_antennal",
+          "modality": "mechanosensation",
+          "neurons": 79
+        }
+      ],
+      "kind": "behavioral_marker",
+      "headline": "Antennal grooming tendency (modeled)",
+      "explanation": "The model suggests antenna cleaning: a movement that removes material from the antennae. This is an unvalidated model hypothesis, not an observed action.",
+      "reached": 2714,
+      "connections": 579220,
+      "evidence": [
+        {
+          "label": "Antennal grooming",
+          "marker_types": [
+            "DNg62",
+            "DNge011",
+            "DNge012",
+            "DNge078"
+          ],
+          "reached": 3,
+          "available": 8,
+          "peak": 0.1061,
+          "engaged": true,
+          "body_ids": [
+            10587,
+            15653,
+            36541
+          ]
+        },
+        {
+          "label": "Escape takeoff",
+          "marker_types": [
+            "DNp01"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Escape / avoidance manoeuvre",
+          "marker_types": [
+            "DNp02",
+            "DNp04",
+            "DNp06",
+            "DNp11"
+          ],
+          "reached": 0,
+          "available": 8,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Steering / turn",
+          "marker_types": [
+            "DNa01",
+            "DNa02"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Freezing / stopping",
+          "marker_types": [
+            "DNp09"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Backward walking",
+          "marker_types": [
+            "MDN"
+          ],
+          "reached": 0,
+          "available": 4,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Courtship song",
+          "marker_types": [
+            "pIP10"
+          ],
+          "reached": 0,
+          "available": 2,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        },
+        {
+          "label": "Proboscis extension (feeding)",
+          "marker_types": [
+            "MN9",
+            "MN11D",
+            "MN11V",
+            "MN12D"
+          ],
+          "reached": 0,
+          "available": 11,
+          "peak": 0.0,
+          "engaged": false,
+          "body_ids": []
+        }
+      ],
+      "limitations": [
+        "Timing uses explicit illustrative model steps, not measured seconds or stimulus frequency."
+      ],
+      "sample_neurons": [
+        {
+          "id": 10438,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 18147,
+          "step": 0,
+          "modality": "olfaction"
+        },
+        {
+          "id": 20553,
+          "step": 0,
+          "modality": "mechanosensation"
+        },
+        {
+          "id": 36550,
+          "step": 0,
+          "modality": "olfaction"
+        },
+        {
+          "id": 38160,
+          "step": 0,
+          "modality": "mechanosensation"
+        }
+      ],
+      "seconds": 2.81
+    }
+  ]
+}

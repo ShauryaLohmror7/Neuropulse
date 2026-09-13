@@ -1,7 +1,7 @@
 import type { PropagationResult } from '../../types/api'
 
 export function ActivityTimeline({ result, step, settled }: {result:PropagationResult;step:number;settled:boolean}) {
-  if (!result.metrics.neurons_activated) return <section className="activity-timeline" aria-label="No simulation activity"><div className="timeline-heading"><span>NO INPUT POPULATION MAPPED</span></div><p>No neural activity was calculated for this description. Review the unhandled cues below.</p></section>
+  if (!result.metrics.neurons_activated) return <section className="activity-timeline" aria-label="No simulation activity"><div className="timeline-heading"><span>NO ACTIVITY ABOVE THRESHOLD</span></div><p>This pass produced no activity above the model threshold. Check the input interpretation and any earlier sequence events.</p></section>
   const current=result.steps.find(s=>s.step===step)
   const maximum=Math.max(1,...result.steps.map(s=>s.active_total))
   return <section className="activity-timeline" aria-label="Recorded model activity">

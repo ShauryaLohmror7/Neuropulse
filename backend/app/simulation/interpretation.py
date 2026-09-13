@@ -83,7 +83,7 @@ def explain_result(response, experience, result, node_meta):
             if partial:
                 strongest = max(partial, key=lambda c: c.peak_activation)
                 response.interpretation_kind = "partial_marker"
-                response.headline = f"{strongest.label} circuit responded"
+                response.headline = "Neural response · movement unresolved"
                 response.detail = (
                     f"{strongest.neurons_activated}/{strongest.neurons_in_circuit} monitored "
                     f"{strongest.label.lower()} neurons responded, with peak model activity "
@@ -91,4 +91,61 @@ def explain_result(response, experience, result, node_meta):
                     "its response remains below this model's action criteria. It does not establish "
                     "that the movement occurred, or that the fly would do nothing."
                 )
+    if response.interpretation_kind == "no_input":
+        response.plain_language = "This description does not provide a supported present stimulus. That is a limit of this model, not evidence that a real fly would do nothing."
+    elif response.interpretation_kind == "sensory_only":
+        reached_labels = list(dict.fromkeys(
+            c.label.lower() for c in experience.components
+            if any(b in activations for b in c.body_ids)
+        ))
+        if reached_labels:
+            cues = "; ".join(reached_labels)
+            spread = (
+                f"Activity spread to {downstream:,} additional neurons through the recorded wiring."
+                if downstream else "Activity stayed within the selected input neurons."
+            )
+            response.plain_language = (
+                f"The simulation registered {cues}. {spread} "
+                "No monitored movement pathway met the action criteria, so a specific movement is not predicted."
+            )
+        else:
+            response.plain_language = (
+                "The selected sensory inputs did not produce above-threshold activity in this run. "
+                "No movement is predicted from this result."
+            )
+    elif response.interpretation_kind == "partial_marker":
+        strongest = max(
+            (c for c in response.channels if c.neurons_activated),
+            key=lambda c: c.peak_activation,
+        )
+        response.plain_language = (
+            f"Activity reached {strongest.neurons_activated} of the "
+            f"{strongest.neurons_in_circuit} monitored neurons associated with "
+            f"{strongest.label.lower()}. This pathway responded below the model's action criteria; "
+            "the result does not establish that the fly performs this movement."
+        )
+    else:
+        actions = {
+            "front_leg_rubbing": "The model recruited a pathway associated with rubbing the front legs together during grooming.",
+            "stride_steering": "The model recruited a pathway associated with adjusting leg strides during a walking turn. The actual turn direction is not resolved.",
+            "forward_walking": "The model recruited a walking-promotion pathway. Forward movement is a hypothesis; the body is not simulated.",
+            "antennal_grooming": "The model suggests antenna cleaning: a movement that removes material from the antennae.",
+            "escape_takeoff": "The model suggests a rapid takeoff away from a possible threat.",
+            "escape_generic": "The model suggests an avoidance movement in response to the input.",
+            "steering_turn": "The model suggests a change in movement direction.",
+            "freeze_stop": "The model suggests stopping movement or freezing.",
+            "backward_walking": "The model suggests walking backward.",
+            "courtship_song": "The model suggests recruitment of a courtship-song pathway; successful mating is not simulated.",
+            "feeding_proboscis": "The model suggests extending the mouthparts for feeding; actual ingestion is not simulated.",
+        }
+        channel = next(
+            (c for c in response.channels if c.label.lower() in response.headline.lower()), None
+        )
+        response.plain_language = (
+            actions.get(
+                channel.key if channel else "",
+                "A monitored action circuit met the model's activity criteria.",
+            )
+            + " This is an unvalidated model hypothesis, not an observed action."
+        )
     return response

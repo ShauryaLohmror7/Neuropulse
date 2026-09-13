@@ -11,13 +11,13 @@ def test_approach_clause_and_sustained_taste_are_both_retained():
 
     result = simulate(SimulateRequest(text="two flies approach while eating sugar"))
     components = {c.stimulus: c for c in result.experience.components}
-    assert set(components) == {"visual_looming", "gustatory_labellar"}
-    assert components["visual_looming"].mapping_quality == "APPROXIMATE_MAPPING"
-    assert "two separate objects" in components["visual_looming"].caveat
+    assert set(components) == {"visual_motion", "gustatory_labellar"}
+    assert components["visual_motion"].mapping_quality == "APPROXIMATE_MAPPING"
+    assert "separate objects" in components["visual_motion"].caveat
     assert components["gustatory_labellar"].input_steps == [0, 1, 2, 3, 4]
     escape = next(c for c in result.response.channels if c.key == "escape_takeoff")
-    assert escape.neurons_activated == 2 and escape.peak_activation >= 0.09
-    assert result.response.confidence != "NONE"
+    assert escape.peak_activation < 0.09
+    assert result.response.confidence == "NONE"
 
 
 def test_repeated_lights_have_explicit_timing_and_do_not_invent_action():
@@ -31,7 +31,10 @@ def test_repeated_lights_have_explicit_timing_and_do_not_invent_action():
     assert result.response.interpretation_kind == "sensory_only"
     assert result.response.headline == "Repeated visual response"
     assert result.response.confidence == "NONE"
-    assert len(result.response.output_evidence) == 8
+    assert len(result.response.output_evidence) == 11
+    assert "luminance change" in result.response.plain_language
+    assert "additional neurons" in result.response.plain_language
+    assert "a specific movement is not predicted" in result.response.plain_language
     assert any("ON/OFF" in note for note in result.response.limitations)
 
 
@@ -78,8 +81,10 @@ def test_touch_reads_real_grooming_markers_without_forcing_an_action():
     assert set(channel.body_ids) == {10587, 12894, 14537, 15653, 36541, 524190}
     assert 0 < channel.peak_activation < 0.09
     assert single.response.interpretation_kind == "partial_marker"
+    assert "associated with antennal grooming" in single.response.plain_language
+    assert "below the model's action criteria" in single.response.plain_language
     assert single.response.confidence == "NONE"
-    assert single.response.headline == "Antennal grooming circuit responded"
+    assert single.response.headline == "Neural response · movement unresolved"
     assert repeated.response.headline == "Antennal grooming tendency (modeled)"
     assert repeated.response.confidence == "MODERATE"
     silenced = simulate(

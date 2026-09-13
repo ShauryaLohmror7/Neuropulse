@@ -1,0 +1,230 @@
+[
+  {
+    "text": "A female crosses its view while it drinks sugar.",
+    "expected": [
+      "gustatory_labellar",
+      "visual_motion"
+    ],
+    "actual": [
+      "gustatory_labellar",
+      "visual_motion"
+    ],
+    "passed": true,
+    "experience": {
+      "raw_text": "A female crosses its view while it drinks sugar.",
+      "interpreter_notice": null,
+      "components": [
+        {
+          "modality": "vision",
+          "stimulus": "visual_motion",
+          "label": "Visual motion",
+          "direction": "bilateral",
+          "intensity": 0.68,
+          "confidence": 0.6,
+          "mapping_quality": "APPROXIMATE_MAPPING",
+          "source_clause": "A female crosses its view",
+          "evidence": "T4 and T5 are the fly's elementary motion detectors, annotated by subtype (a-d) in MaleCNS. Each subtype is tuned to one of four cardinal directions; T4 responds to brightness increments, T5 to decrements (Maisak et al. 2013; Fisher et al. 2015).",
+          "caveat": "AI-interpreted cue; interpretation may be wrong. The visual motion of the female crossing the view spans both eyes or a general visual field.",
+          "temporal_pattern": "pulse",
+          "input_steps": [
+            0
+          ],
+          "timing_note": "Illustrative input schedule; model steps are not measured seconds or firing rates.",
+          "body_ids": [],
+          "neuron_count": 0,
+          "seed_types": []
+        },
+        {
+          "modality": "gustation",
+          "stimulus": "gustatory_labellar",
+          "label": "Taste on the labellum",
+          "direction": "bilateral",
+          "intensity": 0.68,
+          "confidence": 0.6,
+          "mapping_quality": "APPROXIMATE_MAPPING",
+          "source_clause": "drinks sugar",
+          "evidence": "MaleCNS annotates gustatory receptor neurons entering through the maxillary-labial nerve (MxLbN) from the labellum. The modality is annotated; the dataset does not label these neurons by tastant valence.",
+          "caveat": "AI-interpreted cue; interpretation may be wrong. Drinking sugar involves physical contact with the labellum. MaleCNS does not annotate sweet vs bitter identity for these GRNs (the only receptor annotations present are ppk23/ppk25/IR52b, which are pheromone-related). NEUROPULSE therefore stimulates labellar taste input generically and does NOT claim a sugar-specific channel.",
+          "temporal_pattern": "sustained",
+          "input_steps": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "timing_note": "Illustrative input schedule; model steps are not measured seconds or firing rates.",
+          "body_ids": [],
+          "neuron_count": 0,
+          "seed_types": []
+        }
+      ],
+      "unmapped": [
+        {
+          "text": "A female crosses its view while it drinks sugar.",
+          "reason": "LLM_CONTEXT_NOT_SIMULATED",
+          "concept": null,
+          "label": "Context outside this model",
+          "note": "nutritional state"
+        },
+        {
+          "text": "A female crosses its view while it drinks sugar.",
+          "reason": "LLM_CONTEXT_NOT_SIMULATED",
+          "concept": null,
+          "label": "Context outside this model",
+          "note": "sugar taste modality details"
+        }
+      ],
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "clauses": [
+        "A female crosses its view while it drinks sugar."
+      ],
+      "note": "Language interpretation is approximate; biological outcomes are calculated separately.",
+      "scene_interpretations": [
+        {
+          "label": "AI scene interpretation",
+          "original": "A female crosses its view while it drinks sugar.",
+          "assumptions": "An adult male fruit fly observes a female moving across its field of view while concurrently consuming sugar with its mouthparts. The visual motion of the female crossing the view spans both eyes or a general visual field. Drinking sugar involves physical contact with the labellum.",
+          "missing": "nutritional state sugar taste modality details",
+          "question": "Are there any olfactory or auditory cues accompanying the female? Is there any wind or temperature change in the environment?"
+        }
+      ]
+    }
+  },
+  {
+    "text": "Rain beats against the window while the fly stays indoors.",
+    "expected": [],
+    "actual": [],
+    "passed": true,
+    "experience": {
+      "raw_text": "Rain beats against the window while the fly stays indoors.",
+      "interpreter_notice": null,
+      "components": [],
+      "unmapped": [
+        {
+          "text": "Rain beats against the window while the fly stays indoors.",
+          "reason": "LLM_CONTEXT_NOT_SIMULATED",
+          "concept": null,
+          "label": "Context outside this model",
+          "note": "Rain behind a window does not touch the fly."
+        }
+      ],
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "clauses": [
+        "Rain beats against the window while the fly stays indoors."
+      ],
+      "note": "Language interpretation is approximate; biological outcomes are calculated separately.",
+      "scene_interpretations": [
+        {
+          "label": "AI scene interpretation",
+          "original": "Rain beats against the window while the fly stays indoors.",
+          "assumptions": "An adult male fruit fly is indoors while rain beats against the window. ",
+          "missing": "Rain behind a window does not touch the fly.",
+          "question": "Are there any visual stimuli, odors, or wind currents reaching the fly indoors?"
+        }
+      ]
+    }
+  },
+  {
+    "text": "Nothing touches its antenna, but it hears a courtship song.",
+    "expected": [
+      "mechano_auditory"
+    ],
+    "actual": [
+      "mechano_auditory"
+    ],
+    "passed": true,
+    "experience": {
+      "raw_text": "Nothing touches its antenna, but it hears a courtship song.",
+      "interpreter_notice": null,
+      "components": [
+        {
+          "modality": "audition",
+          "stimulus": "mechano_auditory",
+          "label": "Vibration / sound",
+          "direction": "bilateral",
+          "intensity": 0.68,
+          "confidence": 0.6,
+          "mapping_quality": "APPROXIMATE_MAPPING",
+          "source_clause": "it hears a courtship song",
+          "evidence": "JO-A and JO-B are Johnston's-organ neuron subgroups annotated with subclass 'auditory' in MaleCNS. They are the fly's sound/vibration receptors, responding to antennal oscillation including courtship song (Kamikouchi et al. 2009; Yorozu et al. 2009).",
+          "caveat": "AI-interpreted cue; interpretation may be wrong. Auditory perception of a courtship song corresponds to near-field sound detected by Johnston's organ.",
+          "temporal_pattern": "repeated",
+          "input_steps": [
+            0,
+            2,
+            4
+          ],
+          "timing_note": "Illustrative input schedule; model steps are not measured seconds or firing rates.",
+          "body_ids": [],
+          "neuron_count": 0,
+          "seed_types": []
+        }
+      ],
+      "unmapped": [
+        {
+          "text": "Nothing touches its antenna, but it hears a courtship song.",
+          "reason": "LLM_CONTEXT_NOT_SIMULATED",
+          "concept": null,
+          "label": "Context outside this model",
+          "note": "Courtship context and behavioral drive"
+        },
+        {
+          "text": "Nothing touches its antenna",
+          "reason": "NEGATED",
+          "concept": null,
+          "label": "Antennal mechanical contact",
+          "note": "Interpreter marked this cue absent; no input injected."
+        }
+      ],
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "clauses": [
+        "Nothing touches its antenna, but it hears a courtship song."
+      ],
+      "note": "Language interpretation is approximate; biological outcomes are calculated separately.",
+      "scene_interpretations": [
+        {
+          "label": "AI scene interpretation",
+          "original": "Nothing touches its antenna, but it hears a courtship song.",
+          "assumptions": "An adult male fruit fly experiences auditory stimulation from a courtship song without any antennal physical contact. Explicit statement that no physical contact occurs on the antenna. Auditory perception of a courtship song corresponds to near-field sound detected by Johnston's organ.",
+          "missing": "Courtship context and behavioral drive",
+          "question": "What is the direction and distance of the source producing the courtship song?"
+        }
+      ]
+    }
+  },
+  {
+    "text": "It remembers yesterday's food.",
+    "expected": [],
+    "actual": [],
+    "passed": true,
+    "experience": {
+      "raw_text": "It remembers yesterday's food.",
+      "interpreter_notice": null,
+      "components": [],
+      "unmapped": [
+        {
+          "text": "It remembers yesterday's food.",
+          "reason": "LLM_CONTEXT_NOT_SIMULATED",
+          "concept": null,
+          "label": "Context outside this model",
+          "note": "Memory of yesterday's food"
+        }
+      ],
+      "parser": "gemini:gemini-3.5-flash-lite",
+      "clauses": [
+        "It remembers yesterday's food."
+      ],
+      "note": "Language interpretation is approximate; biological outcomes are calculated separately.",
+      "scene_interpretations": [
+        {
+          "label": "AI scene interpretation",
+          "original": "It remembers yesterday's food.",
+          "assumptions": "An adult male fruit fly has a memory of yesterday's food. ",
+          "missing": "Memory of yesterday's food",
+          "question": "Is there any present odor, visual presence, or direct physical contact with food right now?"
+        }
+      ]
+    }
+  }
+]

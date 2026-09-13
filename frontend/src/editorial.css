@@ -1,0 +1,99 @@
+/* Editorial art direction: ink, parchment and brushed champagne.
+   Anatomy and activity colors retain their scientific legend. */
+.polished {
+  --accent:#e1cfac;
+  --ink:#eee9df;
+  --ink-dim:#b2b0a8;
+  --ink-faint:#93948e;
+  --line:#e6dcc318;
+  --line-strong:#e6dcc338;
+  --display: 'Iowan Old Style','Baskerville','Palatino Linotype',Georgia,serif;
+}
+.polished .masthead { background:#111311; border-bottom:1px solid #d7c6a52b; padding:0 34px; }
+.polished .brand-icon { color:#d7c6a5; width:25px; }
+.polished .wordmark { font-weight:500; font-size:16px; letter-spacing:.24em; color:#ede6d8; }
+.polished .edition { font-family:var(--font); font-size:8px; letter-spacing:.2em; color:#acaa9f; }
+.polished .dataset-chip { color:#b9b7ac; }
+.polished .experience-rail { background:radial-gradient(ellipse at 5% 0,#77694a16,transparent 65%),#171a18; border-right:1px solid #d7c6a52b; padding:30px 28px 20px; }
+.polished .eyebrow,.polished .preset-label { font-family:var(--font); font-size:9px; font-weight:500; letter-spacing:.18em; color:#a8a594; }
+.polished .accent-line { background:#c9b68e; width:26px; }
+.polished .intro h1 { font:normal 44px/1.02 var(--display); letter-spacing:-1.9px; margin:24px 0 18px; color:#efe9de; }
+.polished .intro h1 em { font-family:var(--display); font-weight:400; color:#d6c3a0; }
+.polished .intro p { font-size:12px; line-height:1.8; color:#aaada4; max-width:265px; margin-bottom:24px; }
+.polished .has-run .intro h1 { font:italic 25px/1.15 var(--display); letter-spacing:-.5px; margin:2px 0 22px; }
+.polished .has-run .intro h1 br { display:none; }
+.polished .has-run .intro h1 em::before { content:' '; }
+.polished .session-settings { border-radius:4px; background:#ffffff03; border-color:#d5c5a424; box-shadow:none; margin-bottom:24px; }
+.polished .session-settings>summary { color:#c2c2b6; padding:12px; font-size:11px; }
+.polished .session-settings>summary b { font-size:9px; color:#bda980; }
+.polished .field { margin-top:12px; border-radius:5px; background:linear-gradient(135deg,#dad2b908,#ffffff02); border-color:#d6c8ab40; box-shadow:inset 0 1px 0 #fff9dd0a; }
+.polished .field.focused { border-color:#d8c49d; box-shadow:0 0 0 3px #d8c49d0d; }
+.polished .field textarea { font:17px/1.6 var(--display); color:#e3dfd4; padding:18px; min-height:130px; }
+.polished .simulate { border-radius:3px; background:linear-gradient(110deg,#e2d4b7,#c9b58e); color:#242820; min-height:45px; font-size:11px; font-weight:600; letter-spacing:.035em; }
+.polished .simulate span { font-size:18px; transition:transform .25s; }
+.polished .simulate:hover:not(:disabled) span { transform:translate(2px,-2px); }
+.polished .input-scope { font-size:9px; color:#999e93; margin:12px 0 22px; }
+.polished .presets { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; margin-top:10px; }
+.polished .presets button { display:flex; align-items:center; text-align:left; gap:7px; border:0; border-bottom:1px solid #d9ccb321; border-radius:0; background:none; min-height:43px; padding:9px 0; font:11px var(--font); color:#c1c5b9; }
+.polished .presets button:hover:not(:disabled) { background:none; color:#e5d2aa!important; box-shadow:none; }
+.preset-number { color:#8c8774; font:italic 11px var(--display); }
+.preset-arrow { margin-left:auto; opacity:0; transform:translate(-3px,3px); transition:opacity .2s,transform .2s; }
+.presets button:hover .preset-arrow,.presets button:focus-visible .preset-arrow { opacity:1; transform:none; }
+.polished .viewer-top h2 { font:normal 27px/1.2 var(--display); letter-spacing:-.6px; color:#e5e0d6; }
+.polished .viewer-top .eyebrow { color:#a59b86; font-size:8px; letter-spacing:.2em; margin-bottom:9px; }
+.polished .viewer-tools>button,.polished .display-menu>summary { border-radius:5px; border-color:#d1c2a52e; background:linear-gradient(130deg,#343830cc,#1c2424df); color:#d9d7cb; font-size:11px; box-shadow:inset 0 1px 0 #f6eace0a; }
+.polished .display-popover { background:#202723f5; border-color:#c6b69644; border-radius:7px; }
+.polished .display-menu[open]>summary { border-color:#d8c49d; }
+.polished .view-toggle { border-color:#d7c6a52b; border-radius:5px; }
+.polished .view-toggle button { border-radius:3px; }
+.polished .response { background:linear-gradient(145deg,#bba4780d,#ffffff03),#202722ad; border-color:#e2cfaa35; border-radius:6px; box-shadow:inset 0 1px 0 #fff0ce15,0 12px 35px #0002; padding:21px 19px 16px; }
+.polished .response .headline { font:normal 29px/1.15 var(--display); letter-spacing:-.7px; color:#e6ddca; margin:15px 0; }
+.polished .response .label { font-family:var(--font); letter-spacing:.14em; font-size:8px; color:#c7b38b; }
+.polished .plain-outcome { color:#c0c6b9; font-size:12px; line-height:1.8; }
+.polished .response .tier { color:#a8a48f; }
+.polished .run-story .quote { font:italic 17px/1.5 var(--display); color:#cbc7b7; }
+.polished .run-actions button { border-radius:4px; border-color:#d1c2a533; }
+.polished .run-actions button:first-child { background:linear-gradient(110deg,#e0d0b0,#c8b48d); color:#22281f; }
+.polished .run-details { border-radius:5px; background:#ffffff03; border-color:#d5c5a424; box-shadow:none; }
+.polished .run-details>summary { color:#d0d1c2; font-size:12px; }
+.polished .response-evidence summary,.polished .result-tools summary,.polished .result-tools>button { color:#cbbc9f; }
+.polished .rail-note { border-top:1px solid #d7c6a524; padding-top:18px; margin-top:22px; color:#8e9387; }
+.polished .rail-note>span { font:italic 26px var(--display); color:#b5a382; }
+.polished .app-footer { background:#111311; border-top:1px solid #d7c6a524; }
+.polished .app-footer>span { font:8px var(--font); letter-spacing:.16em; color:#989887; }
+.polished .viewer-bottom { background:#111714ee; border-color:#d7c6a51c; }
+.polished .instrument-frame { opacity:.45; }
+@media(min-width:1500px) { .polished .experience-rail { padding:38px 34px 26px; }.polished .intro h1 { font-size:53px; }.polished .has-run .intro h1 { font-size:27px; } }
+@media(max-width:800px) { .polished .masthead { padding:0 18px; }.polished .wordmark { font-size:12px; }.polished .experience-rail { padding:28px 24px; }.polished .intro h1 { font-size:43px; }.polished .viewer-top h2 { font-size:21px; }.polished .has-run .intro h1 { font-size:25px; }.polished .presets { gap:0 20px; } }
+@media(prefers-reduced-motion:reduce) { .preset-arrow,.polished .simulate span { transition:none; } }
+
+/* Living material at the edges; source anatomy stays the visual subject. */
+.polished .neural-ambience { height:440px; opacity:.58; background:none; mask-image:linear-gradient(#000 0%,#000b 35%,transparent 100%); }
+.polished .intro { text-shadow:0 2px 16px #111a13; }
+.silk-ambience { position:absolute; inset:0; pointer-events:none; z-index:2; opacity:.22; mask-image:radial-gradient(ellipse at 50% 48%,transparent 35%,#000 100%); }
+.polished .viewer-top,.polished .viewer-bottom,.polished .view-caption { z-index:4; }
+.atlas-loading { position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:60px 30px; background:radial-gradient(ellipse,#17221edb,#090d1299); pointer-events:none; }
+.atlas-loading h2 { font:italic 48px/1.1 var(--display); color:#e3d1ae; margin:18px 0; letter-spacing:-1px; }
+.atlas-loading p { max-width:370px; font-size:12px; color:#b5bdb3; line-height:1.7; }
+.atlas-loading small { color:#969f92; font-size:10px; margin-top:16px; }
+.atlas-loading-mark { position:relative; width:130px; height:130px; margin-bottom:32px; display:grid; place-items:center; }
+.atlas-loading-mark span { position:absolute; inset:0; border:1px solid #dbc49b24; border-top-color:#dfc591; border-radius:50%; animation:atlas-orbit 5s linear infinite; }
+.atlas-loading-mark::after { content:''; position:absolute; inset:12px; border:1px solid #dbc49b18; border-bottom-color:#a5cdb477; border-radius:50%; animation:atlas-orbit 8s linear infinite reverse; }
+.atlas-loading-mark svg { width:76px; fill:none; stroke:#ddc99f; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+.atlas-loading-mark path { stroke-dasharray:1; animation:atlas-trace 2.8s ease-in-out infinite; }
+.atlas-loading-track { width:140px; height:1px; background:#d7c6a51c; overflow:hidden; margin-top:18px; }
+.atlas-loading-track i { display:block; width:50%; height:100%; background:linear-gradient(90deg,transparent,#d8c498,transparent); animation:atlas-travel 2s ease-in-out infinite; }
+.anatomy-entrance-note { position:absolute; bottom:110px; left:50%; transform:translateX(-50%); z-index:5; pointer-events:none; color:#dac8a4; font:italic 18px var(--display); text-align:center; animation:atlas-note 3s both; }
+.anatomy-entrance-note span { display:block; font:9px var(--font); color:#a4afa3; margin-top:7px; letter-spacing:.03em; }
+@keyframes atlas-orbit { to { transform:rotate(360deg); } }
+@keyframes atlas-trace { 0% { stroke-dashoffset:1; opacity:.3; } 45%,70% { stroke-dashoffset:0; opacity:1; } 100% { stroke-dashoffset:-1; opacity:.3; } }
+@keyframes atlas-travel { from { transform:translateX(-100%); } to { transform:translateX(300%); } }
+@keyframes atlas-note { 0%,10% { opacity:0; } 25%,70% { opacity:1; } 100% { opacity:0; visibility:hidden; } }
+@media(max-width:800px) { .polished .neural-ambience { height:360px; }.atlas-loading h2 { font-size:36px; }.atlas-loading-mark { width:80px; height:80px; margin-bottom:16px; }.atlas-loading-mark svg { width:48px; }.anatomy-entrance-note { bottom:90px; font-size:15px; } }
+@media(prefers-reduced-motion:reduce) { .anatomy-entrance-note { display:none; }.atlas-loading-mark span,.atlas-loading-mark::after,.atlas-loading-mark path,.atlas-loading-track i { animation:none; } }
+/* Audit correction: keep the neuron card header/close control unobstructed. */
+.polished .viewer:has(.detail-card) .viewer-tools { left:28px; right:auto; top:112px; }
+.polished .legend { flex-wrap:wrap; gap:7px 13px; }
+.polished .legend-note { color:#b6baaf; font-size:8px; }
+.neuron-role-heading { font-size:11px; font-weight:500; color:#d6c39f; margin:18px 0 5px; }
+@media(max-width:800px) { .polished .viewer:has(.detail-card) .viewer-tools { left:12px; right:auto; top:96px; }.polished .viewer:has(.detail-card) .viewer-tools>button,.polished .viewer:has(.detail-card) .display-menu>summary { padding:8px; font-size:10px; } }

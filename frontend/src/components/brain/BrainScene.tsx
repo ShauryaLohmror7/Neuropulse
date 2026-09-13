@@ -2,7 +2,7 @@ import { Suspense, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { EffectComposer, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { AnatomyShell } from './AnatomyShell'
 import { BrainContext } from './BrainContext'
@@ -31,7 +31,7 @@ export function BrainScene({ data }: { data: SceneData }) {
   const controls = useRef<OrbitControlsImpl | null>(null)
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: 'high-performance', alpha: false }}
       camera={{ position: [1850, 780, 1750], fov: 34, near: 5, far: 20000 }}
       onCreated={({ gl, scene }) => {
@@ -70,10 +70,9 @@ export function BrainScene({ data }: { data: SceneData }) {
         />
         <Atmosphere count={120} radius={2600} />
         <CameraRig circuit={data.circuit} controls={controls} />
-        {import.meta.env.DEV && <SceneDebug />}
+        {import.meta.env.DEV && new URLSearchParams(window.location.search).has('debugScene') && <SceneDebug />}
       </Suspense>
-      <EffectComposer multisampling={4}>
-        <Bloom intensity={0.8} luminanceThreshold={0.85} luminanceSmoothing={0.5} mipmapBlur radius={0.82} />
+      <EffectComposer multisampling={0}>
         <Vignette eskil={false} offset={0.12} darkness={0.3} />
       </EffectComposer>
     </Canvas>
@@ -152,7 +151,7 @@ function RealAnatomy({ data }: { data: SceneData }) {
   const isolate = useStore((s) => s.isolateNeuron)
   const detailMix = detail && view === 'brain' ? (isolate ? 0 : 0.15) : 1
   // Context recedes once a cascade is running so the active pathway dominates.
-  const contextDim = (sim ? 0.4 : 1) * detailMix
+  const contextDim = (sim ? 0.55 : 1) * detailMix
   // Brain view isolates the brain. The VNC sits posterior of z = 100 um in the
   // dataset's frame, so clipping there leaves brain and neck connective only.
   const clipZ = view === 'brain' ? -100 : 1e6
@@ -162,10 +161,10 @@ function RealAnatomy({ data }: { data: SceneData }) {
       {data.context && (
         <group position={data.contextOffset}>
           <BrainContext circuit={data.context} opacity={0.85 + m * 0.15} dim={contextDim} clipZ={clipZ - data.contextOffset.z} />
-
+          {sim && <CircuitNetwork circuit={data.context} opacity={detailMix} clipZ={clipZ - data.contextOffset.z} restingOpacity={0} excludeBodyIds={data.circuit.slotOf} />}
         </group>
       )}
-      <Somata circuit={data.circuit} opacity={(0.45 + m * 0.55) * detailMix} clipZ={clipZ} size={0.55} />
+      <Somata circuit={data.circuit} context={data.context} opacity={(0.45 + m * 0.55) * detailMix} clipZ={clipZ} size={0.55} />
       <CircuitNetwork circuit={data.circuit} opacity={(0.5 + m * 0.5) * detailMix} clipZ={clipZ} />
       <FullNeuron />
       {/* Activity is confined to measured skeletons; no invented centroid-to-centroid arcs. */}

@@ -47,6 +47,7 @@ class UnmappedContent(BaseModel):
 
 class CompiledExperience(BaseModel):
     raw_text: str
+    interpreter_notice: str | None = None
     components: list[ExperienceComponent] = Field(default_factory=list)
     unmapped: list[UnmappedContent] = Field(default_factory=list)
     parser: str = Field(description="Which semantic backend produced this.")

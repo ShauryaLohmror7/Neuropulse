@@ -51,3 +51,15 @@ def test_explicit_cues_in_other_clauses_survive_social_interpretation():
         next(c for c in exp.components if c.stimulus == "visual_motion").source_clause
         == "a female approaches to mate"
     )
+
+
+def test_temperature_paraphrases_and_absence():
+    for text in ['the air around the fly suddenly becomes hot','the temperature suddenly drops around the fly']:
+        assert {c.stimulus for c in compile_experience(text).components}=={'thermo_change'}
+    assert not compile_experience('the air is not hot').components
+
+
+def test_only_explicit_rapid_approach_is_looming():
+    assert 'visual_motion' in {c.stimulus for c in compile_experience('two flies approach').components}
+    assert 'visual_looming' not in {c.stimulus for c in compile_experience('two flies approach').components}
+    assert 'visual_looming' in {c.stimulus for c in compile_experience('a dark object approaches rapidly').components}
