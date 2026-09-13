@@ -1,0 +1,68 @@
+[
+  {
+    "input": "Raindrops repeatedly hit the fly\u2019s body in humid air.",
+    "seconds": 4.68,
+    "confidence": "NONE",
+    "model_headline": "Body / leg touch + Humidity change response",
+    "ai": {
+      "kind": "suggested_action",
+      "action": "Walk toward a nearby vertical shelter surface",
+      "rationale": "Continuous tactile stimulation from raindrops combined with high ambient humidity strongly engages mechanosensory and hygrosensory pathways, signaling an unfavorable wet microenvironment. Seeking a sheltered vertical surface helps minimize direct exposure to precipitation.",
+      "assumptions": [
+        "A sheltered vertical surface is within walking distance.",
+        "The fly's wings and legs remain functional despite the wetting."
+      ],
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "evidence_level": "AI hypothesis; movement not established by the simulation."
+    },
+    "notice": null
+  },
+  {
+    "input": "A female fly approaches to mate.",
+    "seconds": 4.47,
+    "confidence": "NONE",
+    "model_headline": "Visual motion response",
+    "ai": {
+      "kind": "suggested_action",
+      "action": "Pause briefly and orient toward the approaching fly.",
+      "rationale": "The simulation indicates widespread activation across visual processing pathways in response to motion cues. Although no specific motor action pathway reached threshold criteria, the intense visual input logically precedes orientation toward a conspecific in the local environment.",
+      "assumptions": [
+        "The visual motion is recognized as another fly.",
+        "The fly is receptive to social interaction.",
+        "Lighting conditions permit clear visual tracking."
+      ],
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "evidence_level": "AI hypothesis; movement not established by the simulation."
+    },
+    "notice": null
+  },
+  {
+    "input": "Purple algebra tastes like Tuesday.",
+    "seconds": 2.69,
+    "confidence": "NONE",
+    "model_headline": "Situation recognized \u00b7 sensory details needed",
+    "ai": {
+      "kind": "clarification",
+      "action": "Could you describe the fly's physical surroundings and any actual sensory cues?",
+      "rationale": "The provided situation contains nonsensical and abstract concepts that do not correspond to any valid physical context or sensory input for a fruit fly.",
+      "assumptions": [
+        "The input situation was nonsensical.",
+        "Physical context was entirely missing."
+      ],
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "evidence_level": "AI hypothesis; movement not established by the simulation."
+    },
+    "notice": null
+  },
+  {
+    "input": "Something repeatedly touches the fly\u2019s left antenna.",
+    "seconds": 2.42,
+    "confidence": "MODERATE",
+    "model_headline": "Antennal grooming tendency (modeled)",
+    "ai": null,
+    "notice": null
+  }
+]

@@ -196,6 +196,8 @@ class ModelledResponse(BaseModel):
     output_evidence: list[dict[str, Any]] = Field(default_factory=list)
     headline: str
     plain_language: str = ""
+    ai_hypothesis: dict[str, Any] | None = None
+    ai_notice: str | None = None
     detail: str | None = None
     confidence: EvidenceTier | Literal["NONE"] = "NONE"
     channels: list[ChannelReadout] = Field(default_factory=list)

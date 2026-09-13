@@ -109,6 +109,8 @@ export interface ChannelReadout {
 }
 
 export interface ModelledResponse {
+  ai_hypothesis?: {kind:'suggested_action'|'clarification';evidence_body_ids?:number[];activity_observation?:string;basis?:'activity_informed'|'scene_only';verified_activity?:{body_id:number;type:string|null;class:string|null;side:string|null;peak_model_activity:number|null;first_step:number|null}[];action:string;rationale:string;assumptions:string[];provider:string;model:string;evidence_level:string}|null
+  ai_notice?: string|null
   plain_language?: string
   interpretation_kind?: 'behavioral_marker'|'partial_marker'|'sensory_only'|'no_input'
   neural_summary?: string[]

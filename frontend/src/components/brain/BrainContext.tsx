@@ -61,7 +61,7 @@ export function BrainContext({
           uDim: { value: 1 },
           uFogNear: { value: 700 },
           uFogFar: { value: 1900 },
-          uSaturation: { value: 1.25 },
+          uSaturation: { value: 1.5 },
           uLift: { value: 0.02 },
           uClipZ: { value: 1e6 },
           uClipSoft: { value: 90 },
@@ -132,7 +132,7 @@ export function BrainContext({
             float fog = 1.0 - smoothstep(uFogNear, uFogFar, vDepth);
             fog = clamp(fog, 0.2, 1.0);
             float lum = dot(vTint, vec3(0.299, 0.587, 0.114));
-            vec3 col = (mix(vec3(lum), vTint, uSaturation) + uLift) * 0.5;
+            vec3 col = max(mix(vec3(lum), vTint, uSaturation), vec3(0.0)) * 0.64 + uLift;
             col *= mix(0.35, 1.0, fog) * uDim;
             float a = uOpacity * fog * keep;
             if (a < 0.002) discard;
@@ -151,7 +151,7 @@ export function BrainContext({
     gl.getDrawingBufferSize(material.uniforms.uResolution.value)
     material.uniforms.uWidth.value = 0.8 * gl.getPixelRatio()
     material.uniforms.uDim.value = dim
-    material.uniforms.uOpacity.value = 0.72 * opacity
+    material.uniforms.uOpacity.value = 0.60 * opacity
     const u = material.uniforms.uClipZ
     u.value += (clipZ - u.value) * (1 - Math.pow(0.02, dt))
   })

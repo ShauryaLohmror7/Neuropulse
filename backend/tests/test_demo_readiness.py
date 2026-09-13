@@ -7,7 +7,8 @@ def test_clear_outcomes_follow_model_evidence_not_just_input_words():
     assert "unvalidated model hypothesis" in grooming.response.plain_language
     visual = simulate(SimulateRequest(text="lights repeatedly turn on and off"))
     assert visual.response.interpretation_kind == "sensory_only"
-    assert "cannot yet translate" in visual.response.plain_language
+    assert "a specific movement is not predicted" in visual.response.plain_language
+    assert visual.response.ai_hypothesis is None
     assert visual.response.confidence == "NONE"
     absent = simulate(SimulateRequest(text="nothing touches its antenna"))
     assert absent.response.interpretation_kind == "no_input"

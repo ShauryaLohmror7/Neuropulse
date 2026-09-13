@@ -30,6 +30,7 @@ class CompileRequest(BaseModel):
 
 
 class SimulateRequest(BaseModel):
+    ai_action_fallback: bool = False
     interpretation_ticket: str | None = Field(default=None, max_length=60000)
     text: str = Field(max_length=600)
     parameters: PropagationParameters | None = None
@@ -143,7 +144,8 @@ def compile_only(req: CompileRequest) -> CompiledExperience:
 
 @router.post("/simulate")
 def simulate(req: SimulateRequest) -> SimulationEnvelope:
-    return _simulate(req)
+    from app.simulation.action_hypothesis import attach_hypothesis
+    return attach_hypothesis(_simulate(req), _circuit().node_meta, req.ai_action_fallback)
 
 
 def _simulate(req: SimulateRequest, initial_state=None, capture_state=None) -> SimulationEnvelope:
@@ -214,6 +216,7 @@ def _simulate(req: SimulateRequest, initial_state=None, capture_state=None) -> S
 
 
 class SequenceRequest(BaseModel):
+    ai_action_fallback: bool = False
     interpretation_tickets: list[Annotated[str | None, Field(max_length=60000)]] | None = Field(
         default=None, max_length=6
     )
@@ -272,7 +275,8 @@ def simulate_sequence(req: SequenceRequest) -> SimulationEnvelope:
                 envelope.response.headline = "Earlier activity is settling"
                 envelope.response.plain_language = "Activity from the earlier event is decaying through the model. No new sensory input was added, and no biological learning is implied."
                 envelope.response.detail = "No new sensory input was injected. This response comes from the retained neural state; it is not a response to unsupported words."
-    return envelope
+    from app.simulation.action_hypothesis import attach_hypothesis
+    return attach_hypothesis(envelope, _circuit().node_meta, req.ai_action_fallback)
 
 
 def _detail(body_id: int):

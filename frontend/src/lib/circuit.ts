@@ -87,8 +87,8 @@ function hashHue(bodyId: number): [number, number, number] {
   h = Math.imul(h ^ (h >>> 16), 0x45d9f3b)
   h = (h ^ (h >>> 16)) >>> 0
   const hue = (h % 3600) / 3600
-  const sat = 0.55 + ((h >>> 12) % 100) / 100 * 0.35
-  const light = 0.55 + ((h >>> 20) % 100) / 100 * 0.2
+  const sat = 0.68 + ((h >>> 12) % 100) / 100 * 0.28
+  const light = 0.48 + ((h >>> 20) % 100) / 100 * 0.16
   return hslToRgb(hue, sat, light)
 }
 

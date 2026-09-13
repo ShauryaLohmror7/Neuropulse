@@ -2,7 +2,7 @@
 
 ## A 30-second explanation
 
-“I built an interactive explorer of a real male fruit-fly connectome. Gemini interprets a written situation into supported sensory cues. Python selects real annotated neurons and propagates simplified activity through the measured wiring. A literature-based readout checks selected action-associated neurons, while a 3D interface shows the source anatomy and calculated activity. It is an experimental connectome simulation, not a validated digital fly.”
+“I built an interactive explorer of a real male fruit-fly connectome. Gemini interprets a written situation into supported sensory cues. Python selects real annotated neurons and propagates simplified activity through the measured wiring. A literature-based readout checks selected action-associated neurons. If that does not resolve a movement, Gemini can suggest a clearly labeled action hypothesis informed by actual activity, with verified neuron citations and explicit assumptions, while a 3D interface shows the source anatomy and calculated activity. It is an experimental connectome simulation, not a validated digital fly.”
 
 ## The parts of the product
 
@@ -14,7 +14,7 @@
 | API | Python, FastAPI, Pydantic, Uvicorn | Validates requests and serves computation/data |
 | Network calculations | NumPy and SciPy sparse matrices | Propagates activity through the full annotated graph |
 | Source data | MaleCNS v1.0, neuPrint / neuprint-python | Annotated neurons, synaptic connectivity and source skeletons |
-| Language AI | Optional Google Gemini; local sentence-transformer/lexical fallback | Extracts sensory cues; never invents neuron IDs or chooses the action |
+| Language AI | Optional Google Gemini; local sentence-transformer/lexical fallback | Extracts sensory cues; optionally suggests an action with verified reached-neuron citations; action inference remains speculative |
 | Action interpretation | Curated Python readouts | Checks activity in literature-associated cell types using explicit model thresholds |
 
 We did not train a new biological brain model or a behavioral predictor. Gemini is a pretrained LLM. The propagation dynamics, timing, thresholds and readout rules are our modeling choices. Retained neural state is not learned biological memory.

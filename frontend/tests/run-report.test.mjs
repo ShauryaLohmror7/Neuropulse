@@ -26,3 +26,13 @@ test('sequence exports disclose retained-state mode',()=>{
  assert.match(runMarkdown(sequence),/Continue sequence/)
  assert.match(runMarkdown(sequence),/weights do not learn/)
 })
+
+test('AI action is exported separately without replacing the computed result',()=>{
+ const ai={...sim,response:{...sim.response,ai_hypothesis:{kind:'suggested_action',action:'Seek cover.',rationale:'A scene-based possibility.',evidence_level:'AI hypothesis; movement not established by the simulation.',provider:'Google Gemini',model:'test',assumptions:['Cover is nearby.']}}}
+ const text=runMarkdown(ai)
+ assert.match(text,/Action remains unresolved/)
+ assert.match(text,/AI suggestion · separate from the model result/)
+ assert.match(text,/Seek cover/)
+ assert.match(text,/movement not established/)
+ assert.equal(runRecord(ai).response.headline,sim.response.headline)
+})

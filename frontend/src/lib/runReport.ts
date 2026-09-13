@@ -24,6 +24,8 @@ export function runMarkdown(sim:SimulationEnvelope):string {
     `Experience: ${sim.experience.raw_text || 'No new stimulus; let previous activity settle.'}`,
     `Mode: ${mode}. Interpreter: ${sim.experience.parser}.`,
     `## Computed result\n\n${sim.response.headline}\n\n${sim.response.plain_language??''}\n\n${sim.response.detail??''}`,
+    ...(sim.response.ai_hypothesis ? [`## AI suggestion · separate from the model result\n\n${sim.response.ai_hypothesis.action}\n\n${sim.response.ai_hypothesis.rationale}\n\nActivity observation: ${sim.response.ai_hypothesis.activity_observation??'Not recorded.'}\n\nVerified reached neuron IDs: ${sim.response.ai_hypothesis.evidence_body_ids?.join(', ')||'None'}\n\n${sim.response.ai_hypothesis.evidence_level}\n\nProvider: ${sim.response.ai_hypothesis.provider} (${sim.response.ai_hypothesis.model}).\n\n${sim.response.ai_hypothesis.assumptions.map(a=>`Assumption: ${a}`).join('\n')}`] : []),
+    ...(sim.response.ai_notice ? [sim.response.ai_notice] : []),
     `## Real dataset\n\n${sim.circuit.dataset}: ${sim.circuit.neurons.toLocaleString('en-US')} annotated neurons and ${sim.circuit.edges.toLocaleString('en-US')} directed connections. [Official source](https://male-cns.janelia.org/).`,
     `## Inputs\n\n${sim.experience.components.map(c=>`- ${c.label}: ${c.neuron_count} real input neurons; ${c.temporal_pattern??'pulse'}; ${c.direction??'side unspecified'}. ${c.caveat??''}`).join('\n')||'No supported present stimulus was injected.'}`,
     `## Model activity\n\n${sim.result.metrics.neurons_activated.toLocaleString('en-US')} neurons reached; ${sim.result.metrics.connections_traversed.toLocaleString('en-US')} connections traversed.\n\n${(sim.response.neural_summary??[]).join('\n\n')}`,

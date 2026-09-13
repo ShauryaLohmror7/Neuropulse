@@ -97,3 +97,69 @@
 .polished .legend-note { color:#b6baaf; font-size:8px; }
 .neuron-role-heading { font-size:11px; font-weight:500; color:#d6c39f; margin:18px 0 5px; }
 @media(max-width:800px) { .polished .viewer:has(.detail-card) .viewer-tools { left:12px; right:auto; top:96px; }.polished .viewer:has(.detail-card) .viewer-tools>button,.polished .viewer:has(.detail-card) .display-menu>summary { padding:8px; font-size:10px; } }
+
+/* Gallery finish: crisp anatomical stage, warm metal accents, quiet glass. */
+.polished { --ink:#f1ede5; --ink-dim:#bec7c8; --line:#b4ccdc20; --line-strong:#bdd3df38; }
+.polished .masthead { background:linear-gradient(110deg,#11171b,#10151a 65%,#191b20); border-bottom-color:#d7c6a52a; box-shadow:0 5px 30px #0002; }
+.polished .brand-icon { filter:drop-shadow(0 0 8px #dac49c33); }
+.polished .wordmark { letter-spacing:.28em; }
+.polished .experience-rail { background:radial-gradient(ellipse at 0 0,#4556682a,transparent 65%),linear-gradient(165deg,#182129,#11191f 70%); border-right-color:#c4d8df22; scrollbar-color:#61727b66 transparent; }
+.polished .intro h1 { font-size:clamp(40px,3.5vw,54px); line-height:1.04; letter-spacing:-1.8px; }
+.polished .intro h1 em { color:#e0c69d; }
+.polished .intro p { color:#bdc5c4; }
+.polished .session-settings { border-radius:10px; background:linear-gradient(120deg,#cce3e80b,#ffffff02); border-color:#c1d5de26; }
+.polished .session-settings>summary { min-height:44px; align-items:center; }
+.polished .session-settings[open] { border-color:#d9c29866; }
+.polished .field { border-radius:14px; background:linear-gradient(145deg,#adcfe512,#90a7c104 65%); border:1px solid #c4d9e63b; box-shadow:inset 0 1px #ffffff12,0 12px 30px #0002; overflow:hidden; }
+.polished .field textarea { font-size:18px; line-height:1.55; min-height:142px; }
+.polished .simulate { border-radius:8px; min-height:48px; background:linear-gradient(115deg,#f0dfbd,#d7bc8d 65%,#ead2aa); box-shadow:inset 0 1px #fff7dfaa,0 4px 18px #0003; transition:filter .2s,transform .2s,box-shadow .2s; }
+.polished .simulate:hover:not(:disabled) { filter:brightness(1.07); box-shadow:inset 0 1px #fff7dfaa,0 6px 22px #c4a77920; transform:translateY(-1px); }
+.polished .presets button { min-height:44px; color:#c5cfd0; border-color:#b5cbd724; }
+.polished .presets button:hover:not(:disabled) { color:#efdab7!important; }
+.polished .viewer { box-shadow:inset 1px 0 #ffffff06; }
+.polished .viewer-top h2 { font-size:clamp(24px,2vw,32px); color:#f1e8d9; }
+.polished .viewer-tools>button,.polished .display-menu>summary { border-radius:10px; background:linear-gradient(145deg,#334452c9,#192631eb); border-color:#bacfdf38; box-shadow:inset 0 1px #eaf9ff13,0 5px 20px #0003; min-height:44px; backdrop-filter:blur(14px); transition:background .2s,border-color .2s; }
+.polished .viewer-tools>button:hover,.polished .display-menu>summary:hover { border-color:#e1c79b88; background:linear-gradient(145deg,#40525fcf,#283844ef); }
+.polished .view-toggle { padding:4px; border-radius:12px; background:#16202bbb; border-color:#bacfdf30; box-shadow:inset 0 1px #fff1; }
+.polished .view-toggle button { border-radius:8px; min-height:34px; }
+.polished .view-toggle button[aria-pressed=true] { background:linear-gradient(135deg,#bba57d35,#9ea79120); color:#f3dfb8; box-shadow:inset 0 1px #eee1bd20; }
+.polished .response { border-radius:16px; padding:24px 22px 18px; background:radial-gradient(ellipse at 0 0,#d7b77915,transparent 70%),linear-gradient(145deg,#2b3843eb,#18242deb); border-color:#e0c5984d; box-shadow:inset 0 1px #fff4d51c,0 15px 40px #0003; }
+.polished .response::before { content:''; position:absolute; top:0; left:22px; right:22px; height:1px; background:linear-gradient(90deg,transparent,#f0d5a1a8,transparent); pointer-events:none; }
+.polished .response .headline { font-size:clamp(25px,2vw,32px); line-height:1.22; text-wrap:pretty; color:#f0e3ce; }
+.polished .response .plain-outcome { color:#d0d8d8; line-height:1.75; }
+.polished .response .computed-note { border-left:2px solid #92b6c16b; padding-left:11px; color:#afc2cb; font-size:10px; line-height:1.7; }
+.polished .response-evidence p { color:#bac8d0; }
+.polished .result-evidence>summary { padding:4px 0; min-height:28px; line-height:1.6; }
+.polished .output-channel { background:#0e192360; border:1px solid #a9bdce18; border-radius:8px; }
+.polished .run-actions button { min-height:44px; border-radius:8px; }
+.polished .run-details { background:#c2dcf005; border-color:#a6c0d12b; border-radius:10px; }
+.polished .detail-card { background:linear-gradient(155deg,#253746f5,#111e2afa); border:1px solid #b9d2df50; border-top-color:#e1ca9b9c; border-radius:18px; box-shadow:0 24px 70px #0008,inset 0 1px #f2e1b61c; backdrop-filter:blur(18px); }
+.polished .detail-card h3 { font-family:var(--display); letter-spacing:-.6px; color:#f0e2c9; }
+.polished .neuron-explanation h4 { font:24px/1.25 var(--display); color:#f1e6d3; }
+.polished .neuron-explanation p { color:#c2d1d7; line-height:1.8; }
+.polished .key-neuron-row button { border-radius:10px; background:linear-gradient(135deg,#2a3f4c99,#172530ba); border-color:#afc8d438; transition:border-color .2s,background .2s; }
+.polished .key-neuron-row button:hover { border-color:#d4c09b99; background:#344b59aa; }
+.polished .detail-invitation { padding:16px; border:1px solid #c1d8e12b; border-radius:12px; background:linear-gradient(130deg,#2536409c,#14212a90); backdrop-filter:blur(12px); box-shadow:inset 0 1px #fff1; }
+.polished .viewer-bottom { background:linear-gradient(90deg,#13202ae8,#101b22f5); border-color:#bad0da24; }
+.polished .app-footer { background:#10171c; border-color:#b6ccd420; }
+.polished .rail-note { border-color:#bfd0dc24; color:#a3b3b8; }
+.polished .scene-readout { color:#a3c7d2; }
+.polished .scene-readout b { color:#99aeb9; }
+.polished :is(button,a,summary,select,textarea):focus-visible { outline:2px solid #edd3a3; outline-offset:4px; }
+.polished button:disabled { cursor:not-allowed; }
+@media(max-height:800px) and (min-width:801px) {
+ .polished .intro h1 { font-size:38px; margin:16px 0 14px; }
+ .polished .intro p { margin-bottom:17px; }
+ .polished .session-settings { margin-bottom:17px; }
+ .polished .field textarea { min-height:115px; }
+ .polished .has-run .intro h1 { font-size:25px; }
+}
+@media(max-width:800px) {
+ .polished .viewer-top h2 { font-size:22px; }
+ .polished .response { padding:22px 20px; }
+ .polished .detail-invitation { padding:10px; max-width:180px; }
+ .polished .viewer-tools>button,.polished .display-menu>summary { min-height:40px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .polished .simulate,.polished .key-neuron-row button,.polished .viewer-tools>button { transition:none; transform:none!important; }
+}
