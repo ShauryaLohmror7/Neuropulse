@@ -1,3 +1,4 @@
+import { BorderBeam } from '../ui/BorderBeam'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { ModelledResponse } from '../../types/api'
 
@@ -20,6 +21,7 @@ export function ResponsePanel({ response }: { response: ModelledResponse | null 
         exit={{ opacity: 0, y: 14 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
       >
+        <BorderBeam/>
         <div className="label">{none ? 'FLY ACTION · UNRESOLVED' : 'POSSIBLE FLY ACTION'}</div>
         <div className={`headline ${none ? 'none' : ''}`}>{response.headline.replace(' tendency (modeled)', '')}</div>
         {response.detail && <div className="detail">{none ? response.detail : 'The modeled signal reached output neurons associated with this response. This is an inferred tendency, not an observed action.'}</div>}

@@ -114,3 +114,8 @@ Added curated, research-linked descriptions for R1–R6, LC4, LPLC2, T4/T5, DNp0
 Added a sci-fi styling toggle, luminous shader cores and source-node highlights for recorded full-neuron events, a model-state readout, and a frame around the scene. No new anatomical edges or model events are invented. Reduced-motion preferences use static per-state shading for the new effects. Added `UNDERSTAND_NEUROPULSE.md` for the project owner. Comparison of two experiences remains a proposed feature.
 
 Verified LC4 description/source link, full-detail loading, replay with source-node shader, no runtime errors, and 390px layout without horizontal overflow. Build passes; 38 backend tests pass. Existing lint warnings and large-bundle warning remain.
+
+## 21st.dev component pass
+
+Browsed 21st.dev and integrated Paper's open-source Neuro Noise shader (0.0.80), with a custom violet/mint palette, plus local border-beam and aurora components. Paid 21st export was not used; sources and licensing are in `UI_COMPONENT_SOURCES.md`. Decorations stay outside the anatomy layer and honor the cinematic toggle/reduced motion. Shader loading is separate, resolution-capped and visibility-aware. Build passes; existing Three.js lint warnings remain.
+Browser verification: default simulation completed with its action readout; cinematic off removed the ambient shader canvas and aurora, and on restored them. Mobile width 390px has no horizontal overflow. No browser runtime errors. Screenshot: `docs/screenshots/21st-components.png`.

@@ -1,3 +1,5 @@
+import { NeuralAmbience } from './components/ui/NeuralAmbience'
+import { AuroraBackdrop } from './components/ui/AuroraBackdrop'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { useShallow } from 'zustand/react/shallow'
@@ -91,6 +93,7 @@ export default function App() {
 
       <main className="workspace">
         <aside className={`experience-rail ${phase !== 'idle' ? 'has-run' : ''}`}>
+          <NeuralAmbience/>
           <div className="intro"><div className="eyebrow"><span className="accent-line"/> EXPERIENCE → ACTIVITY</div><h1>Give a biological <br/>brain an <em>experience.</em></h1><p>Explore how a fly’s real neural wiring carries a modeled sensory response.</p></div>
           {phase === 'idle' ? <ExperienceInput onSimulate={runSimulation} disabled={!data} /> : <div className="run-story">
             <div className="eyebrow">YOUR EXPERIENCE</div><p className="quote">“{envelope?.experience.raw_text ?? useStore.getState().text}”</p>
@@ -107,6 +110,7 @@ export default function App() {
           <div className="viewer-top"><div><div className="eyebrow">DROSOPHILA MELANOGASTER</div><h2>{detail && view === 'brain' ? 'One neuron. Every source branch.' : view === 'brain' ? 'The architecture of sensation.' : 'One fly. Thousands of pathways.'}</h2></div><ViewToggle/></div>
           <div className="scene">{data && <BrainScene data={data}/>}<RegionLabelLayer/></div>
           {!data && <div className="loading" role="status"><span className="pulse-dot"/>{dataError ?? 'Loading measured anatomy…'}</div>}
+          {cinematic && <AuroraBackdrop/>}
           <div className="instrument-frame" aria-hidden="true"><i/><i/><i/><i/></div>
           {data && <div className="scene-readout"><span className="readout-dot"/><span>{phase==='propagating' ? 'MODEL SIGNAL PLAYBACK' : phase==='settled' ? 'PEAK ACTIVITY · FROZEN SUMMARY' : 'DATASET ANATOMY'}</span><b>{phase==='propagating' && sim ? `STATE ${String(Math.max(0,Math.min(step,sim.result.steps.length-1))).padStart(2,'0')} / ${String(sim.result.steps.length-1).padStart(2,'0')}` : 'MaleCNS · v1.0'}</b></div>}
           <NeuronDetailPanel data={data}/>

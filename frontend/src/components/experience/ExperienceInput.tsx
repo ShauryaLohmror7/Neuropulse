@@ -1,3 +1,4 @@
+import { BorderBeam } from '../ui/BorderBeam'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useStore } from '../../lib/store'
@@ -31,6 +32,7 @@ export function ExperienceInput({ onSimulate, disabled = false }: { onSimulate: 
     >
       <label className="eyebrow" htmlFor="experience">DESCRIBE A MOMENT</label>
       <div className={`field ${focused ? 'focused' : ''}`}>
+        <BorderBeam/>
         <textarea
           id="experience"
           rows={4}
