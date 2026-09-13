@@ -36,6 +36,7 @@ def propagate(
     params: PropagationParameters = DEFAULT_PARAMETERS,
     seed_modalities: Mapping[int, str] | None = None,
     max_pulses: int = 12000,
+    input_schedule: Mapping[int, Mapping[int, float]] | None = None,
 ) -> PropagationResult:
     """Run the cascade.
 
@@ -63,6 +64,17 @@ def propagate(
         else np.ones(n, dtype=np.float32)
     )
 
+    scheduled = {}
+    for step, values in (input_schedule or {}).items():
+        if step < 0 or step > params.steps:
+            continue
+        pairs = [
+            (graph.index[int(b)], float(v)) for b, v in values.items() if int(b) in graph.index
+        ]
+        scheduled[step] = (
+            np.array([i for i, _ in pairs], dtype=np.int32),
+            np.array([v for _, v in pairs], dtype=np.float32),
+        )
     # --- seed ---------------------------------------------------------
     modality_of = np.array([""] * n, dtype=object)
     seed_indices: list[int] = []
@@ -90,6 +102,7 @@ def propagate(
             active_total=int(active_mask.sum()),
             mean_activation=float(act[active_mask].mean()) if active_mask.any() else 0.0,
             pulses=0,
+            input_neurons=len(seed_indices),
         )
     )
 
@@ -101,11 +114,12 @@ def propagate(
     for step in range(1, params.steps + 1):
         emitting = act > params.activation_threshold
         if not emitting.any():
-            break
+            if not any(k >= step for k in scheduled):
+                break
 
         # Signal leaving each emitting neuron along each surviving edge.
         edge_active = emitting[src]
-        if not edge_active.any():
+        if not edge_active.any() and not any(k >= step for k in scheduled):
             break
         edge_traversed |= edge_active
         active_raw = raw_w[edge_active]
@@ -123,6 +137,9 @@ def propagate(
         new_act = params.self_decay * act + drive
         # Refractory neurons cannot be re-driven this step.
         new_act = np.where(refractory > 0, params.self_decay * act, new_act)
+        if step in scheduled:
+            input_idx, input_values = scheduled[step]
+            new_act[input_idx] = np.maximum(new_act[input_idx], input_values)
         act = np.clip(new_act, 0.0, params.max_activation)
         peak = np.maximum(peak, act)
         history.append(act.copy())
@@ -179,6 +196,7 @@ def propagate(
                 mean_activation=float(act[active_now].mean()) if active_now.any() else 0.0,
                 pulses=step_pulses,
                 cumulative_connections=int(edge_traversed.sum()),
+                input_neurons=len(scheduled[step][0]) if step in scheduled else 0,
             )
         )
 

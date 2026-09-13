@@ -41,11 +41,25 @@ def lesion_and_compare(
     *,
     params: PropagationParameters = DEFAULT_PARAMETERS,
     seed_modalities: Mapping[int, str] | None = None,
+    input_schedule: Mapping[int, Mapping[int, float]] | None = None,
 ) -> LesionComparison:
-    normal = propagate(graph, seeds, params=params, seed_modalities=seed_modalities)
+    normal = propagate(
+        graph, seeds, params=params, seed_modalities=seed_modalities, input_schedule=input_schedule
+    )
     injured = graph.without(body_ids)
     remaining_seeds = {b: v for b, v in seeds.items() if int(b) not in {int(x) for x in body_ids}}
-    lesioned = propagate(injured, remaining_seeds, params=params, seed_modalities=seed_modalities)
+    drop = {int(b) for b in body_ids}
+    schedule = {
+        step: {b: v for b, v in values.items() if int(b) not in drop}
+        for step, values in (input_schedule or {}).items()
+    }
+    lesioned = propagate(
+        injured,
+        remaining_seeds,
+        params=params,
+        seed_modalities=seed_modalities,
+        input_schedule=schedule,
+    )
 
     normal_ids = {a.body_id for a in normal.activations}
     lesioned_ids = {a.body_id for a in lesioned.activations}
@@ -53,7 +67,8 @@ def lesion_and_compare(
         lesioned_body_ids=[int(b) for b in body_ids],
         normal=normal,
         lesioned=lesioned,
-        delta_neurons_activated=lesioned.metrics.neurons_activated - normal.metrics.neurons_activated,
+        delta_neurons_activated=lesioned.metrics.neurons_activated
+        - normal.metrics.neurons_activated,
         delta_connections_traversed=(
             lesioned.metrics.connections_traversed - normal.metrics.connections_traversed
         ),

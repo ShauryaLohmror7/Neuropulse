@@ -142,6 +142,18 @@ def compile_experience(
 
     for clause in clauses:
         ranked = idx.rank(clause)
+        approach_cue = bool(
+            re.search(r"\b(approach(?:es|ing)?|approaching|comes? closer)\b", clause, re.I)
+            and re.search(
+                r"\b(flies|fly|objects?|shadows?|predators?|hands?|balls?|birds?|something|someone)\b",
+                clause,
+                re.I,
+            )
+        )
+        if approach_cue:
+            ranked = [("visual_looming", 0.97)] + [
+                (k, s) for k, s in ranked if k != "visual_looming"
+            ]
         if not ranked:
             continue
         top_score = ranked[0][1]
@@ -199,13 +211,15 @@ def compile_experience(
                 continue
 
             if concept.key == "olfactory_fruit" and not ODOR_CUE.search(clause):
-                unmapped.append(UnmappedContent(
-                    text=clause,
-                    reason="CONTEXT_WITHOUT_SENSORY_CUE",
-                    concept=key,
-                    label="Fruit / food context",
-                    note="An object or proximity to food does not establish an odor stimulus. No olfactory input injected.",
-                ))
+                unmapped.append(
+                    UnmappedContent(
+                        text=clause,
+                        reason="CONTEXT_WITHOUT_SENSORY_CUE",
+                        concept=key,
+                        label="Fruit / food context",
+                        note="An object or proximity to food does not establish an odor stimulus. No olfactory input injected.",
+                    )
+                )
                 accepted += 1
                 continue
 
@@ -218,6 +232,37 @@ def compile_experience(
                 accepted += 1
                 continue
 
+            repeated = bool(
+                re.search(
+                    r"\b(repeatedly|repeating|flashing|flicker\w*|blinking|again and again|on and off)\b",
+                    clause,
+                    re.I,
+                )
+            )
+            sustained = bool(
+                re.search(
+                    r"\b(eating|feeding|drinking|continuously|constant|ongoing|sustained|keeps)\b",
+                    clause,
+                    re.I,
+                )
+            )
+            pattern = "repeated" if repeated else "sustained" if sustained else "pulse"
+            timing = {
+                "pulse": ([0], "One input pulse at model step 0; model steps are not seconds."),
+                "repeated": (
+                    [0, 2, 4],
+                    "Three repeated input events at model steps 0, 2 and 4. Illustrative timing: frequency and event count were not measured. Light ON/OFF-specific physiology is not reproduced.",
+                ),
+                "sustained": (
+                    [0, 1, 2, 3, 4],
+                    "Input maintained through model steps 0–4, then released. Illustrative duration, not a measured feeding or stimulus time.",
+                ),
+            }[pattern]
+            caveat = concept.caveat
+            quality = concept.mapping_quality
+            if approach_cue and key == "visual_looming":
+                quality = "APPROXIMATE_MAPPING"
+                caveat = "Approach is interpreted as an expanding visual image. Object identity, number, size and speed are not resolved; two approaching flies are not encoded as two separate objects."
             components[key] = ExperienceComponent(
                 modality=concept.modality,
                 stimulus=concept.key,
@@ -225,12 +270,24 @@ def compile_experience(
                 direction=direction,
                 intensity=intensity,
                 confidence=confidence,
-                mapping_quality=concept.mapping_quality,
+                mapping_quality=quality,
+                temporal_pattern=pattern,
+                input_steps=timing[0],
+                timing_note=timing[1],
                 source_clause=clause,
                 evidence=concept.evidence,
-                caveat=concept.caveat,
+                caveat=caveat,
             )
             accepted += 1
+
+        if accepted == 0:
+            unmapped.append(
+                UnmappedContent(
+                    text=clause,
+                    reason="NO_SENSORY_MATCH",
+                    note="No supported sensory interpretation survived the mapping checks; this clause was not simulated.",
+                )
+            )
 
     note = None
     if not components:

@@ -1,3 +1,4 @@
+import { MazeLab } from './components/maze/MazeLab'
 import { NeuralAmbience } from './components/ui/NeuralAmbience'
 import { AuroraBackdrop } from './components/ui/AuroraBackdrop'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -21,6 +22,7 @@ import { getSceneTime } from './lib/sceneClock'
 import type { SimulationEnvelope } from './types/api'
 
 export default function App() {
+  const [section,setSection] = useState<'explorer'|'maze'>('explorer')
   const { data, error: dataError } = useSceneData()
   useFullNeuron(data)
   const { phase, sim, error, view, detail, inspector, showLabels, setPhase, setSim, setError, setView, toggleLabels, toggleInspector } = useStore(useShallow(s => ({detail:s.detail, phase:s.phase, sim:s.sim, error:s.error, view:s.view, inspector:s.inspector, showLabels:s.showLabels, setPhase:s.setPhase, setSim:s.setSim, setError:s.setError, setView:s.setView, toggleLabels:s.toggleLabels, toggleInspector:s.toggleInspector})))
@@ -81,6 +83,8 @@ export default function App() {
   const edges = (phase === 'settled' ? sim?.result.metrics.connections_traversed : sim?.result.steps.find(s => s.step === step)?.cumulative_connections) ?? 0
   const stageIndex = ['idle', 'compiling', 'transition', 'propagating', 'settled'].indexOf(phase)
 
+  if (section === 'maze') return <MazeLab data={data} dataError={dataError} onExit={()=>{reset();setSection('explorer')}}/>
+
   return (
     <div className={`app ${cinematic ? 'cinematic' : 'restrained'}`}>
       <header className="masthead">
@@ -88,7 +92,7 @@ export default function App() {
           <svg className="brand-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 17h7l4-11 6 21 4-10h7" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><circle cx="2" cy="17" r="2" fill="currentColor"/><circle cx="30" cy="17" r="2" fill="currentColor"/></svg>
           <span className="wordmark">NEUROPULSE</span><span className="edition">CONNECTOME EXPLORER</span>
         </a>
-        <div className="head-right"><span className="dataset-chip"><span className="live-dot"/> MaleCNS v1.0</span><button className="text-button" onClick={toggleInspector}>What is real? <span>↗</span></button></div>
+        <div className="head-right"><button className="maze-entry" onClick={()=>{reset();setSection('maze')}}>Maze learning ↗</button><span className="dataset-chip"><span className="live-dot"/> MaleCNS v1.0</span><button className="text-button" onClick={toggleInspector}>What is real? <span>↗</span></button></div>
       </header>
 
       <main className="workspace">

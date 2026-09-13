@@ -43,6 +43,7 @@ class PulseEvent(BaseModel):
 
 
 class StepSummary(BaseModel):
+    input_neurons: int = 0
     cumulative_connections: int = 0
     step: int
     newly_activated: int

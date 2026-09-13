@@ -41,24 +41,25 @@ export function ExperienceBreakdown({ experience }: { experience: CompiledExperi
               <div className={`quality q-${c.mapping_quality}`}>
                 {QUALITY_LABEL[c.mapping_quality]} · {c.neuron_count} neurons
               </div>
-              {c.caveat && <p className="mapping-caveat">{c.caveat}</p>}
+              {c.temporal_pattern && <div className="input-timing"><b>{c.temporal_pattern === 'repeated' ? 'Repeated input' : c.temporal_pattern === 'sustained' ? 'Sustained input' : 'Single input'}</b><span>Model steps {c.input_steps?.join(' · ')}</span><details><summary>Timing assumption</summary><p>{c.timing_note}</p></details></div>}{c.caveat && <p className="mapping-caveat">{c.caveat}</p>}
             </div>
           </motion.div>
         ))}
 
         {contextOnly.map((u) => (
-          <div className="item muted" key={u.concept ?? u.text}>
+          <div className="item muted" key={`${u.concept??''}:${u.text}:${u.reason}`}>
             <span className="dot m-internal_state" />
             <div className="item-body">
               <div className="item-head">
                 <span className="modality">{u.reason === 'NO_SENSORY_MATCH' ? 'unmapped' : 'context'}</span>
               </div>
-              <div className="stimulus">{u.label ?? u.text}</div>
+              <div className="stimulus">{u.label ?? u.text}</div>{u.note&&<p className="mapping-caveat">{u.note}</p>}
               <div className="quality q-UNSUPPORTED">{u.reason === 'NEGATED' ? 'Absent · not simulated' : u.reason === 'NO_SENSORY_MATCH' ? 'No supported mapping · not simulated' : 'Recognised · not simulated'}</div>
             </div>
           </div>
         ))}
 
+        {!!experience.components.length && <details className="mapping-caveat"><summary>Why can different sentences highlight the same neurons?</summary><p>The mapper selects real, annotated sensory populations. Two phrases describing the same sensory cue can select the same input cells. Side, intensity and timing can change the calculated response; object identity, exact retinal position and arbitrary scene details are not fully encoded.</p></details>}
         {experience.note && <div className="note">{experience.note}</div>}
       </motion.div>
     </AnimatePresence>

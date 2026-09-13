@@ -19,7 +19,7 @@ fly given this experience would do X.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Literal, Mapping, Sequence
 
 from pydantic import BaseModel, Field
@@ -157,6 +157,12 @@ class ChannelReadout(BaseModel):
 class ModelledResponse(BaseModel):
     """The overall inferred tendency, with its basis fully inspectable."""
 
+    interpretation_kind: Literal["behavioral_marker", "sensory_only", "no_input"] = (
+        "behavioral_marker"
+    )
+    neural_summary: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+    output_evidence: list[dict[str, Any]] = Field(default_factory=list)
     headline: str
     detail: str | None = None
     confidence: EvidenceTier | Literal["NONE"] = "NONE"
@@ -264,9 +270,7 @@ def infer_response(
         f"{'/'.join(BY_KEY[primary.key].marker_types)} activated by step {primary.earliest_step}"
     ]
     if len(engaged) > 1:
-        detail_bits.append(
-            "also engaged: " + ", ".join(r.label.lower() for r in engaged[1:3])
-        )
+        detail_bits.append("also engaged: " + ", ".join(r.label.lower() for r in engaged[1:3]))
 
     return ModelledResponse(
         headline=f"{headline} tendency (modeled)",

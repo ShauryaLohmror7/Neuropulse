@@ -26,6 +26,9 @@ class ExperienceComponent(BaseModel):
     source_clause: str
     evidence: str
     caveat: str | None = None
+    temporal_pattern: Literal["pulse", "repeated", "sustained"] = "pulse"
+    input_steps: list[int] = Field(default_factory=lambda: [0])
+    timing_note: str = "One input pulse at model step 0; model steps are not seconds."
     #: Real neurons this component will stimulate. Filled by the mapper.
     body_ids: list[int] = Field(default_factory=list)
     neuron_count: int = 0

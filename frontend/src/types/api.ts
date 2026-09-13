@@ -11,6 +11,9 @@ export interface ExperienceComponent {
   intensity: number
   confidence: number
   mapping_quality: MappingQuality
+  temporal_pattern?: 'pulse' | 'repeated' | 'sustained'
+  input_steps?: number[]
+  timing_note?: string
   source_clause: string
   evidence: string
   caveat: string | null
@@ -56,6 +59,7 @@ export interface NeuronActivation {
 }
 
 export interface StepSummary {
+  input_neurons?: number
   cumulative_connections: number
   step: number
   newly_activated: number
@@ -102,6 +106,10 @@ export interface ChannelReadout {
 }
 
 export interface ModelledResponse {
+  interpretation_kind?: 'behavioral_marker'|'sensory_only'|'no_input'
+  neural_summary?: string[]
+  limitations?: string[]
+  output_evidence?: {label:string;marker_types:string[];reached:number;available:number;peak:number;engaged:boolean;body_ids:number[]}[]
   headline: string
   detail: string | null
   confidence: EvidenceTier

@@ -124,3 +124,18 @@ Browser verification: default simulation completed with its action readout; cine
 ## Full dataset expansion — 13 September 2026
 
 Replaced the runtime subset with all 166,700 annotated MaleCNS neurons, 25,582,938 connections and 124,177,617 represented synapses. Removed default population/fanout/weak-edge caps, added full-catalogue search and full-graph connection inspection, and rendered all 139,662 supplied soma positions with model-state activity. Source skeletons remain streamed on demand. Every graph edge was compared against the official bulk export; 40 tests and the frontend build passed. Browser verified new-neuron detail, full-model playback and drag behavior. No maze work. See [exact scope and reproduction](FULL_DATASET_REPORT.md).
+
+
+## Pixel maze learning lab
+
+Added five progressively larger mazes, procedural pixel fly/environment, temporary throwable obstacles, visible trials, accelerated Q-learning, separate persisted maze memories, nonlearning evaluation and measured progress charts. The full real brain displays modeled sensory responses to game events; route learning is explicitly a separate controller. Engine tests verify all five agents learn shortest routes after 500 trials and evaluation preserves learned values. No biological-learning claim. See MAZE_LAB.md.
+
+
+### Understandable learning and sensory explanations
+
+Added saved untrained baseline replay, comparable learned tests, dead-end markers and backtrack counters, lifetime completed-attempt totals and 10/50/200-attempt batches. Added What’s happening? with actual controller reasons, recent decisions, source-derived sensory input groups/types and per-step real-neuron counts. The first-maze browser comparison improved from 70 steps/32 backtracks to 12/0 after 50 learning attempts. Four engine tests cover all-maze convergence, replay path validity, retained baselines and lifetime counters.
+
+
+## Sensory interpretation and response repair
+
+Fixed silently dropped approach clauses and single-pulse handling of repeated/ongoing input. Explicit schedules now drive propagation and remain excluded for silenced cells. The approach-plus-sugar example reaches both DNp01 markers under unchanged criteria; repeated lights report the actual visual response with unresolved action. Added real output-marker evidence and input-specific limitations, per-component representative neurons, and class-based plain-language descriptions with body IDs secondary. The untyped gustatory cell 104287023 now explains taste sensing without inventing its tastant preference. 45 backend and six frontend tests pass; production build passes. See RESPONSE_MODEL_AUDIT.md for exact examples and scientific limits.

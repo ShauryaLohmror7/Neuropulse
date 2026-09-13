@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.api.state import CircuitMissingError, get_circuit, get_semantic_index
-from app.experience.mapper import map_to_neurons, seed_drive
+from app.experience.mapper import map_to_neurons, seed_drive, scheduled_drive
 from app.experience.ontology import MODALITY_COLOUR, ONTOLOGY
 from app.experience.parser import compile_experience
 from app.experience.schemas import CompiledExperience
@@ -120,11 +120,21 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
     exp = compile_experience(req.text, index=get_semantic_index())
     map_to_neurons(exp, c.seed_sets, c.node_meta)
     drive, modality = seed_drive(exp)
+    schedule = scheduled_drive(exp)
+    if req.parameters is None and any(c.temporal_pattern != "pulse" for c in exp.components):
+        params = DEFAULT_PARAMETERS.model_copy(update={"steps": 10})
 
     graph = c.graph
     lesion_info: dict[str, Any] | None = None
     if req.lesion:
-        cmp_ = lesion_and_compare(graph, drive, req.lesion, params=params, seed_modalities=modality)
+        cmp_ = lesion_and_compare(
+            graph,
+            drive,
+            req.lesion,
+            params=params,
+            seed_modalities=modality,
+            input_schedule=schedule,
+        )
         result = cmp_.lesioned
         lesion_info = {
             "lesionedBodyIds": cmp_.lesioned_body_ids,
@@ -137,9 +147,14 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
             "normalMetrics": cmp_.normal.metrics.model_dump(),
         }
     else:
-        result = propagate(graph, drive, params=params, seed_modalities=modality)
+        result = propagate(
+            graph, drive, params=params, seed_modalities=modality, input_schedule=schedule
+        )
 
     response = infer_response(result.activations, c.node_meta)
+    from app.simulation.interpretation import explain_result
+
+    response = explain_result(response, exp, result, c.node_meta)
     rendered_activated = sum(1 for a in result.activations if a.body_id in c.rendered_ids)
 
     return SimulationEnvelope(

@@ -82,3 +82,15 @@ def seed_drive(experience: CompiledExperience) -> tuple[dict[int, float], dict[i
                 drive[b] = level
                 modality[b] = comp.modality
     return drive, modality
+
+
+def scheduled_drive(experience: CompiledExperience):
+    """Boundary inputs at explicit model steps; no inferred biological frequency."""
+    schedule: dict[int, dict[int, float]] = {}
+    for component in experience.components:
+        level = float(min(component.intensity * (0.55 + 0.45 * component.confidence), 1.0))
+        for step in component.input_steps:
+            values = schedule.setdefault(step, {})
+            for body_id in component.body_ids:
+                values[body_id] = max(values.get(body_id, 0.0), level)
+    return schedule

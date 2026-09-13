@@ -23,6 +23,10 @@ Open **http://localhost:5173**. Offline flags use the already downloaded semanti
 
 The browser uses `http://127.0.0.1:8000/api` by default. Set `VITE_API_BASE` for another backend. The local CORS configuration permits the frontend on port 5173.
 
+## Pixel maze lab
+
+Open **Maze learning ↗** for five pixel-art mazes, a moving fly, sugar rewards, throwable pebbles, saved route learning and a live event-triggered connectome panel. Train 200 trials, then test the learned route; harder mazes need more practice. The game agent learns separately from the biological model. See [controls, learning rules and scientific scope](docs/MAZE_LAB.md).
+
 ## Explore
 
 - Start in Fly View: the shell is contextual artwork, with real reconstructed CNS geometry registered inside it.
@@ -50,7 +54,7 @@ The browser uses `http://127.0.0.1:8000/api` by default. Set `VITE_API_BASE` for
 | Response | Thresholded readout of annotated output markers and the existing literature registry; an inferred tendency, not observed behavior |
 | Fly body | Procedural contextual shell, not an EM reconstruction or validated biomechanical model |
 
-This is **not a perfect electrophysiological recreation of a living fly**. Inputs are currently injected together; narrative event timing is not reconstructed. Similarity scores are heuristic, not calibrated biological probabilities. Food proximity alone does not establish an odor stimulus. Abstract cognition is not assigned an invented neural pathway.
+This is **not a perfect electrophysiological recreation of a living fly**. Inputs start together; explicit repeated or ongoing cues use disclosed illustrative schedules. Exact narrative timing is not reconstructed. Similarity scores are heuristic, not calibrated biological probabilities. Food proximity alone does not establish an odor stimulus. Abstract cognition is not assigned an invented neural pathway.
 
 The response registry's evidence tiers describe the supporting marker literature, not probabilities that a real fly will act. Anatomical lateral activation is reported in the raw readout but is not converted to a behavioral turn direction. Subthreshold output activity does not establish a response.
 
