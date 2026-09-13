@@ -128,7 +128,7 @@ Replaced the runtime subset with all 166,700 annotated MaleCNS neurons, 25,582,9
 
 ## Pixel maze learning lab
 
-Added five progressively larger mazes, procedural pixel fly/environment, temporary throwable obstacles, visible trials, accelerated Q-learning, separate persisted maze memories, nonlearning evaluation and measured progress charts. The full real brain displays modeled sensory responses to game events; route learning is explicitly a separate controller. Engine tests verify all five agents learn shortest routes after 500 trials and evaluation preserves learned values. No biological-learning claim. See MAZE_LAB.md.
+Added five progressively larger mazes, procedural pixel fly/environment, temporary throwable obstacles, visible trials, accelerated Q-learning, separate persisted maze memories, nonlearning evaluation and measured progress charts. The full real brain displays modeled sensory responses to game events; route learning is explicitly a separate controller. Engine tests verify all five agents learn shortest routes after 500 trials and evaluation preserves learned values. No biological-learning claim. The maze was subsequently removed; see the removal entry below.
 
 
 ### Understandable learning and sensory explanations
@@ -139,3 +139,17 @@ Added saved untrained baseline replay, comparable learned tests, dead-end marker
 ## Sensory interpretation and response repair
 
 Fixed silently dropped approach clauses and single-pulse handling of repeated/ongoing input. Explicit schedules now drive propagation and remain excluded for silenced cells. The approach-plus-sugar example reaches both DNp01 markers under unchanged criteria; repeated lights report the actual visual response with unresolved action. Added real output-marker evidence and input-specific limitations, per-component representative neurons, and class-based plain-language descriptions with body IDs secondary. The untyped gustatory cell 104287023 now explains taste sensing without inventing its tastant preference. 45 backend and six frontend tests pass; production build passes. See RESPONSE_MODEL_AUDIT.md for exact examples and scientific limits.
+
+
+## Grooming decoder and activity visibility
+
+Added a research-linked antennal-grooming readout for matching MaleCNS DNg62/DNge011/DNge012/DNge078 types. Single touch reaches six of eight monitored cells below the action threshold; repeated touch meets the unchanged criterion. Silencing the reached markers removes engagement. Partial output activity now identifies the responding action circuit without pretending its movement is confirmed. No-input runs skip playback and remove fake completion/chart/replay. Added source-position soma halos, modality colors, a display-only contrast curve and visibility slider. Browser verified repeated-touch output, active rendering and unsupported-input behavior without runtime errors; production build, 46 backend tests and six frontend tests pass. Large-bundle and existing Three.js mutation lint warnings remain. The maze still uses Q-learning; biological-learning replacement is explicitly unfinished (BIOLOGICAL_LEARNING_STATUS.md).
+
+## First situation-interpretation layer
+
+Added bounded rain, capture and social-encounter decomposition, with original text, explicit assumptions, approximate input quality and missing context surfaced in the UI and result evidence. Social approach maps to visible motion, not automatic escape or direct mating activation. Enclosures and shelter avoid invented contact. Recognized scenes with no defensible input now ask a specific sensory-context question. 51 backend tests and production build pass. This is not a general biological predictor or a connectome-learning maze replacement; see SCENE_INTERPRETATION.md.
+
+
+## Maze removed
+
+Removed the maze entry point, five-maze interface, pixel renderer, Q-learning engine, decision explanations, styles, maze tests and user guide at the project owner’s request. The explorer is now the only product flow. Earlier maze entries above are historical, not current capabilities. Existing connectome data and sensory simulation remain intact.

@@ -45,6 +45,19 @@ class ResponseChannel:
 
 CHANNELS: tuple[ResponseChannel, ...] = (
     ResponseChannel(
+        key="antennal_grooming",
+        label="Antennal grooming",
+        marker_types=("DNg62", "DNge011", "DNge012", "DNge078"),
+        evidence_tier="MODERATE",
+        evidence=(
+            "These types are documented antennal-grooming descending neurons in "
+            "Distributed control circuits across a brain-and-cord connectome, Nature 2026 "
+            "(https://www.nature.com/articles/s41586-026-10735-w, grooming cluster). "
+            "Matching MaleCNS type annotations provide a cross-dataset functional hypothesis, "
+            "not validation of this model's response to a natural touch."
+        ),
+    ),
+    ResponseChannel(
         key="escape_takeoff",
         label="Escape takeoff",
         marker_types=("DNp01",),
@@ -157,9 +170,9 @@ class ChannelReadout(BaseModel):
 class ModelledResponse(BaseModel):
     """The overall inferred tendency, with its basis fully inspectable."""
 
-    interpretation_kind: Literal["behavioral_marker", "sensory_only", "no_input"] = (
-        "behavioral_marker"
-    )
+    interpretation_kind: Literal[
+        "behavioral_marker", "partial_marker", "sensory_only", "no_input"
+    ] = "behavioral_marker"
     neural_summary: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
     output_evidence: list[dict[str, Any]] = Field(default_factory=list)

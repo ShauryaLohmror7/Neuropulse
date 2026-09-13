@@ -15,6 +15,8 @@ export type Phase = 'idle' | 'compiling' | 'transition' | 'propagating' | 'settl
 
 interface State {
   cinematic:boolean
+  activityGain:number
+  setActivityGain:(gain:number)=>void
   toggleCinematic:()=>void
   detail: FullNeuron | null
   detailStatus: 'idle' | 'loading' | 'ready' | 'error'
@@ -55,6 +57,7 @@ interface State {
 
 export const useStore = create<State>((set) => ({
   cinematic:true, toggleCinematic:()=>set(s=>({cinematic:!s.cinematic})),
+  activityGain:2, setActivityGain:(activityGain)=>set({activityGain:Math.max(.5,Math.min(4,activityGain))}),
   detail:null, detailStatus:'idle', detailError:null, detailRetry:0, isolateNeuron:false,
   setDetail:(detail,detailStatus,detailError)=>set({detail,detailStatus,detailError}),
   retryDetail:()=>set(s=>({detailRetry:s.detailRetry+1})),

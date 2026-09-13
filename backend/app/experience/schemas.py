@@ -52,6 +52,7 @@ class CompiledExperience(BaseModel):
     parser: str = Field(description="Which semantic backend produced this.")
     clauses: list[str] = Field(default_factory=list)
     note: str | None = None
+    scene_interpretations: list[dict[str, str]] = Field(default_factory=list)
 
     @property
     def modalities(self) -> list[str]:

@@ -20,6 +20,9 @@ def explain_result(response, experience, result, node_meta):
             f"The full-graph model reached {downstream:,} additional neurons downstream, traversing {result.metrics.connections_traversed:,} connections."
         )
     response.neural_summary = summaries
+    response.neural_summary = [
+        f"Scene assumption — {scene['assumptions']}" for scene in experience.scene_interpretations
+    ] + summaries
     response.output_evidence = [
         {
             "label": c.label,
@@ -55,6 +58,11 @@ def explain_result(response, experience, result, node_meta):
         if not summaries:
             response.headline = "No supported sensory input was simulated"
             response.detail = "The sentence did not resolve to a supported input population. The unhandled clauses are shown below."
+            if experience.scene_interpretations:
+                response.headline = "Situation recognized · sensory details needed"
+                response.detail = " ".join(
+                    scene["question"] for scene in experience.scene_interpretations
+                )
         else:
             modes = {c.modality for c in experience.components}
             if "visual_looming" in keys and "gustation" in modes:
@@ -71,4 +79,16 @@ def explain_result(response, experience, result, node_meta):
                 )
             reached = sum(c.neurons_activated for c in response.channels)
             response.detail = f"{len(result.activations):,} neurons responded in the model. {reached} monitored output markers crossed the activity threshold, but no behavior channel met the engagement criteria. The action is unresolved—not a prediction that the fly does nothing."
+            partial = [c for c in response.channels if c.neurons_activated]
+            if partial:
+                strongest = max(partial, key=lambda c: c.peak_activation)
+                response.interpretation_kind = "partial_marker"
+                response.headline = f"{strongest.label} circuit responded"
+                response.detail = (
+                    f"{strongest.neurons_activated}/{strongest.neurons_in_circuit} monitored "
+                    f"{strongest.label.lower()} neurons responded, with peak model activity "
+                    f"{strongest.peak_activation:.3f}. This identifies a possible action pathway; "
+                    "its response remains below this model's action criteria. It does not establish "
+                    "that the movement occurred, or that the fly would do nothing."
+                )
     return response

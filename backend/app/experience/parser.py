@@ -24,6 +24,7 @@ from dataclasses import dataclass
 
 from app.experience.embeddings import SemanticIndex, get_index
 from app.experience.ontology import BY_KEY, StimulusConcept
+from app.experience.scenes import interpret_scene
 from app.experience.schemas import (
     CompiledExperience,
     Direction,
@@ -139,8 +140,38 @@ def compile_experience(
     components: dict[str, ExperienceComponent] = {}
     unmapped: list[UnmappedContent] = []
     seen_unsupported: set[str] = set()
+    scene_interpretations = []
+    interpreted_clauses = []
+    for original in clauses:
+        plan = interpret_scene(original)
+        if plan:
+            question = {
+                "Social encounter": "Does the fly see the other fly moving, hear a courtship song, or make physical contact?",
+                "Rain around the fly": "Do the droplets actually hit the fly, or is it sheltered from the rain?",
+                "Capture or restraint": "Is the fly physically held or touching something, or simply enclosed in a container?",
+            }[plan.label]
+            scene_interpretations.append(
+                {
+                    "label": plan.label,
+                    "original": original,
+                    "assumptions": plan.assumptions,
+                    "missing": plan.missing,
+                    "question": question,
+                }
+            )
+            interpreted_clauses.extend((original, cue, plan.assumptions) for cue in plan.cues)
+            unmapped.append(
+                UnmappedContent(
+                    text=original,
+                    reason="SCENE_CONTEXT_NOT_SIMULATED",
+                    label=plan.label,
+                    note=plan.missing,
+                )
+            )
+        else:
+            interpreted_clauses.append((original, original, None))
 
-    for clause in clauses:
+    for original, clause, scene_assumption in interpreted_clauses:
         ranked = idx.rank(clause)
         approach_cue = bool(
             re.search(r"\b(approach(?:es|ing)?|approaching|comes? closer)\b", clause, re.I)
@@ -223,9 +254,11 @@ def compile_experience(
                 accepted += 1
                 continue
 
-            direction = extract_direction(clause) if concept.population.lateralised else None
-            intensity = extract_intensity(clause)
+            direction = extract_direction(original) if concept.population.lateralised else None
+            intensity = extract_intensity(original)
             confidence = round(_calibrate(score, accept_floor), 3)
+            if scene_assumption:
+                confidence = min(confidence, 0.6)
 
             existing = components.get(key)
             if existing and existing.confidence >= confidence:
@@ -260,6 +293,9 @@ def compile_experience(
             }[pattern]
             caveat = concept.caveat
             quality = concept.mapping_quality
+            if scene_assumption:
+                quality = "APPROXIMATE_MAPPING"
+                caveat = " ".join(x for x in [scene_assumption, caveat] if x)
             if approach_cue and key == "visual_looming":
                 quality = "APPROXIMATE_MAPPING"
                 caveat = "Approach is interpreted as an expanding visual image. Object identity, number, size and speed are not resolved; two approaching flies are not encoded as two separate objects."
@@ -274,7 +310,7 @@ def compile_experience(
                 temporal_pattern=pattern,
                 input_steps=timing[0],
                 timing_note=timing[1],
-                source_clause=clause,
+                source_clause=original,
                 evidence=concept.evidence,
                 caveat=caveat,
             )
@@ -303,6 +339,7 @@ def compile_experience(
         parser=idx.name,
         clauses=clauses,
         note=note,
+        scene_interpretations=scene_interpretations,
     )
 
 

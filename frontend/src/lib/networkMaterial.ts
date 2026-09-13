@@ -91,7 +91,8 @@ void main() {
 
   float ignition = vState.r;
   if (ignition >= 0.0 && uTime >= ignition) {
-    float activation = vState.g;
+    // Display-only contrast curve: zero remains zero; model values are untouched.
+    float activation = sqrt(max(vState.g, 0.0));
     int   mi = int(vState.b + 0.5);
     float sign = vState.a;
 

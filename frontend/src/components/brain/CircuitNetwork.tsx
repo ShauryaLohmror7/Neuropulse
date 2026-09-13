@@ -77,7 +77,7 @@ export function CircuitNetwork({ circuit, opacity = 1, clipZ = 1e6 }: Props) {
     u.uSummary.value = summary || reducedMotion ? 1 : 0
     u.uCinematic.value = useStore.getState().cinematic ? 1 : 0
     u.uTime.value = clock.elapsedTime
-    u.uGain.value = opacity
+    u.uGain.value = opacity * useStore.getState().activityGain
 
     // While a cascade runs, fade the quiet network back so the active pathway
     // is legible. Eased, never snapped.

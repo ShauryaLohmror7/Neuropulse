@@ -22,6 +22,7 @@ export function ExperienceBreakdown({ experience }: { experience: CompiledExperi
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="label">Experience decomposition</div>
+        {!!experience.scene_interpretations?.length && <section className="scene-reading" aria-label="How this situation was interpreted"><h4>How I interpreted the situation</h4>{experience.scene_interpretations.map((scene,i)=><div key={`${scene.label}:${i}`}><b>{scene.label}</b><p>{scene.assumptions}</p><details><summary>What still needs context</summary><p>{scene.missing}</p></details></div>)}<small>Disclosed scenario assumptions · not measured sensory input</small></section>}
 
         {experience.components.map((c, i) => (
           <motion.div

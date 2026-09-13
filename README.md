@@ -23,10 +23,6 @@ Open **http://localhost:5173**. Offline flags use the already downloaded semanti
 
 The browser uses `http://127.0.0.1:8000/api` by default. Set `VITE_API_BASE` for another backend. The local CORS configuration permits the frontend on port 5173.
 
-## Pixel maze lab
-
-Open **Maze learning ↗** for five pixel-art mazes, a moving fly, sugar rewards, throwable pebbles, saved route learning and a live event-triggered connectome panel. Train 200 trials, then test the learned route; harder mazes need more practice. The game agent learns separately from the biological model. See [controls, learning rules and scientific scope](docs/MAZE_LAB.md).
-
 ## Explore
 
 - Start in Fly View: the shell is contextual artwork, with real reconstructed CNS geometry registered inside it.

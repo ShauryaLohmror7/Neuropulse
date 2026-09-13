@@ -730,3 +730,15 @@ button, textarea, input { font:inherit; } button { cursor:pointer; } button:focu
 @media(max-width:800px) { .neural-ambience { height:290px; }.aurora-backdrop { bottom:auto;height:56dvh; }.aurora-backdrop i { filter:blur(35px); }.cinematic .intro { padding-top:0; } }
 @media(prefers-reduced-motion:reduce) { .aurora-backdrop i,.border-beam i { animation:none; } }
 .input-timing{font:10px var(--mono);margin:10px 0;color:#a2cdc7;display:flex;flex-direction:column;gap:5px}.input-timing span{color:#809fa3}.input-timing summary{cursor:pointer;font-size:9px}.input-timing p{font:10px/1.7 var(--font)}.response-evidence{margin-top:16px;border-top:1px solid #ffffff14;padding-top:12px}.response-evidence h4,.response-evidence summary{font-size:11px;color:#c2dfd2;font-weight:500;margin:0 0 9px}.response-evidence summary{cursor:pointer}.response-evidence p{font-size:11px;line-height:1.65;color:#9eb7b6}.output-channel{display:flex;flex-direction:column;gap:5px;margin:12px 0;padding:9px;border-radius:5px;background:#0c191d}.output-channel b{font-size:11px;font-weight:500}.output-channel span,.output-channel small{font-size:10px;color:#a0b9b7}.detail-card h3{overflow-wrap:anywhere;font-size:clamp(22px,2.5vw,36px)}.detail-card h3 span{flex-shrink:0}.key-neuron-row{flex-wrap:wrap}
+
+.activity-exposure {position:absolute;left:30px;bottom:65px;z-index:6;width:230px;padding:12px 15px;border:1px solid #75e7d333;border-radius:12px;background:#0b1923dd;backdrop-filter:blur(16px)}
+.activity-exposure label {display:flex;justify-content:space-between;font:9px var(--mono);letter-spacing:1.5px;color:#a1dcd4}
+.activity-exposure input {width:100%;accent-color:#74f4d3;margin:10px 0 5px;cursor:pointer}
+.activity-exposure small {font-size:9px;color:#8dabae}
+@media(max-width:700px){.activity-exposure{left:12px;bottom:54px;width:180px;padding:9px}.activity-exposure small{font-size:8px}}
+.scene-reading {margin:16px 0;padding:16px;border:1px solid #91baff44;border-radius:12px;background:linear-gradient(135deg,#1c304288,#12232788)}
+.scene-reading h4 {margin:0 0 14px;color:#b9d7ff;font-size:14px;font-weight:500}
+.scene-reading b {font-size:13px;color:#ddf4ef;font-weight:500}
+.scene-reading p {font-size:12px;line-height:1.7;color:#afc4c9;margin:8px 0 12px}
+.scene-reading summary {font-size:11px;color:#9ccedb;cursor:pointer}
+.scene-reading small {display:block;margin-top:14px;font-size:10px;color:#849fab}

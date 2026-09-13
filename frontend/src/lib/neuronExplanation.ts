@@ -34,6 +34,9 @@ export function neuronDisplayName(node:CircuitNode):string {
 /** Curated type-level explanations; never manufacture a function from a body ID. */
 export function explainNeuron(node:CircuitNode, sim:SimulationEnvelope|null):Explanation {
   let profile=node.type ? profiles[node.type] : undefined
+  if(node.type && ['DNg62','DNge011','DNge012','DNge078'].includes(node.type)) {
+    profile={title:'A link to antenna-cleaning movements',text:'Published work associates this descending neuron type with antennal grooming: movements used to clean the antennae. Descending neurons carry signals toward movement circuits in the nerve cord. This cell’s glow shows the modeled response; it does not prove that a complete grooming movement occurred.',source:'https://www.nature.com/articles/s41586-026-10735-w'}
+  }
   if(node.type && /^T[45][a-d]$/.test(node.type)) {
     const on=node.type.startsWith('T4')
     profile={title:'A detector of visual motion',text:`This neuron belongs to the ${on ? 'T4' : 'T5'} family, which helps detect the direction of moving ${on ? 'bright' : 'dark'} features. Different subtypes prefer different directions. The current simulation uses a broad motion input, rather than reproducing each cell’s visual receptive field.`,source:MOTION}

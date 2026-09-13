@@ -31,7 +31,7 @@ def test_repeated_lights_have_explicit_timing_and_do_not_invent_action():
     assert result.response.interpretation_kind == "sensory_only"
     assert result.response.headline == "Repeated visual response"
     assert result.response.confidence == "NONE"
-    assert len(result.response.output_evidence) == 7
+    assert len(result.response.output_evidence) == 8
     assert any("ON/OFF" in note for note in result.response.limitations)
 
 
@@ -67,3 +67,26 @@ def test_silenced_inputs_cannot_be_reinjected_by_a_schedule():
     graph = ConnectomeGraph.from_edges([(1, 2, 1), (2, 3, 1)])
     result = lesion_and_compare(graph, {1: 0.8}, [1], input_schedule={0: {1: 0.8}, 2: {1: 0.8}})
     assert not result.lesioned.activations
+
+
+def test_touch_reads_real_grooming_markers_without_forcing_an_action():
+    from app.api.routes import SimulateRequest, simulate
+
+    single = simulate(SimulateRequest(text="something touches its antenna"))
+    repeated = simulate(SimulateRequest(text="something repeatedly touches its antenna"))
+    channel = next(c for c in single.response.channels if c.key == "antennal_grooming")
+    assert set(channel.body_ids) == {10587, 12894, 14537, 15653, 36541, 524190}
+    assert 0 < channel.peak_activation < 0.09
+    assert single.response.interpretation_kind == "partial_marker"
+    assert single.response.confidence == "NONE"
+    assert single.response.headline == "Antennal grooming circuit responded"
+    assert repeated.response.headline == "Antennal grooming tendency (modeled)"
+    assert repeated.response.confidence == "MODERATE"
+    silenced = simulate(
+        SimulateRequest(text="something repeatedly touches its antenna", lesion=channel.body_ids)
+    )
+    missing = next(c for c in silenced.response.channels if c.key == "antennal_grooming")
+    assert missing.neurons_activated == 0
+    assert not next(
+        c for c in silenced.response.output_evidence if c["label"] == "Antennal grooming"
+    )["engaged"]

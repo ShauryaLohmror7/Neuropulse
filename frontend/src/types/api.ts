@@ -31,6 +31,7 @@ export interface UnmappedContent {
 }
 
 export interface CompiledExperience {
+  scene_interpretations?: {label:string;original:string;assumptions:string;missing:string}[]
   raw_text: string
   components: ExperienceComponent[]
   unmapped: UnmappedContent[]
@@ -106,7 +107,7 @@ export interface ChannelReadout {
 }
 
 export interface ModelledResponse {
-  interpretation_kind?: 'behavioral_marker'|'sensory_only'|'no_input'
+  interpretation_kind?: 'behavioral_marker'|'partial_marker'|'sensory_only'|'no_input'
   neural_summary?: string[]
   limitations?: string[]
   output_evidence?: {label:string;marker_types:string[];reached:number;available:number;peak:number;engaged:boolean;body_ids:number[]}[]
