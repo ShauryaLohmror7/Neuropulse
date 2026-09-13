@@ -10,7 +10,7 @@ import * as THREE from 'three'
  * `uWaveSpeed` scene-units/second. Every fragment knows its own cable distance
  * from the root (`aGeodesic`), so the bright band physically sweeps along the
  * real morphology and arrives at distal branches later than proximal ones —
- * the same ordering a signal would follow through the arbor.
+ * an illustrative root-distance order, not measured electrophysiology.
  */
 
 export const NEURON_VERT = /* glsl */ `
@@ -34,6 +34,8 @@ void main() {
 export const NEURON_FRAG = /* glsl */ `
 precision highp float;
 
+uniform float uCinematic;
+uniform float uSummary; // static peak-activity summary, no repeated firing
 uniform float uTime;
 uniform float uIgnition;      // time the wavefront entered this neuron (<0 = resting)
 uniform float uActivation;    // modelled activation level, 0..1
@@ -62,7 +64,7 @@ void main() {
   vec3  color = uBaseColor;
   float alpha = uBaseOpacity * (0.55 + 0.45 * calibre);
 
-  if (uIgnition >= 0.0) {
+  if (uIgnition >= 0.0 && uTime >= uIgnition) {
     float elapsed = max(uTime - uIgnition, 0.0);
     float front = elapsed * uWaveSpeed;
     float d = vGeo - front;
@@ -75,13 +77,19 @@ void main() {
     float sinceArrival = max(elapsed - vGeo / max(uWaveSpeed, 0.0001), 0.0);
     float sustain = arrived * uActivation * exp(-sinceArrival * 0.55);
 
-    float energy = clamp(sustain + pulse * 1.35, 0.0, 2.2);
+    float energy = clamp(uActivation * 0.4 + sustain + pulse * uActivation * 1.35, 0.0, 2.2);
+    if (uSummary > 0.5) energy = uActivation;
 
     // Inhibitory signal is rendered cooler and dimmer rather than "bright".
     vec3 activeCol = uSign < 0.0 ? uActiveColor * vec3(0.55, 0.72, 1.0) : uActiveColor;
 
     color = mix(uBaseColor, activeCol, clamp(energy, 0.0, 1.0));
     color += activeCol * max(energy - 1.0, 0.0) * 1.6;
+    float coreWidth = max(uWaveWidth * 0.24, 0.001);
+    float core = exp(-(d*d)/(2.0*coreWidth*coreWidth));
+    float flare = core * uActivation * uCinematic * 3.0;
+    if (uSummary > 0.5) flare = uActivation * uCinematic * 0.35;
+    color += mix(activeCol, vec3(0.82, 0.98, 1.0), 0.55) * flare;
     alpha = clamp(alpha + energy * 0.75, 0.0, 1.0);
   }
 
@@ -103,6 +111,8 @@ export interface NeuronUniformOptions {
 
 export function makeNeuronUniforms(opts: NeuronUniformOptions = {}) {
   return {
+    uCinematic: { value: 1 },
+    uSummary: { value: 0 },
     uTime: { value: 0 },
     uIgnition: { value: -1 },
     uActivation: { value: 0 },

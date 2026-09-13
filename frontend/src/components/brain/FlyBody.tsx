@@ -1,207 +1,182 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { makeAnatomyMaterial } from '../../lib/anatomyMaterial'
-import { useStore } from '../../lib/store'
+import {
+  abdomenGeometry,
+  antennaGeometry,
+  buildLeg,
+  eyeGeometry,
+  headGeometry,
+  segmentGeometry,
+  thoraxGeometry,
+  wingGeometry,
+  wingVeins,
+} from '../../lib/flyGeometry'
+import { makeBodyMaterial, makeEyeMaterial } from '../../lib/bodyMaterial'
+
 
 /**
  * SCHEMATIC FLY BODY — CONTEXTUAL ANATOMY, NOT CONNECTOME DATA.
  *
- * This shell is generated procedurally. It is *not* derived from MaleCNS and
- * carries no reconstructed structure; it exists only so a viewer can see where
- * the real nervous system sits inside the animal. It is deliberately drawn as a
- * faint glass volume so it never reads as measured data.
+ * Generated procedurally; nothing here is reconstructed from MaleCNS. It exists
+ * so a viewer can see where the real nervous system sits inside the animal, and
+ * is drawn as dark glass so it never reads as measured data.
  *
- * What *is* faithful is the scale. Dimensions follow published adult
- * Drosophila melanogaster morphometrics (~2.5 mm body, ~0.8 mm head width), and
- * the shell is positioned in the dataset's own coordinate frame, so the real
- * brain lands inside the head and the real ventral nerve cord inside the thorax
- * at their true relative sizes.
+ * The *scale and placement* are faithful: dimensions follow adult Drosophila
+ * melanogaster morphometrics (~2.5 mm body), and the shell is positioned in the
+ * dataset's own frame, so the real brain lands inside the head and the real
+ * ventral nerve cord inside the thorax at true relative size.
  *
- * Dataset axes (MaleCNS): +X = the fly's left, -Y = dorsal, -Z = anterior.
- * The scene applies a pi rotation about X, so here +Y is up and +Z is forward.
+ * Authored in screen frame (+Y up, +Z toward the head, +X the fly's left), so
+ * this component must NOT be nested inside the scene's dataset-axis rotation.
  */
 
-interface Part {
-  key: string
-  geometry: THREE.BufferGeometry
-  position: [number, number, number]
-  rotation?: [number, number, number]
-  tint: string
-  strength: number
-}
-
-const SHELL = '#66707f'
-const EYE = '#7a5766'
-
-function ellipsoid(rx: number, ry: number, rz: number, seg = 32): THREE.BufferGeometry {
-  const g = new THREE.SphereGeometry(1, seg, Math.max(12, seg / 2))
-  g.scale(rx, ry, rz)
-  return g
-}
-
-function buildParts(): Part[] {
-  const parts: Part[] = []
-
-  // --- head: must enclose the real brain (x +/-339, y -122..257, z 236..495 um)
-  parts.push({
-    key: 'head',
-    geometry: ellipsoid(400, 320, 250, 44),
-    position: [0, 66, 366],
-    tint: SHELL,
-    strength: 1,
-  })
-
-  // --- compound eyes, lateral on the head
-  for (const side of [1, -1]) {
-    parts.push({
-      key: `eye${side}`,
-      geometry: ellipsoid(170, 250, 200, 30),
-      position: [side * 290, 70, 360],
-      tint: EYE,
-      strength: 1.5,
-    })
-  }
-
-  // --- antennae, projecting anteriorly (where olfactory and JO input enters)
-  for (const side of [1, -1]) {
-    parts.push({
-      key: `antenna${side}`,
-      geometry: ellipsoid(48, 60, 130, 18),
-      position: [side * 105, -40, 560],
-      rotation: [0.32, 0, 0],
-      tint: SHELL,
-      strength: 1.25,
-    })
-  }
-
-  // --- proboscis, ventral-anterior (labellar taste)
-  parts.push({
-    key: 'proboscis',
-    geometry: ellipsoid(90, 130, 90, 20),
-    position: [0, -180, 430],
-    tint: SHELL,
-    strength: 1.1,
-  })
-
-  // --- thorax: must enclose the real VNC (x +/-145, y -257..-31, z -495..49)
-  parts.push({
-    key: 'thorax',
-    geometry: ellipsoid(450, 400, 520, 44),
-    position: [0, -150, -230],
-    tint: SHELL,
-    strength: 0.95,
-  })
-
-  // --- abdomen, tapering posteriorly
-  parts.push({
-    key: 'abdomen',
-    geometry: ellipsoid(360, 330, 620, 40),
-    position: [0, -210, -1050],
-    tint: SHELL,
-    strength: 0.85,
-  })
-
-  // --- wings, hinged dorsally on the thorax and swept back
-  for (const side of [1, -1]) {
-    const g = ellipsoid(300, 14, 900, 26)
-    parts.push({
-      key: `wing${side}`,
-      geometry: g,
-      position: [side * 330, 120, -900],
-      rotation: [0.05, side * -0.16, side * 0.12],
-      tint: SHELL,
-      strength: 0.6,
-    })
-  }
-
-  // --- legs: three pairs from the ventral thorax, one per VNC leg neuropil
-  const legZ = [140, -190, -520]
-  legZ.forEach((z, i) => {
-    for (const side of [1, -1]) {
-      const spread = 0.55 + i * 0.16
-      const g = ellipsoid(26, 26, 430, 12)
-      parts.push({
-        key: `leg${i}${side}`,
-        geometry: g,
-        position: [side * 330, -430, z - 170],
-        rotation: [1.05 - i * 0.18, side * spread, 0],
-        tint: SHELL,
-        strength: 0.75,
-      })
-      const t = ellipsoid(18, 18, 330, 10)
-      parts.push({
-        key: `tarsus${i}${side}`,
-        geometry: t,
-        position: [side * 520, -760, z - 400],
-        rotation: [0.55 - i * 0.1, side * spread, 0],
-        tint: SHELL,
-        strength: 0.65,
-      })
-    }
-  })
-
-  return parts
-}
+// Anchors chosen so the real neuropils sit where they belong:
+// brain occupies x +/-339, y -122..257, z 236..495; VNC x +/-145, y -257..-31, z -495..49.
+const HEAD = new THREE.Vector3(0, 78, 352)
+const THORAX = new THREE.Vector3(0, -150, -250)
+const ABDOMEN = new THREE.Vector3(0, -205, -1180)
 
 export function FlyBody({ opacity = 1 }: { opacity?: number }) {
-  const parts = useMemo(buildParts, [])
-  const materials = useMemo(() => {
-    const map = new Map<string, THREE.ShaderMaterial>()
-    for (const p of parts) {
-      const m = makeAnatomyMaterial(p.tint, p.strength)
-      m.uniforms.uOpacity.value = 0.085
-      m.uniforms.uFresnel.value = 2.6
-      map.set(p.key, m)
+  const geo = useMemo(
+    () => ({
+      head: headGeometry(),
+      eye: eyeGeometry(),
+      thorax: thoraxGeometry(),
+      abdomen: abdomenGeometry(),
+      wing: wingGeometry(),
+      veins: wingVeins(),
+      antenna: antennaGeometry(),
+    }),
+    [],
+  )
+
+  const mat = useMemo(
+    () => ({
+      shell: makeBodyMaterial({ opacity: 0.10, rimStrength: 0.5, rimPower: 2.5 }),
+      thorax: makeBodyMaterial({ opacity: 0.24, rimStrength: 1.05, rimPower: 2.3 }),
+      abdomen: makeBodyMaterial({ opacity: 0.22, rimStrength: 0.95, rimPower: 2.1 }),
+      limb: makeBodyMaterial({ opacity: 0.5, rimStrength: 1.4, rimPower: 1.7 }),
+      wing: makeBodyMaterial({
+        color: '#0b0e14', rim: '#93a8c8', opacity: 0.21, rimStrength: 0.7, rimPower: 3.4,
+      }),
+      eye: makeEyeMaterial(),
+    }),
+    [],
+  )
+
+  const veinMat = useMemo(
+    () =>
+      new THREE.LineBasicMaterial({
+        color: '#7d90ad', transparent: true, opacity: 0.16, depthWrite: false,
+      }),
+    [],
+  )
+
+  // Six legs, each a jointed chain hanging off the ventral thorax.
+  const legs = useMemo(() => {
+    const out: { key: string; seg: ReturnType<typeof buildLeg>[number] }[] = []
+    const origins: [number, number, number][] = [
+      [188, -300, 92],
+      [214, -326, -232],
+      [200, -318, -536],
+    ]
+    origins.forEach((o, pair) => {
+      for (const side of [1, -1]) {
+        const segs = buildLeg([o[0] * side, o[1], o[2]], side, pair as 0 | 1 | 2)
+        segs.forEach((seg, i) => out.push({ key: `leg-${pair}-${side}-${i}`, seg }))
+      }
+    })
+    return out
+  }, [])
+
+  const segGeoms = useMemo(() => {
+    const cache = new Map<string, THREE.BufferGeometry>()
+    for (const l of legs) {
+      const k = `${l.seg.rTop}|${l.seg.rBottom}|${l.seg.length}`
+      if (!cache.has(k)) cache.set(k, segmentGeometry(l.seg.rTop, l.seg.rBottom, l.seg.length))
     }
-    return map
-  }, [parts])
+    return cache
+  }, [legs])
 
   const group = useRef<THREE.Group>(null)
-  const sim = useStore((s) => s.sim)
-  const phase = useStore((s) => s.phase)
-
-  // Modelled response cue: a small yaw away from the threatened side. Kept
-  // deliberately slight — it visualises the model's lateral bias, and must not
-  // suggest a measured behaviour.
-  const targetYaw = useMemo(() => {
-    if (!sim || phase !== 'settled') return 0
-    const r = sim.response
-    if (!r.direction || r.confidence === 'NONE') return 0
-    const escaping = r.channels.some(
-      (c) => c.key.startsWith('escape') && c.neurons_activated > 0,
-    )
-    if (!escaping) return 0
-    // Stimulus on the fly's left -> turn toward its right.
-    return r.direction === 'left' ? -0.22 : 0.22
-  }, [sim, phase])
-
-  useFrame((_, dt) => {
-    if (!group.current) return
-    const k = 1 - Math.pow(0.001, dt)
-    group.current.rotation.y += (targetYaw - group.current.rotation.y) * k * 0.55
-    for (const m of materials.values()) m.uniforms.uStrength.value ||= 1
-  })
-
+  // Keep contextual body and real CNS rigidly registered. No unsupported motor pose.
   useFrame(() => {
-    for (const p of parts) {
-      const m = materials.get(p.key)
-      if (m) m.uniforms.uOpacity.value = 0.085 * opacity
-    }
+    for (const m of Object.values(mat)) m.uniforms.uFade.value = opacity
+    veinMat.opacity = 0.38 * opacity
   })
 
-  if (opacity <= 0.001) return null
+  useEffect(
+    () => () => {
+      for (const g of Object.values(geo)) g.dispose()
+      for (const m of Object.values(mat)) m.dispose()
+      for (const g of segGeoms.values()) g.dispose()
+      veinMat.dispose()
+    },
+    [geo, mat, segGeoms, veinMat],
+  )
+
+  if (opacity <= 0.004) return null
 
   return (
-    <group ref={group}>
-      {parts.map((p) => (
+    <group ref={group} renderOrder={0}>
+      {/* --- head + compound eyes --- */}
+      <mesh geometry={geo.head} material={mat.shell} position={HEAD} />
+      {[1, -1].map((s) => (
         <mesh
-          key={p.key}
-          geometry={p.geometry}
-          material={materials.get(p.key)!}
-          position={p.position}
-          rotation={p.rotation}
-          renderOrder={0}
+          key={`eye${s}`}
+          geometry={geo.eye}
+          material={mat.eye}
+          position={[HEAD.x + s * 262, HEAD.y + 18, HEAD.z + 12]}
+          rotation={[0, 0, s > 0 ? -0.22 : Math.PI + 0.22]}
+          scale={[s, 1, 1]}
+        />
+      ))}
+
+      {/* --- antennae, where olfactory and Johnston's-organ input enters --- */}
+      {[1, -1].map((s) => (
+        <mesh
+          key={`ant${s}`}
+          geometry={geo.antenna}
+          material={mat.limb}
+          position={[s * 96, HEAD.y - 132, HEAD.z + 236]}
+          rotation={[0.4, 0, 0]}
+        />
+      ))}
+
+      {/* --- proboscis (labellar taste) --- */}
+      <mesh
+        geometry={geo.antenna}
+        material={mat.limb}
+        position={[0, HEAD.y - 266, HEAD.z + 66]}
+        scale={[1.5, 2.1, 1.4]}
+      />
+
+      {/* --- thorax and abdomen --- */}
+      <mesh geometry={geo.thorax} material={mat.thorax} position={THORAX} />
+      <mesh geometry={geo.abdomen} material={mat.abdomen} position={ABDOMEN} rotation={[0.06, 0, 0]} />
+
+      {/* --- wings, hinged dorsally and swept back over the abdomen --- */}
+      {[1, -1].map((s) => (
+        <group
+          key={`wing${s}`}
+          position={[s * 150, 138, -220]}
+          rotation={[0.08, s * 1.05, -s * 0.08]}
+          scale={[s, 1, 1]}
+        >
+          <mesh geometry={geo.wing} material={mat.wing} />
+          <lineSegments geometry={geo.veins} material={veinMat} />
+        </group>
+      ))}
+
+      {/* --- six articulated legs --- */}
+      {legs.map((l) => (
+        <mesh
+          key={l.key}
+          geometry={segGeoms.get(`${l.seg.rTop}|${l.seg.rBottom}|${l.seg.length}`)!}
+          material={mat.limb}
+          position={l.seg.position}
+          rotation={l.seg.rotation}
         />
       ))}
     </group>

@@ -10,7 +10,9 @@ from pydantic import BaseModel, Field
 class NeuronActivation(BaseModel):
     body_id: int
     activation: float
-    step: int = Field(description="Step at which this neuron first crossed threshold.")
+    step: int = Field(description="First threshold crossing, or initial seed assignment at step 0.")
+    history: list[float] = Field(default_factory=list, description="Actual model activation at each returned step, including subthreshold values.")
+    emission_steps: list[int] = Field(default_factory=list, description="Source-state steps where this neuron transmitted along retained graph edges.")
 
 
 class PulseEvent(BaseModel):

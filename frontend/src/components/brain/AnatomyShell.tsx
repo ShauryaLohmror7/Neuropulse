@@ -6,6 +6,8 @@ import { GROUP_TINT, makeAnatomyMaterial } from '../../lib/anatomyMaterial'
 interface Props {
   groups: { group: string; geometry: THREE.BufferGeometry; rois: string[] }[]
   opacity?: number
+  /** Anatomical groups to omit (e.g. the VNC while in brain view). */
+  hide?: Set<string>
 }
 
 /**
@@ -15,7 +17,7 @@ interface Props {
  * silhouette a viewer sees is the actual shape of the reconstructed brain and
  * ventral nerve cord.
  */
-export function AnatomyShell({ groups, opacity = 1 }: Props) {
+export function AnatomyShell({ groups, opacity = 1, hide }: Props) {
   const materials = useMemo(() => {
     const m = new Map<string, THREE.ShaderMaterial>()
     for (const g of groups) {
@@ -34,9 +36,11 @@ export function AnatomyShell({ groups, opacity = 1 }: Props) {
 
   return (
     <group>
-      {groups.map((g) => (
-        <mesh key={g.group} geometry={g.geometry} material={materials.get(g.group)!} renderOrder={1} />
-      ))}
+      {groups
+        .filter((g) => !hide?.has(g.group))
+        .map((g) => (
+          <mesh key={g.group} geometry={g.geometry} material={materials.get(g.group)!} renderOrder={1} />
+        ))}
     </group>
   )
 }

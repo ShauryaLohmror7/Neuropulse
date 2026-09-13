@@ -1,10 +1,29 @@
+import type { FullNeuron } from './fullNeuron'
 import { create } from 'zustand'
 import type { SimulationEnvelope } from '../types/api'
+
+export interface ProjectedLabel {
+  roi: string
+  name: string
+  x: number
+  y: number
+  depth: number
+}
 
 export type ViewMode = 'fly' | 'brain'
 export type Phase = 'idle' | 'compiling' | 'transition' | 'propagating' | 'settled'
 
 interface State {
+  cinematic:boolean
+  toggleCinematic:()=>void
+  detail: FullNeuron | null
+  detailStatus: 'idle' | 'loading' | 'ready' | 'error'
+  detailError: string | null
+  detailRetry: number
+  isolateNeuron: boolean
+  setDetail: (detail:FullNeuron|null, status:State['detailStatus'], error:string|null) => void
+  retryDetail: () => void
+  toggleIsolate: () => void
   view: ViewMode
   phase: Phase
   /** Scene-clock time (seconds) at which propagation step 0 fires. */
@@ -15,6 +34,10 @@ interface State {
   inspector: boolean
   lesion: number[]
   hoveredBodyId: number | null
+  /** True once the viewer has taken the camera over by dragging or scrolling. */
+  manualCamera: boolean
+  showLabels: boolean
+  labels: ProjectedLabel[]
 
   setView: (v: ViewMode) => void
   setPhase: (p: Phase) => void
@@ -24,31 +47,48 @@ interface State {
   toggleInspector: () => void
   setLesion: (ids: number[]) => void
   setHovered: (id: number | null) => void
+  setManualCamera: (v: boolean) => void
+  setLabels: (l: ProjectedLabel[]) => void
+  toggleLabels: () => void
   reset: () => void
 }
 
 export const useStore = create<State>((set) => ({
+  cinematic:true, toggleCinematic:()=>set(s=>({cinematic:!s.cinematic})),
+  detail:null, detailStatus:'idle', detailError:null, detailRetry:0, isolateNeuron:false,
+  setDetail:(detail,detailStatus,detailError)=>set({detail,detailStatus,detailError}),
+  retryDetail:()=>set(s=>({detailRetry:s.detailRetry+1})),
+  toggleIsolate:()=>set(s=>({isolateNeuron:!s.isolateNeuron})),
   view: 'fly',
   phase: 'idle',
   simStartedAt: null,
   sim: null,
   error: null,
-  text: '',
+  text: 'A hungry fly smells ripe fruit while a dark object rapidly approaches from its left.',
   inspector: false,
   lesion: [],
   hoveredBodyId: null,
+  manualCamera: false,
+  showLabels: false,
+  labels: [],
 
-  setView: (view) => set({ view }),
+  setView: (view) => set({ view, manualCamera: false }),
   setPhase: (phase) => set({ phase }),
   setText: (text) => set({ text }),
   setSim: (sim, simStartedAt) => set({ sim, simStartedAt }),
   setError: (error) => set({ error }),
   toggleInspector: () => set((s) => ({ inspector: !s.inspector })),
   setLesion: (lesion) => set({ lesion }),
-  setHovered: (hoveredBodyId) => set({ hoveredBodyId }),
+  setHovered: (hoveredBodyId) => set(s => s.hoveredBodyId === hoveredBodyId ? { manualCamera:false } : { hoveredBodyId, detail:null, detailStatus:hoveredBodyId === null ? 'idle' : 'loading', detailError:null, manualCamera:false }),
+  setManualCamera: (manualCamera) => set({ manualCamera }),
+  setLabels: (labels) => set({ labels }),
+  toggleLabels: () => set((s) => ({ showLabels: !s.showLabels, labels: [] })),
   reset: () =>
-    set({ sim: null, simStartedAt: null, phase: 'idle', error: null, lesion: [] }),
+    set({
+      sim: null, simStartedAt: null, phase: 'idle', error: null,
+      lesion: [], manualCamera: false,
+    }),
 }))
 
 /** Seconds of wall time per propagation step. Paces the whole cascade. */
-export const STEP_DURATION = 1.35
+export const STEP_DURATION = 2.8

@@ -9,72 +9,65 @@ export interface SceneData {
   circuit: CircuitGeometry
   anatomy: { group: string; geometry: THREE.BufferGeometry; rois: string[] }[]
   anatomyDoc: AnatomyDoc | null
+  /** Dense sample of real neurons rendered as structure, not signal. */
+  context: CircuitGeometry | null
+  /** Translation aligning the context bundle onto the circuit bundle. */
+  contextOffset: THREE.Vector3
+  /** Translation that aligns the anatomy bundle onto the circuit bundle. */
+  anatomyOffset: THREE.Vector3
   /** Dataset-space origin (nm) shared by everything in the scene. */
   originNm: number[]
 }
 
 const BASE = '/circuits'
 
-/**
- * Load the real circuit and the real neuropil surfaces, aligned to a common
- * dataset origin. Both bundles record the nanometre coordinate that became
- * their local zero, so the offset between them is exact — neurons land inside
- * the neuropils they actually occupy.
+/** Cache the immutable scene for this page lifetime (including StrictMode remounts).
+ * Fetch independent LOD layers concurrently. No biological fallback is invented.
  */
+let scenePromise: Promise<SceneData> | null = null
+function loadScene(): Promise<SceneData> {
+  if (scenePromise) return scenePromise
+  scenePromise = (async () => {
+    const [primary, contextResult, anatomyResult] = await Promise.allSettled([
+      loadCircuit(BASE, 'cns_circuit'),
+      loadCircuit(BASE, 'brain_context'),
+      loadAnatomy(BASE),
+    ])
+    if (primary.status === 'rejected') throw primary.reason
+    const {doc, buffer} = primary.value
+    const circuit = buildCircuitGeometry(doc, buffer)
+    const offsetFor = (origin: number[]) => new THREE.Vector3(
+      ...origin.map((value, i) => (value - doc.transform.origin_nm[i]) / 1000) as [number,number,number],
+    )
+    let context: CircuitGeometry | null = null
+    let contextOffset = new THREE.Vector3()
+    if (contextResult.status === 'fulfilled') {
+      context = buildCircuitGeometry(contextResult.value.doc, contextResult.value.buffer, {colourBy:'identity'})
+      contextOffset = offsetFor(contextResult.value.doc.transform.origin_nm)
+    } else console.warn('Context skeletons unavailable:', contextResult.reason)
+    let anatomy: SceneData['anatomy'] = []
+    let anatomyDoc: AnatomyDoc | null = null
+    let anatomyOffset = new THREE.Vector3()
+    if (anatomyResult.status === 'fulfilled') {
+      const a = anatomyResult.value
+      anatomyDoc = a.doc
+      anatomyOffset = offsetFor(a.doc.transform.origin_nm)
+      anatomy = buildAnatomyGroups(a.doc,a.verts,a.idx,anatomyOffset)
+    } else console.warn('Region anatomy unavailable:', anatomyResult.reason)
+    return { circuitDoc:doc,circuit,context,contextOffset,anatomy,anatomyDoc,anatomyOffset,originNm:doc.transform.origin_nm }
+  })().catch(e => {scenePromise = null; throw e})
+  return scenePromise
+}
+
 export function useSceneData() {
   const [data, setData] = useState<SceneData | null>(null)
   const [error, setError] = useState<string | null>(null)
-
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
-      try {
-        const { doc, buffer } = await loadCircuit(BASE, 'cns_circuit')
-        const circuit = buildCircuitGeometry(doc, buffer)
-
-        let anatomy: SceneData['anatomy'] = []
-        let anatomyDoc: AnatomyDoc | null = null
-        try {
-          const a = await loadAnatomy(BASE)
-          anatomyDoc = a.doc
-          const co = doc.transform.origin_nm
-          const ao = a.doc.transform.origin_nm
-          const offset = new THREE.Vector3(
-            (ao[0] - co[0]) / 1000,
-            (ao[1] - co[1]) / 1000,
-            (ao[2] - co[2]) / 1000,
-          )
-          anatomy = buildAnatomyGroups(a.doc, a.verts, a.idx, offset)
-        } catch (e) {
-          // Anatomy is context, not the claim — the scene still works without it.
-          console.warn('anatomy unavailable:', e)
-        }
-
-        if (!cancelled) {
-          setData({
-            circuitDoc: doc,
-            circuit,
-            anatomy,
-            anatomyDoc,
-            originNm: doc.transform.origin_nm,
-          })
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError(
-            `Could not load real connectome data (${(e as Error).message}).\n\n` +
-              `Build it with:\n` +
-              `  cd backend && .venv/bin/python -m scripts.build_circuit\n` +
-              `  cd backend && .venv/bin/python -m scripts.fetch_anatomy\n\n` +
-              `NEUROPULSE has no synthetic fallback by design.`,
-          )
-        }
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
+    loadScene().then(result => { if (!cancelled) setData(result) }).catch(e => {
+      if (!cancelled) setError(`Real connectome data could not be loaded: ${(e as Error).message}. Check the circuit bundles; no synthetic fallback is used.`)
+    })
+    return () => {cancelled = true}
   }, [])
-
-  return { data, error }
+  return {data,error}
 }

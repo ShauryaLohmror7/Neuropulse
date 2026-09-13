@@ -97,6 +97,8 @@ def propagate(
         )
     )
 
+    history = [act.copy()]
+    emissions: dict[int, list[int]] = defaultdict(list)
     edge_traversed: set[tuple[int, int]] = set()
 
     for step in range(1, params.steps + 1):
@@ -109,6 +111,8 @@ def propagate(
         if not edge_active.any():
             break
         es, et, ew = src[edge_active], tgt[edge_active], nw[edge_active]
+        for source in np.unique(es):
+            emissions[int(source)].append(step - 1)
         amp = act[es] * ew * params.decay
         esign = signs[es]
         contrib = np.where(esign < 0, -amp * params.inhibition_strength, amp)
@@ -122,6 +126,7 @@ def propagate(
         new_act = np.where(refractory > 0, params.self_decay * act, new_act)
         act = np.clip(new_act, 0.0, params.max_activation)
         peak = np.maximum(peak, act)
+        history.append(act.copy())
 
         newly = (act > params.activation_threshold) & (first_step < 0)
         first_step = np.where(newly, step, first_step)
@@ -182,6 +187,8 @@ def propagate(
             body_id=int(graph.body_ids[i]),
             activation=round(float(peak[i]), 5),
             step=int(first_step[i]),
+            history=[float(state[i]) for state in history],
+            emission_steps=emissions.get(int(i), []),
         )
         for i in activated_idx
     ]

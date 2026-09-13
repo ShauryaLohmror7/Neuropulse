@@ -160,3 +160,22 @@ def test_empty_seed_produces_empty_result():
     r = propagate(g, {}, params=PropagationParameters(steps=3, min_edge_weight=1))
     assert r.metrics.neurons_activated == 0
     assert r.pulses == []
+
+
+def test_recorded_history_captures_activity_after_last_new_neuron():
+    # Two cells, one directed edge. Exact recurrence with no refractory:
+    # seed: 1, .5, .25, .125; target: 0, 1, 1, .75.
+    g = chain_graph(2)
+    p = PropagationParameters(steps=3, decay=1, self_decay=.5,
+                              activation_threshold=.01, min_edge_weight=1,
+                              refractory_steps=0)
+    r = propagate(g, {0: 1}, params=p)
+    by_id = {a.body_id: a for a in r.activations}
+    assert by_id[0].history == pytest.approx([1, .5, .25, .125])
+    assert by_id[1].history == pytest.approx([0, 1, 1, .75])
+    assert by_id[0].emission_steps == [0, 1, 2]
+    assert by_id[1].emission_steps == []  # no outgoing edge
+    assert r.metrics.propagation_depth == 1
+    assert len(r.steps) == 4  # playback must not stop at depth 1
+    for step in r.steps:
+        assert step.active_total == sum(a.history[step.step] > p.activation_threshold for a in r.activations)

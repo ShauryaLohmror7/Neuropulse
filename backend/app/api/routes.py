@@ -157,3 +157,29 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
         },
         lesion=lesion_info,
     )
+
+
+def _detail(body_id: int):
+    from app.connectome.detail import get_detail
+    if body_id <= 0:
+        raise HTTPException(status_code=404, detail="Unknown circuit neuron")
+    try:
+        return get_detail(body_id)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail="Body ID is not in this real circuit") from e
+    except Exception as e:
+        log.warning("Full-detail fetch failed for bodyId=%d: %s", body_id, type(e).__name__)
+        raise HTTPException(status_code=503, detail="Verified full-detail morphology is unavailable. The overview remains a labeled LOD; no synthetic replacement was made.") from e
+
+
+@router.get('/neurons/{body_id}/detail')
+def neuron_detail(body_id: int):
+    manifest, _ = _detail(body_id)
+    return manifest
+
+
+@router.get('/neurons/{body_id}/detail.bin')
+def neuron_detail_binary(body_id: int):
+    from fastapi.responses import FileResponse
+    manifest, path = _detail(body_id)
+    return FileResponse(path, media_type='application/octet-stream', headers={'ETag': f'"{manifest["sha256"]}"'})

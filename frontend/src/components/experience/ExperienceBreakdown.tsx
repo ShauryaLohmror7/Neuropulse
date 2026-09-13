@@ -10,9 +10,7 @@ const QUALITY_LABEL: Record<string, string> = {
 /** The compiler's reading of the sentence. Deliberately small and quiet. */
 export function ExperienceBreakdown({ experience }: { experience: CompiledExperience | null }) {
   if (!experience) return null
-  const contextOnly = experience.unmapped.filter(
-    (u) => u.reason === 'RECOGNISED_BUT_NOT_SIMULATED' || u.reason === 'NEGATED',
-  )
+  const contextOnly = experience.unmapped
 
   return (
     <AnimatePresence>
@@ -43,6 +41,7 @@ export function ExperienceBreakdown({ experience }: { experience: CompiledExperi
               <div className={`quality q-${c.mapping_quality}`}>
                 {QUALITY_LABEL[c.mapping_quality]} · {c.neuron_count} neurons
               </div>
+              {c.caveat && <p className="mapping-caveat">{c.caveat}</p>}
             </div>
           </motion.div>
         ))}
@@ -52,10 +51,10 @@ export function ExperienceBreakdown({ experience }: { experience: CompiledExperi
             <span className="dot m-internal_state" />
             <div className="item-body">
               <div className="item-head">
-                <span className="modality">context</span>
+                <span className="modality">{u.reason === 'NO_SENSORY_MATCH' ? 'unmapped' : 'context'}</span>
               </div>
               <div className="stimulus">{u.label ?? u.text}</div>
-              <div className="quality q-UNSUPPORTED">recognised · not simulated</div>
+              <div className="quality q-UNSUPPORTED">{u.reason === 'NEGATED' ? 'Absent · not simulated' : u.reason === 'NO_SENSORY_MATCH' ? 'No supported mapping · not simulated' : 'Recognised · not simulated'}</div>
             </div>
           </div>
         ))}

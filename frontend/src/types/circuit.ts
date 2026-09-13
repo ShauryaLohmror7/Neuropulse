@@ -52,6 +52,8 @@ export interface CircuitDoc {
   seedSets: Record<string, number[]>
   policy: Record<string, number>
   neurons: CircuitNeuronGeometry[]
+  /** Real soma (cell body) positions, from the dataset's somaLocation field. */
+  somas?: { bodyIds: number[]; positions: number[] }
   nodes: CircuitNode[]
   edges: { source: number[]; target: number[]; weight: number[] }
   extra: { concepts?: ConceptInfo[] }

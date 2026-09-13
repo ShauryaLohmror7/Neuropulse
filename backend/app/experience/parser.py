@@ -74,6 +74,14 @@ INTENSITY_DOWN = re.compile(
     r"subtle|mild|distant|barely|softly|soft)\b",
     re.IGNORECASE,
 )
+# A fruit object is not itself evidence that an olfactory stimulus was described.
+# Keep semantic retrieval, but gate this common false positive on an actual odor cue.
+ODOR_CUE = re.compile(
+    r"\b(smell\w*|smelt|odor\w*|odour\w*|scent\w*|aroma\w*|fragra\w*|"
+    r"stench|stink\w*|pungent|whiff|sniff\w*|volatile\w*|vapou?r\w*|fumes?|plume)\b",
+    re.IGNORECASE,
+)
+
 NEGATION = re.compile(
     r"\b(no|not|nothing|never|without|absent|lacks?|isn't|doesn't|cannot|can't)\b", re.IGNORECASE
 )
@@ -187,6 +195,17 @@ def compile_experience(
                         note="Described as absent; no stimulus injected.",
                     )
                 )
+                accepted += 1
+                continue
+
+            if concept.key == "olfactory_fruit" and not ODOR_CUE.search(clause):
+                unmapped.append(UnmappedContent(
+                    text=clause,
+                    reason="CONTEXT_WITHOUT_SENSORY_CUE",
+                    concept=key,
+                    label="Fruit / food context",
+                    note="An object or proximity to food does not establish an odor stimulus. No olfactory input injected.",
+                ))
                 accepted += 1
                 continue
 

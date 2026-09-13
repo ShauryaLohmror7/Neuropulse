@@ -23,7 +23,7 @@ import orjson
 from app.connectome.circuits import Circuit
 from app.connectome.morphology import NeuronMorphology, build_morphology, prune_twigs
 from app.connectome.provenance import Provenance
-from app.connectome.queries import fetch_real_skeleton
+from app.connectome.queries import fetch_real_skeleton, voxel_size_nm
 
 log = logging.getLogger(__name__)
 
@@ -156,6 +156,25 @@ def write_bundle(
     bin_path = out_dir / f"{name}.bin"
     bin_path.write_bytes(flat.tobytes())
 
+    # ---- somata ----------------------------------------------------------
+    # Cell bodies sit in a rind on the surface of the neuropil. They are the
+    # dominant visual texture in published renders of this connectome, and
+    # somaLocation is real dataset metadata, so we carry it through.
+    soma_xyz: list[float] = []
+    soma_ids: list[int] = []
+    for body_id, meta in circuit.nodes.items():
+        loc = _soma_coords(meta.get("somaLocation"))
+        if loc is None:
+            continue
+        try:
+            # somaLocation is in voxel units like every other coordinate.
+            p_nm = np.asarray(loc, dtype=np.float64) * voxel_size_nm()
+        except (TypeError, ValueError):
+            continue
+        q = (p_nm - centre) * NM_TO_UM
+        soma_xyz.extend(float(round(v, 2)) for v in q)
+        soma_ids.append(int(body_id))
+
     # ---- graph -----------------------------------------------------------
     node_list: list[dict[str, Any]] = []
     for body_id, meta in circuit.nodes.items():
@@ -199,6 +218,7 @@ def write_bundle(
         "seedSets": circuit.seed_sets,
         "policy": circuit.policy,
         "neurons": neurons,
+        "somas": {"bodyIds": soma_ids, "positions": soma_xyz},
         "nodes": node_list,
         "edges": {
             "source": edge_src.tolist(),
@@ -218,6 +238,23 @@ def write_bundle(
         "rendered": len(neurons),
         "vertices": int(len(flat)),
     }
+
+
+def _soma_coords(loc: Any) -> list[float] | None:
+    """Extract [x, y, z] from a somaLocation value.
+
+    neuPrint returns this as a Neo4j spatial point. Through ``fetch_neurons`` it
+    arrives as a plain list, but through raw Cypher it is a dict of the form
+    ``{"coordinates": [x, y, z], "crs": {...}}``. Handle both.
+    """
+    if isinstance(loc, dict):
+        loc = loc.get("coordinates")
+    if isinstance(loc, (list, tuple)) and len(loc) == 3:
+        try:
+            return [float(v) for v in loc]
+        except (TypeError, ValueError):
+            return None
+    return None
 
 
 def _round(v: Any, n: int) -> Any:

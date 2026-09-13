@@ -20,9 +20,9 @@ export function ResponsePanel({ response }: { response: ModelledResponse | null 
         exit={{ opacity: 0, y: 14 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
       >
-        <div className="label">Modelled response</div>
-        <div className={`headline ${none ? 'none' : ''}`}>{response.headline}</div>
-        {response.detail && <div className="detail">{response.detail}</div>}
+        <div className="label">{none ? 'FLY ACTION · UNRESOLVED' : 'POSSIBLE FLY ACTION'}</div>
+        <div className={`headline ${none ? 'none' : ''}`}>{response.headline.replace(' tendency (modeled)', '')}</div>
+        {response.detail && <div className="detail">{none ? response.detail : 'The modeled signal reached output neurons associated with this response. This is an inferred tendency, not an observed action.'}</div>}
         {response.competing.length > 0 && (
           <div className="competing">Competing: {response.competing.join(' · ')}</div>
         )}

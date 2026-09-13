@@ -214,12 +214,8 @@ def infer_response(
             elif side == "R":
                 right += a.activation
         acts = [a.activation for _b, a in hits]
+        # Left/right sums report anatomy. They are not a validated motor decoder.
         direction = None
-        if c.directional and (left + right) > 0:
-            if left > right * DIRECTION_RATIO:
-                direction = "left"
-            elif right > left * DIRECTION_RATIO:
-                direction = "right"
         readouts.append(
             ChannelReadout(
                 key=c.key,
@@ -251,8 +247,9 @@ def infer_response(
         return ModelledResponse(
             headline="No defensible behavioural prediction",
             detail=(
-                "The cascade did not reach the descending or motor populations this dataset "
-                "lets us identify, so there is nothing to infer a response from."
+                "No annotated output channel met this model’s engagement thresholds. "
+                "Some output neurons may have been reached at subthreshold strength; "
+                "that is insufficient to infer a response."
             ),
             confidence="NONE",
             channels=readouts,
@@ -262,14 +259,6 @@ def infer_response(
     competing = _find_conflicts(engaged)
 
     headline = primary.label
-    if primary.direction:
-        # Escape and steering are directed *away* from the threatened side.
-        if primary.key in ("escape_takeoff", "escape_generic", "steering_turn"):
-            away = "right" if primary.direction == "left" else "left"
-            headline = f"{primary.label} biased to the {away}"
-        else:
-            headline = f"{primary.label} ({primary.direction} side)"
-
     detail_bits = [
         f"{primary.neurons_activated}/{primary.neurons_in_circuit} "
         f"{'/'.join(BY_KEY[primary.key].marker_types)} activated by step {primary.earliest_step}"
@@ -280,7 +269,7 @@ def infer_response(
         )
 
     return ModelledResponse(
-        headline=headline,
+        headline=f"{headline} tendency (modeled)",
         detail="; ".join(detail_bits),
         confidence=primary.evidence_tier,
         channels=readouts,

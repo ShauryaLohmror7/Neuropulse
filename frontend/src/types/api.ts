@@ -49,6 +49,8 @@ export interface PulseEvent {
 export interface NeuronActivation {
   body_id: number
   activation: number
+  history: number[]
+  emission_steps: number[]
   step: number
 }
 

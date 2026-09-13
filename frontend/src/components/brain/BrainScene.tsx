@@ -1,16 +1,23 @@
 import { Suspense, useRef, useState } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { AnatomyShell } from './AnatomyShell'
+import { BrainContext } from './BrainContext'
+import { Somata } from './Somata'
 import { Atmosphere } from './Atmosphere'
 import { CameraRig } from './CameraRig'
+import { ScaleBar } from './ScaleBar'
+import { FullNeuron } from './FullNeuron'
 import { CircuitNetwork } from './CircuitNetwork'
 import { FlyBody } from './FlyBody'
-import { SignalParticles } from './SignalParticles'
+import { RegionLabels } from './RegionLabels'
+
 import { useStore } from '../../lib/store'
 import type { SceneData } from '../../hooks/useSceneData'
-import { markSceneClock } from '../../App'
+import { setSceneTime } from '../../lib/sceneClock'
 
 /**
  * The scene.
@@ -21,6 +28,7 @@ import { markSceneClock } from '../../App'
  * the schematic body therefore share one coordinate frame.
  */
 export function BrainScene({ data }: { data: SceneData }) {
+  const controls = useRef<OrbitControlsImpl | null>(null)
   return (
     <Canvas
       dpr={[1, 2]}
@@ -29,14 +37,16 @@ export function BrainScene({ data }: { data: SceneData }) {
       onCreated={({ gl, scene }) => {
         // Anchor the React-side clock to three's, so scheduled ignition times and
         // shader uniforms agree on t=0.
-        markSceneClock()
-        gl.setClearColor('#040406', 1)
+        setSceneTime(0)
+        gl.setClearColor('#090d12', 1)
         gl.toneMapping = THREE.ACESFilmicToneMapping
-        gl.toneMappingExposure = 1.12
-        scene.fog = new THREE.FogExp2('#040406', 0.00021)
+        gl.toneMappingExposure = 1.25
+        scene.fog = new THREE.FogExp2('#090d12', 0.00004)
       }}
     >
       <Suspense fallback={null}>
+        <SceneClock />
+        <ScaleBar />
         {/* Real data lives in the dataset frame and is rotated into screen
             convention here. The schematic body is authored directly in screen
             frame, so it must NOT be nested inside this rotation. */}
@@ -44,16 +54,70 @@ export function BrainScene({ data }: { data: SceneData }) {
           <RealAnatomy data={data} />
         </group>
         <SchematicBody />
-        <Atmosphere count={700} radius={2600} />
-        <CameraRig circuit={data.circuit} />
+        <LabelProjector data={data} />
+        <OrbitControls
+          ref={controls}
+          makeDefault
+          enabled={false}
+          enablePan
+          enableDamping
+          dampingFactor={0.06}
+          rotateSpeed={0.62}
+          zoomSpeed={0.85}
+          panSpeed={0.7}
+          minDistance={90}
+          maxDistance={9000}
+        />
+        <Atmosphere count={120} radius={2600} />
+        <CameraRig circuit={data.circuit} controls={controls} />
+        {import.meta.env.DEV && <SceneDebug />}
       </Suspense>
       <EffectComposer multisampling={4}>
-        <Bloom intensity={1.05} luminanceThreshold={0.1} luminanceSmoothing={0.5} mipmapBlur radius={0.72} />
-        <Vignette eskil={false} offset={0.2} darkness={0.86} />
+        <Bloom intensity={0.8} luminanceThreshold={0.85} luminanceSmoothing={0.5} mipmapBlur radius={0.82} />
+        <Vignette eskil={false} offset={0.12} darkness={0.3} />
       </EffectComposer>
     </Canvas>
   )
 }
+
+/** Dev-only: exposes camera and per-layer world bounds for diagnosis. */
+function SceneDebug() {
+  const { camera, scene, gl } = useThree()
+  const last = useRef(0)
+  useFrame(({ clock }) => {
+    if (clock.elapsedTime - last.current < 2) return
+    last.current = clock.elapsedTime
+    const w = window as unknown as Record<string, unknown>
+    const layers: Record<string, number[]> = {}
+    scene.traverse((o) => {
+      const m = o as THREE.Mesh
+      if (!(m as THREE.Object3D).visible) return
+      if (m.type !== 'LineSegments' && m.type !== 'Points') return
+      const g = m.geometry as THREE.BufferGeometry | undefined
+      if (!g?.attributes?.position) return
+      const box = new THREE.Box3().setFromBufferAttribute(
+        g.attributes.position as THREE.BufferAttribute,
+      )
+      box.applyMatrix4(m.matrixWorld)
+      const key = `${m.type}:${(g.attributes.position as THREE.BufferAttribute).count}`
+      layers[key] = [
+        ...box.min.toArray().map((v) => Math.round(v)),
+        ...box.max.toArray().map((v) => Math.round(v)),
+      ]
+    })
+    w.__NP_DEBUG = {
+      drawCalls: gl.info.render.calls,
+      manual: useStore.getState().manualCamera,
+      cam: camera.position.toArray().map((v) => Math.round(v)),
+      dir: camera.getWorldDirection(new THREE.Vector3()).toArray().map((v) => +v.toFixed(2)),
+      layers,
+    }
+  })
+  return null
+}
+
+const VNC_GROUPS = new Set(['vnc'])
+const EMPTY = new Set<string>()
 
 /**
  * How strongly each layer shows, as a function of view mode and phase.
@@ -82,18 +146,46 @@ function useLayerMix() {
 
 function RealAnatomy({ data }: { data: SceneData }) {
   const m = useLayerMix()
+  const view = useStore((s) => s.view)
+  const sim = useStore((s) => s.sim)
+  const detail = useStore((s) => s.detail)
+  const isolate = useStore((s) => s.isolateNeuron)
+  const detailMix = detail && view === 'brain' ? (isolate ? 0 : 0.15) : 1
+  // Context recedes once a cascade is running so the active pathway dominates.
+  const contextDim = (sim ? 0.4 : 1) * detailMix
+  // Brain view isolates the brain. The VNC sits posterior of z = 100 um in the
+  // dataset's frame, so clipping there leaves brain and neck connective only.
+  const clipZ = view === 'brain' ? -100 : 1e6
   return (
     <>
-      <AnatomyShell groups={data.anatomy} opacity={0.35 + m * 0.65} />
-      <CircuitNetwork circuit={data.circuit} opacity={0.42 + m * 0.58} />
-      <SignalParticles circuit={data.circuit} />
+      <AnatomyShell groups={data.anatomy} opacity={(0.14 + m * 0.2) * detailMix} hide={view === 'brain' ? VNC_GROUPS : EMPTY} />
+      {data.context && (
+        <group position={data.contextOffset}>
+          <BrainContext circuit={data.context} opacity={0.85 + m * 0.15} dim={contextDim} clipZ={clipZ - data.contextOffset.z} />
+          <Somata circuit={data.context} opacity={(0.45 + m * 0.55) * contextDim} clipZ={clipZ - data.contextOffset.z} />
+        </group>
+      )}
+      <CircuitNetwork circuit={data.circuit} opacity={(0.5 + m * 0.5) * detailMix} clipZ={clipZ} />
+      <FullNeuron />
+      {/* Activity is confined to measured skeletons; no invented centroid-to-centroid arcs. */}
     </>
   )
 }
 
 function SchematicBody() {
   const m = useLayerMix()
-  // Never fully gone in brain view: a faint outline keeps the viewer oriented
-  // about where inside the animal they are.
-  return <FlyBody opacity={1 - m * 0.78} />
+  // Brain view shows the brain alone: the body shell fades out completely so
+  // nothing occludes the tissue.
+  return <FlyBody opacity={Math.max(1 - m * 1.0, 0)} />
+}
+
+/** Labels live outside the dataset rotation; they do their own transform. */
+function LabelProjector({ data }: { data: SceneData }) {
+  const m = useLayerMix()
+  return <RegionLabels doc={data.anatomyDoc} offset={data.anatomyOffset} opacity={m} />
+}
+
+function SceneClock() {
+  useFrame(({ clock }) => setSceneTime(clock.elapsedTime), -2)
+  return null
 }

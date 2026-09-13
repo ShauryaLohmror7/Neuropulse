@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { NeuronStateTexture, modalityIndex, type CircuitGeometry } from '../../lib/circuit'
 import { makeNetworkMaterial } from '../../lib/networkMaterial'
+import { neuronPlayback } from '../../lib/playback'
 import { STEP_DURATION, useStore } from '../../lib/store'
 
 interface Props {
   circuit: CircuitGeometry
   opacity?: number
+  /** Fade out everything posterior to this plane (isolates the brain). */
+  clipZ?: number
 }
 
 /**
@@ -18,7 +22,9 @@ interface Props {
  * a wavefront along its real cable. Neurons ignite in the order the propagation
  * model produced, at a pace of STEP_DURATION seconds per synaptic step.
  */
-export function CircuitNetwork({ circuit, opacity = 1 }: Props) {
+export function CircuitNetwork({ circuit, opacity = 1, clipZ = 1e6 }: Props) {
+  const reducedMotion=useReducedMotion()
+  const selected = useStore((s) => s.hoveredBodyId)
   const sim = useStore((s) => s.sim)
   const simStartedAt = useStore((s) => s.simStartedAt)
 
@@ -29,44 +35,60 @@ export function CircuitNetwork({ circuit, opacity = 1 }: Props) {
   )
   const ref = useRef<THREE.LineSegments>(null)
 
-  // Modality per activated neuron, resolved from the pulses that reached it.
-  useEffect(() => {
-    state.reset()
-    if (!sim || simStartedAt === null) {
-      state.commit()
-      return
-    }
-
+  const tracks = useMemo(() => {
     const modalityOf = new Map<number, string>()
-    for (const seedList of Object.entries(sim.result.seeds)) {
-      const [modality, ids] = seedList
+    if (!sim) return []
+    for (const [modality, ids] of Object.entries(sim.result.seeds)) {
       for (const id of ids) modalityOf.set(id, modality)
     }
-    // Pulses carry the stream they descend from; strongest arrival wins.
+    const seedIds = new Set(Object.values(sim.result.seeds).flat())
     const best = new Map<number, number>()
     for (const p of sim.result.pulses) {
-      if (!p.modality) continue
-      const prev = best.get(p.target) ?? -1
-      if (p.amplitude > prev) {
+      if (p.modality && p.amplitude > (best.get(p.target) ?? -1)) {
         best.set(p.target, p.amplitude)
-        if (!modalityOf.has(p.target)) modalityOf.set(p.target, p.modality)
+        if (!seedIds.has(p.target)) modalityOf.set(p.target, p.modality)
       }
     }
-
-    for (const a of sim.result.activations) {
+    return sim.result.activations.flatMap(a => {
       const slot = circuit.slotOf.get(a.body_id)
-      if (slot === undefined) continue
-      const ignition = simStartedAt + a.step * STEP_DURATION
-      state.set(slot, ignition, Math.min(a.activation * 2.4, 1), modalityIndex(modalityOf.get(a.body_id)), 1)
-    }
-    state.commit()
-  }, [sim, simStartedAt, state, circuit])
+      return slot === undefined ? [] : [{ a, slot, modality: modalityIndex(modalityOf.get(a.body_id)) }]
+    })
+  }, [sim, circuit])
+  const lastState = useRef('')
+  useEffect(() => { lastState.current = '' }, [tracks, simStartedAt])
 
-  useFrame(({ clock }) => {
+  const dim = useRef(1)
+
+  useFrame(({ clock }, dt) => {
     const u = material.uniforms
+    const summary = useStore.getState().phase === 'settled'
+    const step = simStartedAt === null ? -1 : Math.floor((clock.elapsedTime - simStartedAt) / STEP_DURATION)
+    const key = `${step}:${summary}`
+    if (lastState.current !== key) {
+      state.reset()
+      if (simStartedAt !== null) for (const {a, slot, modality} of tracks) {
+        const sample = neuronPlayback(a, step, summary)
+        state.set(slot, sample.ignitionStep < 0 ? -1 : simStartedAt + sample.ignitionStep * STEP_DURATION,
+          sample.activation, modality, 1)
+      }
+      state.commit()
+      lastState.current = key
+    }
+    u.uSummary.value = summary || reducedMotion ? 1 : 0
+    u.uCinematic.value = useStore.getState().cinematic ? 1 : 0
     u.uTime.value = clock.elapsedTime
     u.uGain.value = opacity
-    u.uBaseOpacity.value = 0.075 * opacity
+
+    // While a cascade runs, fade the quiet network back so the active pathway
+    // is legible. Eased, never snapped.
+    const wantDim = sim ? 0.42 : 1
+    dim.current += (wantDim - dim.current) * (1 - Math.pow(0.05, dt))
+    u.uDimUnactivated.value = dim.current
+    u.uSelectedSlot.value = selected === null ? -1 : (circuit.slotOf.get(selected) ?? -1)
+    u.uBaseOpacity.value = 0.045 * opacity
+    // Full-detail selection is rendered separately; do not superimpose a second LOD highlight.
+    if (useStore.getState().detail?.manifest.bodyId === selected) u.uSelectedSlot.value = -1
+    u.uClipZ.value += (clipZ - u.uClipZ.value) * (1 - Math.pow(0.02, dt))
   })
 
   useEffect(() => () => { state.dispose(); material.dispose() }, [state, material])
@@ -78,6 +100,7 @@ export function CircuitNetwork({ circuit, opacity = 1 }: Props) {
       material={material}
       frustumCulled={false}
       renderOrder={2}
+
     />
   )
 }

@@ -15,7 +15,7 @@ export const PRESETS: { label: string; text: string }[] = [
   },
 ]
 
-export function ExperienceInput({ onSimulate }: { onSimulate: (text: string) => void }) {
+export function ExperienceInput({ onSimulate, disabled = false }: { onSimulate: (text: string) => void; disabled?: boolean }) {
   const text = useStore((s) => s.text)
   const setText = useStore((s) => s.setText)
   const phase = useStore((s) => s.phase)
@@ -29,14 +29,18 @@ export function ExperienceInput({ onSimulate }: { onSimulate: (text: string) => 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
+      <label className="eyebrow" htmlFor="experience">DESCRIBE A MOMENT</label>
       <div className={`field ${focused ? 'focused' : ''}`}>
-        <input
+        <textarea
+          id="experience"
+          rows={4}
+          maxLength={600}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && text.trim() && !busy) onSimulate(text)
+            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && text.trim() && !busy && !disabled) { e.preventDefault(); onSimulate(text) }
           }}
           placeholder="Describe an experience…"
           spellCheck={false}
@@ -44,12 +48,14 @@ export function ExperienceInput({ onSimulate }: { onSimulate: (text: string) => 
         />
         <button
           className="simulate"
-          disabled={!text.trim() || busy}
+          disabled={disabled || !text.trim() || busy}
           onClick={() => onSimulate(text)}
         >
-          {busy ? 'Simulating' : 'Simulate experience'}
+          {busy ? 'Simulating' : 'Simulate experience'} <span aria-hidden="true">↗</span>
         </button>
       </div>
+      <p className="input-scope">Free-form text · supported sensory cues only · {text.length}/600</p>
+      <div className="preset-label">OR TRY A SENSORY SCENARIO</div>
       <div className="presets">
         {PRESETS.map((p) => (
           <button key={p.label} onClick={() => setText(p.text)} disabled={busy}>

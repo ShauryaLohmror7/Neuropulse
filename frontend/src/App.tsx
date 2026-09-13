@@ -1,161 +1,128 @@
-import { useCallback, useEffect, useRef } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { BrainScene } from './components/brain/BrainScene'
 import { ExperienceInput } from './components/experience/ExperienceInput'
 import { ExperienceBreakdown } from './components/experience/ExperienceBreakdown'
-import { SimulationOverlay } from './components/simulation/SimulationOverlay'
+import { ActivityTimeline } from './components/simulation/ActivityTimeline'
 import { ResponsePanel } from './components/simulation/ResponsePanel'
 import { ViewToggle } from './components/ViewToggle'
+import { RegionLabelLayer } from './components/RegionLabelLayer'
+import { KeyNeurons } from './components/KeyNeurons'
+import { ScientificInspector } from './components/ScientificInspector'
+import { useFullNeuron } from './hooks/useFullNeuron'
+import { NeuronDetailPanel } from './components/NeuronDetailPanel'
 import { useSceneData } from './hooks/useSceneData'
 import { api } from './lib/api'
 import { STEP_DURATION, useStore } from './lib/store'
+import { getSceneTime } from './lib/sceneClock'
+import type { SimulationEnvelope } from './types/api'
 
-/**
- * One screen.
- *
- * The biology is the hero; every panel is small, quiet, and appears only when it
- * has something to say. Technical detail (provenance, evidence, lesion tooling)
- * lives behind the inspector rather than on the default view.
- */
 export default function App() {
   const { data, error: dataError } = useSceneData()
-  const { phase, sim, error, setPhase, setSim, setError, setView } = useStore()
+  useFullNeuron(data)
+  const { phase, sim, error, view, detail, inspector, showLabels, setPhase, setSim, setError, setView, toggleLabels, toggleInspector } = useStore(useShallow(s => ({detail:s.detail, phase:s.phase, sim:s.sim, error:s.error, view:s.view, inspector:s.inspector, showLabels:s.showLabels, setPhase:s.setPhase, setSim:s.setSim, setError:s.setError, setView:s.setView, toggleLabels:s.toggleLabels, toggleInspector:s.toggleInspector})))
+  const cinematic=useStore(s=>s.cinematic)
   const timers = useRef<number[]>([])
+  const [pending, setPending] = useState<SimulationEnvelope | null>(null)
+  const [step, setStep] = useState(-1)
+  const generation = useRef(0)
+  useEffect(() => () => { generation.current++; timers.current.forEach(clearTimeout) }, [])
+  useEffect(() => {
+    if (phase !== 'propagating') return
+    const id = window.setInterval(() => {
+      const start = useStore.getState().simStartedAt
+      const currentStep = start === null ? -1 : Math.floor((getSceneTime() - start) / STEP_DURATION)
+      setStep(currentStep)
+      const steps = useStore.getState().sim?.result.steps
+      if (steps?.length && currentStep > steps[steps.length - 1].step) setPhase('settled')
+    }, 80)
+    return () => clearInterval(id)
+  }, [phase, setPhase])
 
-  useEffect(() => () => timers.current.forEach(clearTimeout), [])
+  const play = useCallback((envelope: SimulationEnvelope) => {
+    setPending(envelope)
+    setPhase('transition')
+    setView('brain')
+    useStore.getState().setManualCamera(false)
+    timers.current.push(window.setTimeout(() => {
+      setSim(envelope, getSceneTime() + 0.2)
+      setPhase('propagating')
+      setStep(-1)
+      // Completion follows every recorded model state on the scene clock.
+    }, 1600))
+  }, [setPhase, setView, setSim])
 
-  const runSimulation = useCallback(
-    async (text: string) => {
-      timers.current.forEach(clearTimeout)
-      timers.current = []
-      setError(null)
-      setSim(null, null)
-      setPhase('compiling')
+  const runSimulation = useCallback(async (text: string) => {
+    const id = ++generation.current
+    timers.current.forEach(clearTimeout)
+    timers.current = []
+    setError(null); setSim(null, null); setPending(null); setPhase('compiling')
+    useStore.getState().setHovered(null)
+    try {
+      const envelope = await api.simulate(text)
+      if (id === generation.current) play(envelope)
+    } catch (e) {
+      if (id !== generation.current) return
+      setPhase('idle'); setError((e as Error).message)
+    }
+  }, [play, setError, setSim, setPhase])
 
-      try {
-        const envelope = await api.simulate(text)
-
-        // Beat 1: show the decomposition while the camera moves to the head.
-        setPhase('transition')
-        setView('brain')
-
-        // Beat 2: ignite. simStartedAt is in scene-clock seconds, which the
-        // shaders share, so step 0 fires exactly when the camera arrives.
-        const startDelay = 1500
-        timers.current.push(
-          window.setTimeout(() => {
-            const t0 = performance.now() / 1000
-            setSim(envelope, sceneClockNow() + 0.15)
-            setPhase('propagating')
-            void t0
-
-            const steps = envelope.result.metrics.propagation_depth + 1
-            timers.current.push(
-              window.setTimeout(
-                () => setPhase('settled'),
-                (steps * STEP_DURATION + 1.4) * 1000,
-              ),
-            )
-          }, startDelay),
-        )
-      } catch (e) {
-        setPhase('idle')
-        setError((e as Error).message)
-      }
-    },
-    [setError, setPhase, setSim, setView],
-  )
-
-  if (dataError) {
-    return (
-      <div className="app">
-        <div className="error">
-          <code>{dataError}</code>
-        </div>
-      </div>
-    )
+  const reset = () => {
+    generation.current++
+    timers.current.forEach(clearTimeout); timers.current = []
+    setPending(null); setStep(-1)
+    useStore.getState().reset(); useStore.getState().setHovered(null)
   }
+  const envelope = sim ?? pending
+  const active = sim?.result.activations.filter(a => phase === 'settled' || a.step <= step).length ?? 0
+  const edges = new Set(sim?.result.pulses.filter(p => phase === 'settled' || p.step <= step).map(p => `${p.source}:${p.target}`)).size
+  const stageIndex = ['idle', 'compiling', 'transition', 'propagating', 'settled'].indexOf(phase)
 
   return (
-    <div className="app">
-      <div className="scene">{data && <BrainScene data={data} />}</div>
+    <div className={`app ${cinematic ? 'cinematic' : 'restrained'}`}>
+      <header className="masthead">
+        <a className="brand" href="#" aria-label="NEUROPULSE home" onClick={e => { e.preventDefault(); reset() }}>
+          <svg className="brand-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 17h7l4-11 6 21 4-10h7" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><circle cx="2" cy="17" r="2" fill="currentColor"/><circle cx="30" cy="17" r="2" fill="currentColor"/></svg>
+          <span className="wordmark">NEUROPULSE</span><span className="edition">CONNECTOME EXPLORER</span>
+        </a>
+        <div className="head-right"><span className="dataset-chip"><span className="live-dot"/> MaleCNS v1.0</span><button className="text-button" onClick={toggleInspector}>What is real? <span>↗</span></button></div>
+      </header>
 
-      {!data && <div className="loading">Loading real connectome</div>}
+      <main className="workspace">
+        <aside className={`experience-rail ${phase !== 'idle' ? 'has-run' : ''}`}>
+          <div className="intro"><div className="eyebrow"><span className="accent-line"/> EXPERIENCE → ACTIVITY</div><h1>Give a biological <br/>brain an <em>experience.</em></h1><p>Explore how a fly’s real neural wiring carries a modeled sensory response.</p></div>
+          {phase === 'idle' ? <ExperienceInput onSimulate={runSimulation} disabled={!data} /> : <div className="run-story">
+            <div className="eyebrow">YOUR EXPERIENCE</div><p className="quote">“{envelope?.experience.raw_text ?? useStore.getState().text}”</p>
+            <div className="run-status" role="status"><span className="pulse-dot"/>{STATUS[phase]}</div>
+            {sim && <ActivityTimeline result={sim.result} step={step} settled={phase==='settled'}/>}
+            {phase === 'settled' && sim && <><ResponsePanel response={sim.response}/><p className="coverage">{sim.rendered_activated} of {sim.result.metrics.neurons_activated} reached neurons have overview morphology.</p></>}
+            {envelope && (phase === 'settled' ? <details className="input-details"><summary>What activated first · sensory inputs</summary><ExperienceBreakdown experience={envelope.experience}/></details> : <ExperienceBreakdown experience={envelope.experience}/>)}
+            <div className="run-actions"><button className="text-button" onClick={reset}>{phase === 'settled' ? '← New experience' : 'Cancel simulation'}</button>{phase === 'settled' && sim && <button className="text-button" onClick={() => { setSim(null,null); play(sim) }}>↻ Replay</button>}</div>
+          </div>}
+          <div className="rail-note"><span>01</span><p><strong>Real anatomy. Modeled activity.</strong><br/>Every rendered neuron comes from the dataset. Signal timing is illustrative.</p></div>
+        </aside>
 
-      <div className="overlay">
-        <header className="masthead">
-          <div>
-            <h1 className="wordmark">NEUROPULSE</h1>
-            <p className="tagline">Give a biological brain an experience.</p>
+        <section className="viewer" aria-label="Interactive nervous system visualization">
+          <div className="viewer-top"><div><div className="eyebrow">DROSOPHILA MELANOGASTER</div><h2>{detail && view === 'brain' ? 'One neuron. Every source branch.' : view === 'brain' ? 'The architecture of sensation.' : 'One fly. Thousands of pathways.'}</h2></div><ViewToggle/></div>
+          <div className="scene">{data && <BrainScene data={data}/>}<RegionLabelLayer/></div>
+          {!data && <div className="loading" role="status"><span className="pulse-dot"/>{dataError ?? 'Loading measured anatomy…'}</div>}
+          <div className="instrument-frame" aria-hidden="true"><i/><i/><i/><i/></div>
+          {data && <div className="scene-readout"><span className="readout-dot"/><span>{phase==='propagating' ? 'MODEL SIGNAL PLAYBACK' : phase==='settled' ? 'PEAK ACTIVITY · FROZEN SUMMARY' : 'DATASET ANATOMY'}</span><b>{phase==='propagating' && sim ? `STATE ${String(Math.max(0,Math.min(step,sim.result.steps.length-1))).padStart(2,'0')} / ${String(sim.result.steps.length-1).padStart(2,'0')}` : 'MaleCNS · v1.0'}</b></div>}
+          <NeuronDetailPanel data={data}/>
+          <div className="viewer-tools"><button aria-label="Toggle cinematic glow" aria-pressed={cinematic} title="Display styling only; neuron data and model values stay the same" onClick={()=>useStore.getState().toggleCinematic()}>✧ <span>Sci-fi glow</span></button><button aria-label="Reset view" title="Return to the default camera" onClick={() => { useStore.getState().setHovered(null); setView(view) }}>↺ <span>Reset view</span></button><button aria-label="Toggle region labels" aria-pressed={showLabels} onClick={toggleLabels}>⌖ <span>Regions</span></button><button aria-label="Inspect scientific data" onClick={toggleInspector}>ⓘ <span>Inspect data</span></button></div>
+          {data && sim && phase === 'settled' && <KeyNeurons data={data}/>}
+          <div className="view-caption"><span className="specimen-marker">{detail ? `SOURCE / ${detail.manifest.bodyId}` : view === 'brain' ? 'BRAIN / 01' : 'SPECIMEN / 01'}</span><p>{detail ? 'Unpruned source skeleton · checksum verified' : view === 'brain' ? 'Real skeletons + measured region surfaces' : 'Contextual fly shell · real CNS reconstruction'}</p><span className="orbit-hint">Drag to orbit · Scroll to zoom</span></div>
+          <div className="viewer-bottom">
+            <div className="legend"><span><i className="legend-structure"/>Anatomy</span><span><i className="m-vision"/>Vision</span><span><i className="m-olfaction"/>Smell</span><span><i className="legend-signal"/>Modeled activity</span></div>
+            <div className="data-stats">{detail ? <><b>{detail.manifest.stats.nodeCount.toLocaleString()}</b> source nodes <span>/</span><b>0</b> invented connections</> : sim ? <><b>{active.toLocaleString()}</b> reached <span>/</span><b>{edges.toLocaleString()}</b> connections reached</> : data ? <><b>{(data.context?.neuronCount ?? 0).toLocaleString()}</b> context skeletons <span>/</span><b>{data.circuit.neuronCount.toLocaleString()}</b> circuit skeletons</> : 'Preparing reconstruction'}</div>
           </div>
-          <ViewToggle />
-        </header>
-
-        <div className="stage">
-          <div className="left-rail">
-            {(phase !== 'idle' || sim) && sim && (
-              <ExperienceBreakdown experience={sim.experience} />
-            )}
-          </div>
-          <div className="right-rail">
-            <AnimatePresence>
-              {(phase === 'propagating' || phase === 'settled') && (
-                <SimulationOverlay sim={sim} />
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <footer className="foot">
-          <AnimatePresence mode="wait">
-            {phase === 'idle' && !sim && (
-              <motion.div key="input" exit={{ opacity: 0, y: 8 }} style={{ width: '100%' }}>
-                <ExperienceInput onSimulate={runSimulation} />
-              </motion.div>
-            )}
-            {phase !== 'idle' && (
-              <motion.div key="status" className="foot-status" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <span className="status-text">{STATUS[phase]}</span>
-                {phase === 'settled' && (
-                  <button className="again" onClick={() => { useStore.getState().reset(); setView('fly') }}>
-                    New experience
-                  </button>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-          {phase === 'settled' && sim && <ResponsePanel response={sim.response} />}
-        </footer>
-      </div>
-
-      {error && (
-        <div className="toast">
-          <code>{error}</code>
-          <button onClick={() => setError(null)}>dismiss</button>
-        </div>
-      )}
+        </section>
+      </main>
+      <footer className="app-footer"><span>REAL WIRING. NEW PERSPECTIVES.</span><div className="pipeline">{['Experience', 'Interpret', 'Map', 'Propagate', 'Response'].map((s,i) => <span className={i === stageIndex ? 'current' : i < stageIndex ? 'complete' : ''} key={s}><i>{String(i+1).padStart(2,'0')}</i>{s}{i < 4 && <b>—</b>}</span>)}</div><button className="text-button" onClick={toggleInspector}>Science & sources ↗</button></footer>
+      <AnimatePresence>{data && inspector && <ScientificInspector data={data}/>}</AnimatePresence>
+      {error && <div className="toast" role="alert"><span>{error}</span><button onClick={() => setError(null)}>Dismiss</button></div>}
     </div>
   )
 }
-
-const STATUS: Record<string, string> = {
-  compiling: 'Interpreting experience',
-  transition: 'Locating sensory populations',
-  propagating: 'Propagating through real connectome',
-  settled: '',
-}
-
-/**
- * Scene-clock reading.
- *
- * three's clock starts when the Canvas mounts; we mirror it here so React-side
- * scheduling and the shader uniforms agree on t=0.
- */
-let clockOrigin: number | null = null
-export function markSceneClock() {
-  if (clockOrigin === null) clockOrigin = performance.now() / 1000
-}
-function sceneClockNow(): number {
-  if (clockOrigin === null) markSceneClock()
-  return performance.now() / 1000 - (clockOrigin ?? 0)
-}
+const STATUS: Record<string,string> = { compiling: 'Interpreting sensory cues…', transition: 'Locating real input neurons…', propagating: 'Modeled activity is propagating', settled: 'Propagation complete' }

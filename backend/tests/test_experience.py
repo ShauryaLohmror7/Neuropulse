@@ -117,3 +117,10 @@ def test_three_modalities_from_one_sentence(compile_):
 def test_empty_input_is_safe(compile_):
     r = compile_("")
     assert not r.components
+
+
+def test_banana_proximity_does_not_invent_an_odor(compile_):
+    result = compile_("The fly worries about university admissions while sitting beside a banana.")
+    assert not result.components
+    assert any(u.reason == "CONTEXT_WITHOUT_SENSORY_CUE" for u in result.unmapped)
+    assert any(u.reason == "NO_SENSORY_MATCH" for u in result.unmapped)

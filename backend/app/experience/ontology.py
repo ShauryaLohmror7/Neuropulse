@@ -147,6 +147,7 @@ BRIGHTNESS = StimulusConcept(
         "R1-R6 are the broad-spectrum photoreceptors of the outer retina, annotated in MaleCNS "
         "as class 'visual', superclass 'ol_sensory'. They carry luminance and contrast signals."
     ),
+    caveat="Light increases and decreases share one broad input here. This model does not reproduce distinct ON/OFF electrical responses or adaptation to darkness.",
     phrases=[
         "it gets dark", "a sudden flash of light", "the light dims", "bright light",
         "a shadow falls over it", "darkness", "the lights go out", "sudden brightness",

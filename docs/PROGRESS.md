@@ -72,3 +72,45 @@ cd frontend && npm run dev          # http://localhost:5173
 4. README with dataset attribution, real-vs-modelled table, citations, limitations.
 5. Consider seeding more LC4/LPLC2 so DNp01 clears the engagement threshold — it fires
    at step 1 but peaks just under it.
+
+## Visual handoff — 2026-09-13
+
+Preserved the existing dirty working tree and real-data pipeline; no fresh scaffold.
+
+### Audit and changes
+
+- Backend and local semantic index work; 30 tests now pass offline. TypeScript/build pass; remaining lint warnings primarily concern Three.js mutations and legacy hooks.
+- Fixed the central visibility bug: brain coordinates are negative Z in the aligned dataset frame. The previous clipping retained the posterior side. Context clipping now also accounts for the context bundle's separate origin.
+- Replaced additive resting tissue blending with controlled normal blending/depth; reduced bloom and added readable inactive detail. Both modes use a dedicated viewport with correct mobile aspect framing.
+- Corrected fly abdomen polarity, mirrored/swept broader wings and jointed leg chains. Removed the unsupported motor pose so the shell stays registered with the real CNS.
+- Replaced sparse floating UI with an experience rail, large specimen stage, view tools, activity legend, live step-based counts, result explanation and scientific/identity inspector.
+- Camera can focus selected real skeletons, via pathway cards, search or explicit detail buttons. Corrected dataset-to-camera centroid axis signs. Resting orbit is bounded; reduced-motion preferences disable idle orbit.
+- Activation now waits for ignition and scales with modeled amplitude. Cable distance is normalized per arbor to fit a display step. React scheduling reads the renderer clock. Removed the centroid-arc particles from the scene because they were not measured anatomical routes.
+- Real asset requests run concurrently; a shared promise prevents duplicate StrictMode fetching/geometry construction. Expensive whole-geometry debug scans are throttled and dev-only.
+- Removed the unsupported conversion from marker sidedness to behavioral turn direction. Clarified no-prediction text for reached but subthreshold output markers.
+- Browser testing exposed a semantic false positive for “sitting beside a banana”; an explicit odor-cue gate now prevents injecting an olfactory stimulus from proximity alone. Unsupported clauses remain visible even when other clauses map.
+
+### Scope limits / next work
+
+The dense view is 4,200 sampled context skeletons plus the 1,498-skeleton circuit subset, not the full connectome. Overview geometry remains pruned LOD; the subsequent full-detail pass below adds an unpruned source fetch. Temporal event scheduling, a fully choreographed 30-second recording mode, and a scientifically validated motor decoder remain future work. Existing literature-to-output mappings need a dedicated citation audit before broad behavioral claims. The browser JS bundle remains large; no cross-device benchmark claim is made.
+
+Live checks: default multimodal prompt, scientific dialog/Escape, ID search/focus, real pathway cards, replay, narrow viewport and a local 120-frame sample (~16.6 ms/frame). See README for real/model/context boundaries.
+
+
+## Full-detail and recorded activity — 2026-09-13
+
+- Added unpruned per-body source forests, live UUID/unit verification, invalid-topology rejection, binary hashing, browser verification, cache, loading/error/retry states, and solo/context camera framing. All disconnected source components remain separate; no artificial bridges.
+- Verified live bodies 19034 (2,816 nodes), 917516 (558 nodes, two components), 531898 (3,428 nodes), and 20859 (1,406 nodes). No dropped nodes or invented edges. LOD nodes for 19034 match full-source coordinates within float encoding precision.
+- Removed all scene picking that opened the inspector. First drag now enables orbit controls before their event handler runs. Added a focal-plane micrometre scale.
+- The simulation now returns actual per-step activation histories and source emission steps. Fixed playback completion: final first-crossing depth is not simulation duration. Timeline covers all returned states; settled view is explicitly a static peak summary.
+- Added a prominent possible-action readout and explicit free-form-input scope. Biological accuracy of arbitrary text, electrical timing, and fly behavior is not claimed.
+- 38 backend tests pass offline, including exact state-history recurrence and retained-edge/source identity checks; TypeScript/build pass. Lint has Three.js mutation and existing legacy warnings.
+- Browser verified full-detail source failure/retry recovery, same-ID reselection, explicit inspector buttons, and orbit dragging with zero dialogs. Mobile at 390 px scrolls through all controls with no horizontal overflow. No browser runtime errors. Default scenario yields the inferred Escape takeoff readout; an unsupported abstract prompt maps zero populations, activates zero neurons, and reports no defensible prediction. Screenshots: `full-neuron.png`, `full-neuron-mobile.png`, and `recorded-activity.png` in `docs/screenshots/`.
+
+## Plain-language explanations and cinematic display
+
+Added curated, research-linked descriptions for R1–R6, LC4, LPLC2, T4/T5, DNp01 and DNp09. All other types get an explicit unresolved-function explanation using their actual annotation, plus their role in the current run. The same component appears in full detail and the scientific inspector. Added the light-change ON/OFF limitation to the sensory ontology and visible input breakdown. The full dataset and loaded-circuit counts are now separate in the inspector.
+
+Added a sci-fi styling toggle, luminous shader cores and source-node highlights for recorded full-neuron events, a model-state readout, and a frame around the scene. No new anatomical edges or model events are invented. Reduced-motion preferences use static per-state shading for the new effects. Added `UNDERSTAND_NEUROPULSE.md` for the project owner. Comparison of two experiences remains a proposed feature.
+
+Verified LC4 description/source link, full-detail loading, replay with source-node shader, no runtime errors, and 390px layout without horizontal overflow. Build passes; 38 backend tests pass. Existing lint warnings and large-bundle warning remain.
