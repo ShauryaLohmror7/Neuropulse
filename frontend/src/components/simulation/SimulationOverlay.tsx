@@ -36,8 +36,8 @@ export function SimulationOverlay({ sim }: { sim: SimulationEnvelope | null }) {
           </motion.div>
         ))}
         <div className="footnote">
-          {sim.rendered_activated} of {m.neurons_activated} activated neurons have rendered
-          morphology
+          {sim.rendered_activated} of {m.neurons_activated} activated neurons have overview
+          skeletons; measured cell bodies also show activity, and source detail loads on selection
         </div>
       </motion.div>
     </AnimatePresence>

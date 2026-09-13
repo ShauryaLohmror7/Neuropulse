@@ -8,8 +8,9 @@ from the dataset's neurotransmitter prediction.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any
 
 import numpy as np
 
@@ -50,7 +51,7 @@ class ConnectomeGraph:
         edges: Iterable[tuple[int, int, float]],
         node_meta: Mapping[int, dict[str, Any]] | None = None,
         provenance: dict[str, Any] | None = None,
-    ) -> "ConnectomeGraph":
+    ) -> ConnectomeGraph:
         edges = list(edges)
         ids: list[int] = []
         index: dict[int, int] = {}
@@ -90,11 +91,11 @@ class ConnectomeGraph:
     # ------------------------------------------------------------- queries
     @property
     def n_nodes(self) -> int:
-        return int(len(self.body_ids))
+        return len(self.body_ids)
 
     @property
     def n_edges(self) -> int:
-        return int(len(self.weights))
+        return len(self.weights)
 
     def node_index(self, body_id: int) -> int | None:
         return self.index.get(int(body_id))
@@ -156,15 +157,18 @@ class ConnectomeGraph:
             "fraction": (signed / total) if total else 0.0,
         }
 
-    def normalised_weights(
+    def transmission_edges(
         self, mode: str = "target_input", *, top_k: int | None = None, min_weight: float = 1.0
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """Filtered edge list with normalised transmission weights.
 
         Returns ``(sources, targets, normalised_weight)``.
         """
-        keep = self.weights >= min_weight
-        s, t, w = self.sources[keep], self.targets[keep], self.weights[keep]
+        if min_weight <= 1:
+            s, t, w = self.sources, self.targets, self.weights
+        else:
+            keep = self.weights >= min_weight
+            s, t, w = self.sources[keep], self.targets[keep], self.weights[keep]
 
         if top_k is not None and len(w):
             order = np.lexsort((-w, s))
@@ -181,7 +185,7 @@ class ConnectomeGraph:
             s, t, w = s[keep2], t[keep2], w[keep2]
 
         if not len(w):
-            return s, t, w.astype(np.float32)
+            return s, t, w.astype(np.float32), w
 
         if mode == "source_output":
             denom = np.bincount(s, weights=w, minlength=self.n_nodes)
@@ -193,18 +197,19 @@ class ConnectomeGraph:
         else:  # target_input (default)
             denom = np.bincount(t, weights=w, minlength=self.n_nodes)
             nw = w / np.maximum(denom[t], 1e-6)
-        return s, t, nw.astype(np.float32)
+        return s, t, nw.astype(np.float32), w
+
+    def normalised_weights(self, mode="target_input", *, top_k=None, min_weight=1.0):
+        return self.transmission_edges(mode, top_k=top_k, min_weight=min_weight)[:3]
 
     # ------------------------------------------------------------ lesioning
-    def without(self, body_ids: Sequence[int]) -> "ConnectomeGraph":
+    def without(self, body_ids: Sequence[int]) -> ConnectomeGraph:
         """Return a copy with the given neurons computationally silenced."""
         drop = {int(b) for b in body_ids}
         drop_idx = {self.index[b] for b in drop if b in self.index}
         if not drop_idx:
             return self
-        mask = ~(
-            np.isin(self.sources, list(drop_idx)) | np.isin(self.targets, list(drop_idx))
-        )
+        mask = ~(np.isin(self.sources, list(drop_idx)) | np.isin(self.targets, list(drop_idx)))
         g = ConnectomeGraph(
             body_ids=self.body_ids.copy(),
             sources=self.sources[mask].copy(),

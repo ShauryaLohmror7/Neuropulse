@@ -18,7 +18,7 @@ export interface CircuitGeometry {
   neuronCount: number
   bounds: THREE.Box3
   /** Real soma positions, if the bundle carries them. */
-  somas: { positions: Float32Array; colours: Float32Array } | null
+  somas: { bodyIds: number[]; positions: Float32Array; colours: Float32Array } | null
 }
 
 /**
@@ -206,7 +206,7 @@ export function buildCircuitGeometry(
       colours[i * 3 + 1] = g
       colours[i * 3 + 2] = b
     }
-    somas = { positions, colours }
+    somas = { bodyIds: sd.bodyIds, positions, colours }
   }
 
   return {

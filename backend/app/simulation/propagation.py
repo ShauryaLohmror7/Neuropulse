@@ -14,7 +14,7 @@ reproducible demo.
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Mapping, Sequence
+from collections.abc import Mapping
 
 import numpy as np
 
@@ -54,13 +54,9 @@ def propagate(
     refractory = np.zeros(n, dtype=np.int32)
     peak = np.zeros(n, dtype=np.float32)
 
-    src, tgt, nw = graph.normalised_weights(
+    src, tgt, nw, raw_w = graph.transmission_edges(
         params.weight_normalisation, top_k=params.top_k_edges, min_weight=params.min_edge_weight
     )
-    raw_w = {}
-    for s, t, w in zip(graph.sources, graph.targets, graph.weights):
-        raw_w[(int(s), int(t))] = float(w)
-
     signs = (
         graph.nt_signs(confidence_floor=params.nt_confidence_floor)
         if params.use_neurotransmitter_sign
@@ -99,7 +95,8 @@ def propagate(
 
     history = [act.copy()]
     emissions: dict[int, list[int]] = defaultdict(list)
-    edge_traversed: set[tuple[int, int]] = set()
+    edge_traversed = np.zeros(len(src), dtype=bool)
+    significant_total = 0
 
     for step in range(1, params.steps + 1):
         emitting = act > params.activation_threshold
@@ -110,6 +107,8 @@ def propagate(
         edge_active = emitting[src]
         if not edge_active.any():
             break
+        edge_traversed |= edge_active
+        active_raw = raw_w[edge_active]
         es, et, ew = src[edge_active], tgt[edge_active], nw[edge_active]
         for source in np.unique(es):
             emissions[int(source)].append(step - 1)
@@ -134,7 +133,8 @@ def propagate(
         # Inherit modality label from the strongest upstream contributor.
         if newly.any():
             best: dict[int, tuple[float, int]] = {}
-            for s_i, t_i, a_i in zip(es, et, amp):
+            candidates = newly[et]
+            for s_i, t_i, a_i in zip(es[candidates], et[candidates], amp[candidates]):
                 if newly[t_i]:
                     cur = best.get(int(t_i))
                     if cur is None or a_i > cur[0]:
@@ -144,21 +144,21 @@ def propagate(
                 modality_of[t_i] = inherited if inherited else "mixed"
 
         # Record pulses (only excitation/inhibition that actually mattered).
+        significant = np.abs(amp) > params.activation_threshold * 0.5
+        significant_total += int(significant.sum())
         if len(pulses) < max_pulses:
-            significant = np.abs(amp) > params.activation_threshold * 0.5
             idxs = np.flatnonzero(significant)
             if len(idxs) > max_pulses - len(pulses):
                 # keep the strongest
                 idxs = idxs[np.argsort(-np.abs(amp[idxs]))][: max_pulses - len(pulses)]
             for k in idxs:
                 s_i, t_i = int(es[k]), int(et[k])
-                edge_traversed.add((s_i, t_i))
                 pulses.append(
                     PulseEvent(
                         step=step,
                         source=int(graph.body_ids[s_i]),
                         target=int(graph.body_ids[t_i]),
-                        weight=raw_w.get((s_i, t_i), 0.0),
+                        weight=float(active_raw[k]),
                         amplitude=round(float(abs(amp[k])), 5),
                         sign=-1 if signs[s_i] < 0 else 1,
                         modality=(modality_of[s_i] or None),
@@ -178,6 +178,7 @@ def propagate(
                 active_total=int(active_now.sum()),
                 mean_activation=float(act[active_now].mean()) if active_now.any() else 0.0,
                 pulses=step_pulses,
+                cumulative_connections=int(edge_traversed.sum()),
             )
         )
 
@@ -185,6 +186,7 @@ def propagate(
     activations = [
         NeuronActivation(
             body_id=int(graph.body_ids[i]),
+            modality=modality_of[i] or None,
             activation=round(float(peak[i]), 5),
             step=int(first_step[i]),
             history=[float(state[i]) for state in history],
@@ -202,10 +204,12 @@ def propagate(
                 regions.add(str(v))
                 break
 
-    total_syn = sum(raw_w.get(e, 0.0) for e in edge_traversed)
+    total_syn = raw_w[edge_traversed].sum(dtype=np.float64)
     metrics = SimulationMetrics(
         neurons_activated=len(activations),
-        connections_traversed=len(edge_traversed),
+        connections_traversed=int(edge_traversed.sum()),
+        connections_considered=len(src),
+        pulses_omitted=significant_total - len(pulses),
         propagation_depth=int(first_step.max()) if len(activated_idx) else 0,
         regions_reached=sorted(regions),
         modalities=sorted({m for m in modality_of if m}),

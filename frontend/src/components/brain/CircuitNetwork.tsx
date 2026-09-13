@@ -51,7 +51,7 @@ export function CircuitNetwork({ circuit, opacity = 1, clipZ = 1e6 }: Props) {
     }
     return sim.result.activations.flatMap(a => {
       const slot = circuit.slotOf.get(a.body_id)
-      return slot === undefined ? [] : [{ a, slot, modality: modalityIndex(modalityOf.get(a.body_id)) }]
+      return slot === undefined ? [] : [{ a, slot, modality: modalityIndex(a.modality ?? modalityOf.get(a.body_id)) }]
     })
   }, [sim, circuit])
   const lastState = useRef('')

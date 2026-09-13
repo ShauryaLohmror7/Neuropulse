@@ -78,7 +78,7 @@ export default function App() {
   }
   const envelope = sim ?? pending
   const active = sim?.result.activations.filter(a => phase === 'settled' || a.step <= step).length ?? 0
-  const edges = new Set(sim?.result.pulses.filter(p => phase === 'settled' || p.step <= step).map(p => `${p.source}:${p.target}`)).size
+  const edges = (phase === 'settled' ? sim?.result.metrics.connections_traversed : sim?.result.steps.find(s => s.step === step)?.cumulative_connections) ?? 0
   const stageIndex = ['idle', 'compiling', 'transition', 'propagating', 'settled'].indexOf(phase)
 
   return (
@@ -119,7 +119,7 @@ export default function App() {
           <div className="view-caption"><span className="specimen-marker">{detail ? `SOURCE / ${detail.manifest.bodyId}` : view === 'brain' ? 'BRAIN / 01' : 'SPECIMEN / 01'}</span><p>{detail ? 'Unpruned source skeleton · checksum verified' : view === 'brain' ? 'Real skeletons + measured region surfaces' : 'Contextual fly shell · real CNS reconstruction'}</p><span className="orbit-hint">Drag to orbit · Scroll to zoom</span></div>
           <div className="viewer-bottom">
             <div className="legend"><span><i className="legend-structure"/>Anatomy</span><span><i className="m-vision"/>Vision</span><span><i className="m-olfaction"/>Smell</span><span><i className="legend-signal"/>Modeled activity</span></div>
-            <div className="data-stats">{detail ? <><b>{detail.manifest.stats.nodeCount.toLocaleString()}</b> source nodes <span>/</span><b>0</b> invented connections</> : sim ? <><b>{active.toLocaleString()}</b> reached <span>/</span><b>{edges.toLocaleString()}</b> connections reached</> : data ? <><b>{(data.context?.neuronCount ?? 0).toLocaleString()}</b> context skeletons <span>/</span><b>{data.circuit.neuronCount.toLocaleString()}</b> circuit skeletons</> : 'Preparing reconstruction'}</div>
+            <div className="data-stats">{detail ? <><b>{detail.manifest.stats.nodeCount.toLocaleString()}</b> source nodes <span>/</span><b>0</b> invented connections</> : sim ? <><b>{active.toLocaleString()}</b> reached <span>/</span><b>{edges.toLocaleString()}</b> connections reached</> : data ? <><b>{data.circuitDoc.counts.graphNeurons.toLocaleString()}</b> neurons in graph <span>/</span><b>{data.circuitDoc.somas?.bodyIds.length.toLocaleString()}</b> measured cell bodies</> : 'Preparing reconstruction'}</div>
           </div>
         </section>
       </main>

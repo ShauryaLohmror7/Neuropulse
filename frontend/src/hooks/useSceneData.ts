@@ -28,14 +28,20 @@ let scenePromise: Promise<SceneData> | null = null
 function loadScene(): Promise<SceneData> {
   if (scenePromise) return scenePromise
   scenePromise = (async () => {
-    const [primary, contextResult, anatomyResult] = await Promise.allSettled([
+    const [primary, contextResult, anatomyResult, catalogueResult] = await Promise.allSettled([
       loadCircuit(BASE, 'cns_circuit'),
       loadCircuit(BASE, 'brain_context'),
       loadAnatomy(BASE),
+      fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000/api'}/dataset/catalogue`).then(async r => {
+        if (!r.ok) throw new Error('Full neuron catalogue unavailable')
+        return await r.json() as CircuitDoc
+      }),
     ])
     if (primary.status === 'rejected') throw primary.reason
-    const {doc, buffer} = primary.value
-    const circuit = buildCircuitGeometry(doc, buffer)
+    if (catalogueResult.status === 'rejected') throw catalogueResult.reason
+    const {doc: overview, buffer} = primary.value
+    const doc = catalogueResult.value
+    const circuit = buildCircuitGeometry({...overview, somas:doc.somas}, buffer)
     const offsetFor = (origin: number[]) => new THREE.Vector3(
       ...origin.map((value, i) => (value - doc.transform.origin_nm[i]) / 1000) as [number,number,number],
     )

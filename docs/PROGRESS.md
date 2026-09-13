@@ -119,3 +119,8 @@ Verified LC4 description/source link, full-detail loading, replay with source-no
 
 Browsed 21st.dev and integrated Paper's open-source Neuro Noise shader (0.0.80), with a custom violet/mint palette, plus local border-beam and aurora components. Paid 21st export was not used; sources and licensing are in `UI_COMPONENT_SOURCES.md`. Decorations stay outside the anatomy layer and honor the cinematic toggle/reduced motion. Shader loading is separate, resolution-capped and visibility-aware. Build passes; existing Three.js lint warnings remain.
 Browser verification: default simulation completed with its action readout; cinematic off removed the ambient shader canvas and aurora, and on restored them. Mobile width 390px has no horizontal overflow. No browser runtime errors. Screenshot: `docs/screenshots/21st-components.png`.
+
+
+## Full dataset expansion — 13 September 2026
+
+Replaced the runtime subset with all 166,700 annotated MaleCNS neurons, 25,582,938 connections and 124,177,617 represented synapses. Removed default population/fanout/weak-edge caps, added full-catalogue search and full-graph connection inspection, and rendered all 139,662 supplied soma positions with model-state activity. Source skeletons remain streamed on demand. Every graph edge was compared against the official bulk export; 40 tests and the frontend build passed. Browser verified new-neuron detail, full-model playback and drag behavior. No maze work. See [exact scope and reproduction](FULL_DATASET_REPORT.md).

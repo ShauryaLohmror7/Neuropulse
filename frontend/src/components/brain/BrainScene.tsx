@@ -162,9 +162,10 @@ function RealAnatomy({ data }: { data: SceneData }) {
       {data.context && (
         <group position={data.contextOffset}>
           <BrainContext circuit={data.context} opacity={0.85 + m * 0.15} dim={contextDim} clipZ={clipZ - data.contextOffset.z} />
-          <Somata circuit={data.context} opacity={(0.45 + m * 0.55) * contextDim} clipZ={clipZ - data.contextOffset.z} />
+
         </group>
       )}
+      <Somata circuit={data.circuit} opacity={(0.45 + m * 0.55) * detailMix} clipZ={clipZ} size={0.55} />
       <CircuitNetwork circuit={data.circuit} opacity={(0.5 + m * 0.5) * detailMix} clipZ={clipZ} />
       <FullNeuron />
       {/* Activity is confined to measured skeletons; no invented centroid-to-centroid arcs. */}

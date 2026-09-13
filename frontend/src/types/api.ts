@@ -47,6 +47,7 @@ export interface PulseEvent {
 }
 
 export interface NeuronActivation {
+  modality?: string | null
   body_id: number
   activation: number
   history: number[]
@@ -55,6 +56,7 @@ export interface NeuronActivation {
 }
 
 export interface StepSummary {
+  cumulative_connections: number
   step: number
   newly_activated: number
   active_total: number
@@ -63,6 +65,8 @@ export interface StepSummary {
 }
 
 export interface SimulationMetrics {
+  connections_considered: number
+  pulses_omitted: number
   neurons_activated: number
   connections_traversed: number
   propagation_depth: number

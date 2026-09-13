@@ -13,9 +13,10 @@ stimulates both sides, which is the honest default for an unlocalised stimulus.
 from __future__ import annotations
 
 import logging
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
-from app.experience.schemas import CompiledExperience, ExperienceComponent
+from app.experience.schemas import CompiledExperience
 
 log = logging.getLogger(__name__)
 
@@ -42,13 +43,12 @@ def map_to_neurons(
     """Attach real bodyIds to every component. Mutates and returns ``experience``."""
     for comp in experience.components:
         ids: list[int] = []
-        for side in sides_for(comp.direction):
-            ids.extend(int(b) for b in seed_sets.get(f"{comp.stimulus}:{side}", []))
-        # Fall back to any recorded side if the requested one is absent.
-        if not ids:
-            for key, vals in seed_sets.items():
-                if key.startswith(f"{comp.stimulus}:"):
-                    ids.extend(int(b) for b in vals)
+        all_key = f"{comp.stimulus}:all"
+        if comp.direction not in ("left", "right") and all_key in seed_sets:
+            ids.extend(int(b) for b in seed_sets[all_key])
+        else:
+            for side in sides_for(comp.direction):
+                ids.extend(int(b) for b in seed_sets.get(f"{comp.stimulus}:{side}", []))
         comp.body_ids = sorted(set(ids))
         comp.neuron_count = len(comp.body_ids)
         if node_meta:

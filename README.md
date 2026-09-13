@@ -4,7 +4,7 @@ Give a biological brain an experience. Explore real MaleCNS v1.0 anatomy and a c
 
 ## Run locally
 
-The current workspace includes prepared circuit bundles in `frontend/public/circuits/`.
+The current workspace includes prepared overview bundles in `frontend/public/circuits/` and the full graph in `data/full-cns/`. On another machine, follow the [full dataset rebuild instructions](docs/FULL_DATASET_REPORT.md#reproduce).
 
 ```sh
 # Terminal 1, from the repository root
@@ -39,8 +39,8 @@ The browser uses `http://127.0.0.1:8000/api` by default. Set `VITE_API_BASE` for
 
 | Layer | Origin and limits |
 | --- | --- |
-| Neuron identity, cell type and sidedness | Cached MaleCNS v1.0 annotations from neuPrint |
-| Connectivity and synapse counts | Real directed connections in an extracted subgraph; not the entire connectome |
+| Neuron identity, cell type and sidedness | Official MaleCNS v1.0 bulk annotations |
+| Connectivity and synapse counts | All 25,582,938 connections between the 166,700 annotated neurons in the official minconf-0.5 export |
 | Morphology | Overview uses real, pruned/simplified skeletons. Selected full-detail view preserves every original node and parent edge returned by neuPrint, including disconnected components |
 | Anatomical regions | Dataset ROI meshes, decimated for browser rendering |
 | Resting colors | Visual identity cues, not measurements of activity or neurotransmitter |
@@ -64,7 +64,7 @@ The response registry's evidence tiers describe the supporting marker literature
 - `frontend/src/components/brain`: anatomy, contextual fly, cameras, skeleton activation shaders.
 - `frontend/src/components/ScientificInspector.tsx`: scientific limitations, evidence and neuron inspection.
 
-Current prepared data: **4,279 graph neurons**, **86,574 connections**, **1,498 rendered circuit skeletons**, and **4,200 separately sampled context skeletons**. The context/circuit subsets can overlap and should not be summed as unique neurons. These are truthful sampled representations, not a claim to display every cell of the full CNS.
+Current prepared data: **166,700 annotated neurons**, **25,582,938 directed connections** and **124,177,617 synapses** from the official MaleCNS v1.0 minconf-0.5 tables. The default model uses all these connections, including weight-1 edges, with no fanout or sensory-population cap. The overview displays **139,662 measured cell bodies**, with 1,498 circuit and 4,200 sampled context skeletons; detailed source skeletons load on selection for any catalogue ID. Missing source morphology remains explicitly unavailable. See [full dataset report](docs/FULL_DATASET_REPORT.md) for exact scope and rebuild instructions.
 
 Bundles retain transforms and provenance. Binary vertices store x/y/z plus geodesic distance. Unconnected fragments are never joined by invented bridges; preprocessing keeps and reports the largest connected component. Short twigs may be pruned. Original cached skeletons remain separate from display LOD.
 

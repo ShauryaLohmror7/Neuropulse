@@ -8,10 +8,10 @@ The anatomy comes from the MaleCNS research collaboration, not from an AI-genera
 
 The full dataset contains approximately **166,700 neurons across the brain and ventral nerve cord**. Our app uses `male-cns:v1.0`, the latest release listed as of September 13, 2026 (released June 8, 2026).
 
-- **4,279 neurons** and **86,574 directed connections** in the loaded model circuit.
+- **166,700 annotated neurons** and **25,582,938 directed connections** in the full loaded model graph.
 - **1,498 circuit skeletons** displayed in the overview.
 - **4,200 context skeletons**, sampled to show surrounding anatomy.
-- These visual subsets overlap. They are not the whole connectome.
+- These skeleton overview subsets overlap. All 139,662 supplied soma positions are displayed; all annotated neuron IDs are searchable and their source skeletons can be requested on demand. Graph computation uses the full annotated neuron graph.
 - Full-detail selection preserves every node and parent link supplied for that individual skeleton, including disconnected components. It does not repair missing biological reconstruction.
 
 Sources: [release notes](https://male-cns.janelia.org/release/), [dataset scope and images](https://male-cns.janelia.org/media/), [available geometry and data](https://male-cns.janelia.org/download/).
@@ -26,7 +26,7 @@ Sources: [release notes](https://male-cns.janelia.org/release/), [dataset scope 
 
 ## Your lights-off example
 
-“All lights in the room turn off” maps to “Luminance change.” In the current default circuit it selects 120 real R1–R6 photoreceptor IDs and reaches 124 neurons in the model. No output channel clears its threshold, so the result is “No defensible behavioural prediction.” The model currently groups light increases and decreases together; it does not model the distinct electrical responses to lights switching on versus off.
+“All lights in the room turn off” maps to “Luminance change.” In the current default circuit it selects 3,377 real R1–R6 photoreceptor IDs and reaches 8,538 neurons in the model. No output channel clears its threshold, so the result is “No defensible behavioural prediction.” The model currently groups light increases and decreases together; it does not model the distinct electrical responses to lights switching on versus off.
 
 ## Reading the interface
 
@@ -35,7 +35,7 @@ Sources: [release notes](https://male-cns.janelia.org/release/), [dataset scope 
 - **Pathway summary:** a frozen view of each reached neuron's highest activity, so you can inspect it. Not ongoing firing.
 - **Pathway cards:** example input, relay and output neurons from this particular run; not every reached cell.
 - **Plain-language description:** a curated explanation of known cell types, with research links. Unknown functions are explicitly labeled.
-- **Explore real neurons:** searches the 4,279 loaded IDs, showing up to 60 matches and prioritizing reached cells. “Anatomy” does not mean activated.
+- **Explore real neurons:** searches all 166,700 loaded IDs, showing up to 60 matches and prioritizing reached cells. “Anatomy” does not mean activated.
 - **Full detail:** all original source nodes and cable links for one neuron; the count of source nodes is not a count of neurons.
 - **Sci-fi glow:** changes styling only. Model values and anatomical coordinates stay identical.
 

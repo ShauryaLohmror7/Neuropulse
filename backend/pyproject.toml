@@ -11,6 +11,7 @@ dependencies = [
     "python-dotenv>=1.0",
     "neuprint-python>=0.4.26",
     "pandas>=2.2",
+    "pyarrow>=19",
     "numpy>=1.26",
     "scipy>=1.14",
     "networkx>=3.3",

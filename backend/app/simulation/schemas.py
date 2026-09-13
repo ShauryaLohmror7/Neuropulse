@@ -8,11 +8,18 @@ from pydantic import BaseModel, Field
 
 
 class NeuronActivation(BaseModel):
+    modality: str | None = None
     body_id: int
     activation: float
     step: int = Field(description="First threshold crossing, or initial seed assignment at step 0.")
-    history: list[float] = Field(default_factory=list, description="Actual model activation at each returned step, including subthreshold values.")
-    emission_steps: list[int] = Field(default_factory=list, description="Source-state steps where this neuron transmitted along retained graph edges.")
+    history: list[float] = Field(
+        default_factory=list,
+        description="Actual model activation at each returned step, including subthreshold values.",
+    )
+    emission_steps: list[int] = Field(
+        default_factory=list,
+        description="Source-state steps where this neuron transmitted along retained graph edges.",
+    )
 
 
 class PulseEvent(BaseModel):
@@ -27,13 +34,16 @@ class PulseEvent(BaseModel):
     target: int
     weight: float = Field(description="Real synapse count for this connection.")
     amplitude: float = Field(description="Modelled signal amplitude carried by this pulse.")
-    sign: Literal[-1, 1] = Field(default=1, description="+1 excitatory, -1 inhibitory (NT-derived).")
+    sign: Literal[-1, 1] = Field(
+        default=1, description="+1 excitatory, -1 inhibitory (NT-derived)."
+    )
     modality: str | None = Field(
         default=None, description="Sensory stream this pulse descends from, when unambiguous."
     )
 
 
 class StepSummary(BaseModel):
+    cumulative_connections: int = 0
     step: int
     newly_activated: int
     active_total: int
@@ -42,6 +52,8 @@ class StepSummary(BaseModel):
 
 
 class SimulationMetrics(BaseModel):
+    connections_considered: int = 0
+    pulses_omitted: int = 0
     neurons_activated: int
     connections_traversed: int
     propagation_depth: int

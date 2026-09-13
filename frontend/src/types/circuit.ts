@@ -13,7 +13,7 @@ export interface CircuitNeuronGeometry {
 
 export interface CircuitNode {
   bodyId: number
-  hop: number
+  hop: number | null
   type: string | null
   instance: string | null
   class: string | null
@@ -50,7 +50,7 @@ export interface CircuitDoc {
     renderedVertices: number
   }
   seedSets: Record<string, number[]>
-  policy: Record<string, number>
+  policy: Record<string, number | null>
   neurons: CircuitNeuronGeometry[]
   /** Real soma (cell body) positions, from the dataset's somaLocation field. */
   somas?: { bodyIds: number[]; positions: number[] }

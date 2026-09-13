@@ -38,7 +38,7 @@ class SimulationEnvelope(BaseModel):
     result: PropagationResult
     response: ModelledResponse
     rendered_activated: int = Field(
-        description="Activated neurons that have real morphology in the scene."
+        description="Activated neurons with preloaded overview skeletons; excludes the separate full soma layer."
     )
     circuit: dict[str, Any]
     lesion: dict[str, Any] | None = None
@@ -124,8 +124,7 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
     graph = c.graph
     lesion_info: dict[str, Any] | None = None
     if req.lesion:
-        cmp_ = lesion_and_compare(graph, drive, req.lesion, params=params,
-                                  seed_modalities=modality)
+        cmp_ = lesion_and_compare(graph, drive, req.lesion, params=params, seed_modalities=modality)
         result = cmp_.lesioned
         lesion_info = {
             "lesionedBodyIds": cmp_.lesioned_body_ids,
@@ -161,6 +160,7 @@ def simulate(req: SimulateRequest) -> SimulationEnvelope:
 
 def _detail(body_id: int):
     from app.connectome.detail import get_detail
+
     if body_id <= 0:
         raise HTTPException(status_code=404, detail="Unknown circuit neuron")
     try:
@@ -169,17 +169,59 @@ def _detail(body_id: int):
         raise HTTPException(status_code=404, detail="Body ID is not in this real circuit") from e
     except Exception as e:
         log.warning("Full-detail fetch failed for bodyId=%d: %s", body_id, type(e).__name__)
-        raise HTTPException(status_code=503, detail="Verified full-detail morphology is unavailable. The overview remains a labeled LOD; no synthetic replacement was made.") from e
+        raise HTTPException(
+            status_code=503,
+            detail="Verified full-detail morphology is unavailable. The overview remains a labeled LOD; no synthetic replacement was made.",
+        ) from e
 
 
-@router.get('/neurons/{body_id}/detail')
+@router.get("/neurons/{body_id}/detail")
 def neuron_detail(body_id: int):
     manifest, _ = _detail(body_id)
     return manifest
 
 
-@router.get('/neurons/{body_id}/detail.bin')
+@router.get("/neurons/{body_id}/detail.bin")
 def neuron_detail_binary(body_id: int):
     from fastapi.responses import FileResponse
+
     manifest, path = _detail(body_id)
-    return FileResponse(path, media_type='application/octet-stream', headers={'ETag': f'"{manifest["sha256"]}"'})
+    return FileResponse(
+        path, media_type="application/octet-stream", headers={"ETag": f'"{manifest["sha256"]}"'}
+    )
+
+
+@router.get("/dataset/catalogue")
+def full_catalogue():
+    from fastapi.responses import FileResponse
+
+    from app.config import REPO_ROOT
+
+    _circuit()
+    return FileResponse(REPO_ROOT / "data/full-cns/catalogue.json", media_type="application/json")
+
+
+@router.get("/neurons/{body_id}/connections")
+def neuron_connections(body_id: int, offset: int = 0, limit: int = 8):
+    import numpy as np
+
+    if offset < 0 or not 1 <= limit <= 200:
+        raise HTTPException(422, "offset must be nonnegative; limit must be 1–200")
+    graph = _circuit().graph
+    i = graph.node_index(body_id)
+    if i is None:
+        raise HTTPException(404, "Not an annotated neuron in this dataset")
+    incident = np.flatnonzero((graph.sources == i) | (graph.targets == i))
+    order = incident[np.argsort(-graph.weights[incident], kind="stable")]
+    return {
+        "total": len(incident),
+        "offset": offset,
+        "connections": [
+            {
+                "source": int(graph.body_ids[graph.sources[k]]),
+                "target": int(graph.body_ids[graph.targets[k]]),
+                "weight": int(graph.weights[k]),
+            }
+            for k in order[offset : offset + limit]
+        ],
+    }

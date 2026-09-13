@@ -38,3 +38,6 @@ models/
 
 # OS
 .DS_Store
+
+# Official bulk tables and reproducible full graph
+data/full-cns/

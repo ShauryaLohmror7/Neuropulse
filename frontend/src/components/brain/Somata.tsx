@@ -1,6 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { STEP_DURATION, useStore } from '../../lib/store'
+import { neuronPlayback } from '../../lib/playback'
 import type { CircuitGeometry } from '../../lib/circuit'
 
 /**
@@ -26,11 +28,23 @@ export function Somata({
   clipZ?: number
   size?: number
 }) {
+  const sim = useStore(s => s.sim)
+  const simStartedAt = useStore(s => s.simStartedAt)
+  const tracks = useMemo(() => {
+    const slots = new Map(circuit.somas?.bodyIds.map((id,i) => [id,i]) ?? [])
+    return sim?.result.activations.flatMap(a => {
+      const slot = slots.get(a.body_id)
+      return slot === undefined ? [] : [{a,slot}]
+    }) ?? []
+  }, [circuit,sim])
+  const lastState = useRef('')
+  useEffect(() => { lastState.current = '' }, [tracks,simStartedAt])
   const { geometry, material } = useMemo(() => {
     const g = new THREE.BufferGeometry()
     const s = circuit.somas
     if (s) {
       g.setAttribute('position', new THREE.BufferAttribute(s.positions, 3))
+      g.setAttribute('aActivity', new THREE.BufferAttribute(new Float32Array(s.bodyIds.length), 1))
       g.setAttribute('aColour', new THREE.BufferAttribute(s.colours, 3))
     }
     g.computeBoundingSphere()
@@ -49,6 +63,8 @@ export function Somata({
       blending: THREE.NormalBlending,
       vertexShader: /* glsl */ `
         attribute vec3 aColour;
+        attribute float aActivity;
+        varying float vActivity;
         uniform float uSize;
         uniform float uClipZ;
         uniform float uClipSoft;
@@ -58,18 +74,20 @@ export function Somata({
         varying float vAlpha;
 
         void main() {
-          vColour = aColour;
+          vActivity = aActivity;
+          vColour = mix(aColour, vec3(0.3, 1.0, 0.85), clamp(aActivity * 3.0, 0.0, 1.0));
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
           float d = -mv.z;
           float keep = (1.0 - smoothstep(uClipZ - uClipSoft, uClipZ + uClipSoft, position.z));
           float fog = 1.0 - smoothstep(uFogNear, uFogFar, d);
           vAlpha = keep * clamp(fog, 0.05, 1.0);
-          gl_PointSize = uSize * (760.0 / max(d, 1.0));
+          gl_PointSize = (uSize + min(aActivity * 9.0, 7.0)) * (760.0 / max(d, 1.0));
           gl_Position = projectionMatrix * mv;
         }
       `,
       fragmentShader: /* glsl */ `
         precision highp float;
+        varying float vActivity;
         uniform float uOpacity;
         varying vec3  vColour;
         varying float vAlpha;
@@ -84,14 +102,26 @@ export function Somata({
           float a = core * vAlpha * uOpacity;
           if (a < 0.003) discard;
           vec3 col = mix(vColour, vec3(1.0), pow(core, 6.0) * 0.15);
-          gl_FragColor = vec4(col * 0.65, a);
+          gl_FragColor = vec4(col * (0.65 + vActivity * 2.0), a);
         }
       `,
     })
     return { geometry: g, material: m }
   }, [circuit])
 
-  useFrame((_, dt) => {
+  useFrame(({clock}, dt) => {
+    const summary = useStore.getState().phase === 'settled'
+    const step = simStartedAt === null ? -1 : Math.floor((clock.elapsedTime - simStartedAt) / STEP_DURATION)
+    const key = `${step}:${summary}`
+    if (key !== lastState.current) {
+      const attribute = geometry.getAttribute('aActivity') as THREE.BufferAttribute | undefined
+      if (attribute) {
+        (attribute.array as Float32Array).fill(0)
+        if (simStartedAt !== null) for (const {a,slot} of tracks) attribute.setX(slot,neuronPlayback(a,step,summary).activation)
+        attribute.needsUpdate = true
+      }
+      lastState.current = key
+    }
     material.uniforms.uOpacity.value = 0.85 * opacity
     material.uniforms.uSize.value = 5.0 * size
     const u = material.uniforms.uClipZ

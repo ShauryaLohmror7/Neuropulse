@@ -48,13 +48,13 @@ class PropagationParameters(BaseModel):
             "for refractoriness/adaptation; not a modelled ion channel."
         ),
     )
-    top_k_edges: int = Field(
-        default=16,
+    top_k_edges: int | None = Field(
+        default=None,
         ge=1,
-        description="Per-neuron cap on outgoing edges used for transmission (strongest first).",
+        description="Optional explicit edge cap; null uses every outgoing connection.",
     )
     min_edge_weight: int = Field(
-        default=4,
+        default=1,
         ge=1,
         description="Synaptic-weight floor; weaker connections are ignored as unreliable.",
     )
